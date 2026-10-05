@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Node (future)
+node_modules/
+
+# Capacitor build output
+android/
+ios/
+
+# Base64 data file (not needed when served from a web server)
+src/assets/menuBgData.js
