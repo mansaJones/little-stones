@@ -1,6 +1,7 @@
 # Walk Around Jericho — asset manifest
 
 Gameplay: `biblical_game_design_doc.md` §11 (redesigned 2026-10-05).
+Generation prompts: `Art_Plate_Prompts.md` Scene 10 (rewritten for the same redesign).
 Code: `src/games/WalkAroundJerichoGame.js`.
 
 All nine plates arrived as one labelled contact sheet and were split out of it.
