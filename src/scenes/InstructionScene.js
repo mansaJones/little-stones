@@ -27,7 +27,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.FIERY_FURNACE]: { icon: '👼', gesture: 'MOVE TO BLOCK', anim: 'tap' },
       [GAME_KEYS.HOUSE_ON_ROCK]: { icon: '🏠', gesture: 'DRAG TO BUILD', anim: 'tap' },
       [GAME_KEYS.DAVID_VS_GOLIATH]: { icon: '🎯', gesture: 'AIM & RELEASE', anim: 'tap' },
-      [GAME_KEYS.WALK_AROUND_JERICHO]: { icon: '🚶', gesture: 'TAP TO MARCH', anim: 'tap' },
+      [GAME_KEYS.WALK_AROUND_JERICHO]: { icon: '🌀', gesture: 'DRAG IN CIRCLES', anim: 'tap' },
       [GAME_KEYS.HE_MUST_INCREASE]: { icon: '⬆️', gesture: 'SWIPE TO RESIZE', anim: 'tap' },
       [GAME_KEYS.LOST_SHEEP]: { icon: '🐑', gesture: 'TAP TO SEARCH', anim: 'tap' },
     };

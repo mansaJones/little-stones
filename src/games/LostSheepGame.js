@@ -2,7 +2,7 @@
 // FIND THE LOST SHEEP - Tap the hiding spots to find the one lost sheep
 // Luke 15:3-7  —  Pastel cel-shaded art plates
 // Landscape layout: 667x375
-// Gameplay spec: biblical_game_design_doc.md §13   Art: Art_Plate_Prompts.md Scene 13
+// Gameplay spec: docs/biblical_game_design_doc.md §13   Art: docs/Art_Plate_Prompts.md Scene 13
 // ============================================
 
 // Art plates live in assets/games/lost-sheep/. The art doc names assets with underscores; the
@@ -106,7 +106,7 @@ const LS_TAP_DEBOUNCE = 250;  // ms. EASY has no wrong-tap limit, so on EASY thi
 const LS_WARM = 0.67;         // cue strength at or above this counts as "warm" — drives the pose
 const LS_PLAY_SPAN = 420;     // px across the play area, the normaliser for cue strength
 
-// Style lock (Art_Plate_Prompts.md): uniform outline, flat cel fills, pastel non-human skin.
+// Style lock (docs/Art_Plate_Prompts.md): uniform outline, flat cel fills, pastel non-human skin.
 // Used only by the placeholder generator, but kept here so the stand-ins land in the right
 // neighbourhood and a missing asset reads as "art not in yet" rather than "something is broken".
 const LS_PAL = {

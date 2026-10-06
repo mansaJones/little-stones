@@ -2,7 +2,7 @@
 // DANIEL IN THE LIONS' DEN - Drag Daniel around the pit, don't get caught
 // Daniel 6  —  Pastel cel-shaded art plates
 // Landscape layout: 667x375
-// Gameplay spec: biblical_game_design_doc.md §5
+// Gameplay spec: docs/biblical_game_design_doc.md §5
 // ============================================
 
 // Art plates live in assets/games/lions-den/

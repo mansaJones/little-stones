@@ -1,6 +1,6 @@
 # Lost Sheep — asset manifest
 
-Generation prompts: `Art_Plate_Prompts.md` Scene 13. Gameplay: `biblical_game_design_doc.md` §13.
+Generation prompts: `docs/Art_Plate_Prompts.md` Scene 13. Gameplay: `docs/biblical_game_design_doc.md` §13.
 Code: `src/games/LostSheepGame.js`.
 
 ## What is here
