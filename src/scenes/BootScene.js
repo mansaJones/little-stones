@@ -11,13 +11,8 @@ class BootScene extends Phaser.Scene {
     // Generate all texture assets programmatically
     this.generateTextures();
 
-    // Check if first launch
-    const data = loadGameData();
-    if (data.firstLaunch) {
-      this.scene.start('OnboardingScene');
-    } else {
-      this.scene.start('MenuScene');
-    }
+    // Always go through PreloadScene so real assets get loaded
+    this.scene.start('PreloadScene');
   }
 
   generateTextures() {
