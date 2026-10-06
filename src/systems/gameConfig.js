@@ -81,9 +81,21 @@ const GAME_CONFIG = {
     hard:   { attempts: 1, goliathSpeed: 40, aimLineVisible: false, timeLimit: 6.0 },
   },
   walkAroundJericho: {
-    easy:   { laps: 7, timeLimit: 10.0, autoWalk: true, obstacles: false },
-    medium: { laps: 7, timeLimit: 8.0, autoWalk: false, obstacles: false },
-    hard:   { laps: 7, timeLimit: 6.0, autoWalk: false, obstacles: true },
+    // TWO phases, each with its own clock (design doc §11, redesigned 2026-10-05).
+    //
+    // Phase 1, the march: drag the phalanx round the city `laps` times inside `timeLimit`. The
+    // phalanx is capped at one lap per second, so the fastest legal march is 7s and the tiers
+    // leave 5 / 3 / 2 seconds of slack. `autoWalk` is gone — both phases are player-driven now.
+    //
+    // Phase 2, the horn: `targetTaps` taps inside `hornTime`, which starts FRESH so scraping
+    // through lap seven with 0.1s left does not doom the horn. `hornDrain` is meter units lost per
+    // second; 0 = no drain, matching windForce/chargeInterval elsewhere.
+    //
+    // timeLimit and targetTaps are named so getAdjustedConfig scales both for free. hornTime is
+    // deliberately not scaled.
+    easy:   { laps: 7, timeLimit: 12.0, targetTaps: 12, hornTime: 4.0, hornDrain: 0,   obstacles: false },
+    medium: { laps: 7, timeLimit: 10.0, targetTaps: 16, hornTime: 4.0, hornDrain: 2.5, obstacles: false },
+    hard:   { laps: 7, timeLimit: 9.0,  targetTaps: 20, hornTime: 4.0, hornDrain: 3.5, obstacles: true  },
   },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
@@ -200,12 +212,13 @@ const GAME_STORIES = {
   },
   [GAME_KEYS.WALK_AROUND_JERICHO]: {
     title: "Walk Around Jericho",
-    reference: "Joshua 6:15",
+    reference: "Joshua 6:15-20",
     story: "Joshua and the Israelites walked around Jericho's walls 7 times, then the walls fell down!",
     successMessage: "The walls have fallen! God is mighty!",
-    failMessage: "Not enough laps! Keep marching!",
-    instruction: "Tap to march around the walls 7 times!",
-    instructionHard: "Tap rhythmically — dodge obstacles!",
+    // Neutral about WHICH phase ran out, because either can.
+    failMessage: "The walls still stand! Keep marching!",
+    instruction: "Drag the soldiers around the city 7 times, then tap to blow the horn!",
+    instructionHard: "March 7 laps, dodge the rocks, then blow the horn!",
   },
   [GAME_KEYS.HE_MUST_INCREASE]: {
     title: "He Must Increase",
