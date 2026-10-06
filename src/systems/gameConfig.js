@@ -38,9 +38,22 @@ const GAME_CONFIG = {
     hard:   { targetPercent: 100, timeLimit: 4.0, weight: 0.6, obstacles: true },
   },
   danielLionsDen: {
-    easy:   { lionCount: 2, surviveTime: 5.0, lionSpeed: 60 },
-    medium: { lionCount: 3, surviveTime: 7.0, lionSpeed: 90 },
-    hard:   { lionCount: 4, surviveTime: 10.0, lionSpeed: 120 },
+    // chargeInterval is seconds between one lion breaking off its patrol to rush Daniel; 0 = never,
+    // matching windForce/drainRate elsewhere. The design doc has always said HARD lions
+    // occasionally charge, and the code has always had a charge branch — but it was gated on
+    // `difficulty === 3` while difficulty is the string 'hard', so it had never once run.
+    //
+    // surviveTime is a SURVIVAL clock: longer is harder, which is why getAdjustedConfig scales it
+    // the opposite way to timeLimit.
+    //
+    // UNBALANCED — see §5 'As built'. Measured with a near-optimal dodging bot, medium wins about
+    // 4 rounds in 14 and hard about 1 in 14, which is far too steep for 6-8s with three lives a
+    // session. These numbers are the design doc's and have been left alone; the tested fix is
+    // medium {lionSpeed: 78, surviveTime: 6.0} and hard {lionSpeed: 95, surviveTime: 7.5}, which
+    // measured 70% and 30%.
+    easy:   { lionCount: 2, surviveTime: 5.0,  lionSpeed: 60,  chargeInterval: 0 },
+    medium: { lionCount: 3, surviveTime: 7.0,  lionSpeed: 90,  chargeInterval: 0 },
+    hard:   { lionCount: 4, surviveTime: 10.0, lionSpeed: 120, chargeInterval: 3.0 },
   },
   fieryFurnace: {
     // Difficulty is ONE dial: how many fireballs are in the air at once. Everything else is
