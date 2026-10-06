@@ -2,7 +2,7 @@
 // WALK AROUND JERICHO - March the city seven times, then blow the horn
 // Joshua 6:15-20  —  Pastel cel-shaded art plates
 // Landscape layout: 667x375
-// Gameplay spec: biblical_game_design_doc.md §11 (redesigned 2026-10-05)
+// Gameplay spec: docs/biblical_game_design_doc.md §11 (redesigned 2026-10-05)
 // ============================================
 
 // Art plates live in assets/games/jericho/

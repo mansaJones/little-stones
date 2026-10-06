@@ -1,6 +1,6 @@
 # Daniel in the Lions' Den — asset manifest
 
-Gameplay: `biblical_game_design_doc.md` §5. Code: `src/games/DanielLionsDenGame.js`.
+Gameplay: `docs/biblical_game_design_doc.md` §5. Code: `src/games/DanielLionsDenGame.js`.
 
 | File | Source | Notes |
 |---|---|---|

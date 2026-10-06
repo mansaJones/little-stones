@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Little Pebbles — Art Plates</title>
+<style>
+  :root{ --page:#2A2A35; --label:#CFCFDD; --sub:#82829A; --rule:#3C3C4A; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; padding:44px 24px 72px;
+    background:var(--page);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--label); -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1040px; margin:0 auto; }
+  header{ margin-bottom:40px; padding-bottom:22px; border-bottom:1px solid var(--rule); }
+  h1{ font-size:15px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; margin:0 0 8px; }
+  header p{ margin:0; font-size:13px; line-height:1.6; color:var(--sub); max-width:64ch; }
+  .plate{ margin-bottom:48px; }
+  .plate h2{ font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin:0 0 3px; }
+  .plate .meta{ font-size:12px; color:var(--sub); margin:0 0 14px; }
+  .frame{ border-radius:12px; overflow:hidden; box-shadow:0 10px 34px rgba(0,0,0,.5); }
+  .frame svg{ display:block; width:100%; height:auto; }
+  footer{ margin-top:8px; padding-top:22px; border-top:1px solid var(--rule); font-size:12px; color:var(--sub); line-height:1.6; }
+
+  /* ---- STYLE LOCK ---- */
+  .ln{ stroke:#1A1A1A; stroke-width:3.5; stroke-linejoin:round; stroke-linecap:round; }
+  .ln-thin{ stroke:#1A1A1A; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round; fill:none; }
+  .noln{ stroke:none; }
+  .nss{ vector-effect:non-scaling-stroke; }
+
+  /* ---- motion ---- */
+  @keyframes bob { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-3.5px) } }
+  @keyframes bobSlow { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-2.5px) } }
+  .bob{ animation:bob 2.6s ease-in-out infinite; }
+  .bob-slow{ animation:bobSlow 4.2s ease-in-out infinite; }
+  .bob-off{ animation-delay:-1.3s; }
+
+  @keyframes stoneArc{
+    0%{ transform:translate(0,0); opacity:0 } 7%{ opacity:1 }
+    25%{ transform:translate(63px,-37px) }
+    50%{ transform:translate(124px,-56px) }
+    75%{ transform:translate(181px,-56px) }
+    93%{ opacity:1 }
+    100%{ transform:translate(235px,-38px); opacity:0 }
+  }
+  .stone{ animation:stoneArc 3.4s cubic-bezier(.35,0,.7,1) infinite; }
+
+  @keyframes flipCard{ 0%,42%{ transform:scaleX(1) } 50%{ transform:scaleX(.04) } 58%,100%{ transform:scaleX(1) } }
+  @keyframes showBack{ 0%,49.9%{ opacity:1 } 50%,100%{ opacity:0 } }
+  @keyframes showFace{ 0%,49.9%{ opacity:0 } 50%,100%{ opacity:1 } }
+  .flip{ animation:flipCard 5s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 50%; }
+  .flip-b{ animation:showBack 5s step-end infinite; }
+  .flip-f{ animation:showFace 5s step-end infinite; }
+  .d2{ animation-delay:-2.5s }
+
+  @keyframes prowlA{ 0%,100%{ transform:translateX(0) } 50%{ transform:translateX(24px) } }
+  @keyframes prowlB{ 0%,100%{ transform:translateX(0) } 50%{ transform:translateX(-20px) } }
+  @keyframes prowlC{ 0%,100%{ transform:translateX(0) } 50%{ transform:translateX(-32px) } }
+  .prowl-a{ animation:prowlA 6.5s ease-in-out infinite }
+  .prowl-b{ animation:prowlB 5.2s ease-in-out infinite }
+  .prowl-c{ animation:prowlC 8s   ease-in-out infinite }
+  @keyframes shimmer{ 0%,100%{ opacity:.40 } 50%{ opacity:.60 } }
+  .shaft{ animation:shimmer 5s ease-in-out infinite }
+
+  @keyframes fillRise{ 0%,100%{ transform:translateY(24px) } 55%{ transform:translateY(-10px) } }
+  @keyframes wineIn{ 0%,100%{ opacity:.08 } 55%,72%{ opacity:1 } }
+  .fill{ animation:fillRise 7s ease-in-out infinite }
+  .wine{ animation:wineIn 7s ease-in-out infinite }
+  @keyframes bubble{ 0%{ transform:translateY(0) scale(.5); opacity:0 } 20%{ opacity:.85 } 100%{ transform:translateY(-54px) scale(1); opacity:0 } }
+  .bub{ animation:bubble 3.2s ease-in infinite }
+  .bub2{ animation-delay:-1.1s } .bub3{ animation-delay:-2.2s } .bub4{ animation-delay:-1.7s }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Little Pebbles — Art Plates</h1>
+  <p>Art plates only: background, characters and interactive props. No HUD, no hearts, timer, score or buttons &mdash; that layer composites separately in Phaser. Each plate is a 667&times;375 viewBox to match the game canvas. Style locked to the sprite reference set: uniform near-black outline, flat cel fill, pastel non-human skin, oversized eyes, blush, desaturated palette.</p>
+</header>
+
+
+<!-- ==================================================================== -->
+<!-- PLATE 1 — DAVID VS GOLIATH                                           -->
+<!-- ==================================================================== -->
+<section class="plate">
+  <h2>01 &middot; David vs Goliath</h2>
+  <p class="meta">Aim &amp; release &mdash; 1 Samuel 17</p>
+  <div class="frame">
+  <svg viewBox="0 0 667 375" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="David vs Goliath art plate">
+    <defs>
+      <linearGradient id="p1sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#AEE0F5"/><stop offset=".5" stop-color="#C8E9DE"/><stop offset="1" stop-color="#FBF3C4"/>
+      </linearGradient>
+      <linearGradient id="p1sand" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F7DFA0"/><stop offset="1" stop-color="#EFC97A"/>
+      </linearGradient>
+      <linearGradient id="p1gol" x1="0" y1="0" x2="1" y2=".5">
+        <stop offset="0" stop-color="#B6E3C1"/><stop offset="1" stop-color="#95CFA7"/>
+      </linearGradient>
+      <linearGradient id="p1dav" x1="0" y1="0" x2="1" y2=".5">
+        <stop offset="0" stop-color="#B8D0F3"/><stop offset="1" stop-color="#9CBAEA"/>
+      </linearGradient>
+    </defs>
+
+    <rect width="667" height="375" fill="url(#p1sky)"/>
+
+    <g class="ln">
+      <path fill="#FFFFFF" transform="translate(46,40)"  d="M0,26 a20,20 0 0 1 26,-18 a26,26 0 0 1 46,-4 a22,22 0 0 1 30,22 z"/>
+      <path fill="#FFFFFF" transform="translate(566,34)" d="M0,24 a18,18 0 0 1 22,-16 a24,24 0 0 1 40,-6 a20,20 0 0 1 30,22 z"/>
+      <path fill="#FFFFFF" transform="translate(238,58)" d="M0,20 a15,15 0 0 1 18,-13 a20,20 0 0 1 33,-5 a17,17 0 0 1 25,18 z"/>
+    </g>
+
+    <!-- distant rock forms -->
+    <g class="ln">
+      <path fill="#E3BDCB" d="M-16,262 q-4,-40 22,-50 q20,-8 34,4 q10,-14 30,-8 q24,7 22,30 q2,14 0,24 z"/>
+      <path fill="#C4CDEA" d="M520,262 q-2,-34 26,-42 q22,-6 34,6 q12,-16 34,-10 q26,8 24,32 q2,8 0,14 z"/>
+      <path fill="#C2DCBB" d="M148,262 q-4,-20 16,-26 q18,-5 28,6 q10,8 8,20 z"/>
+      <path fill="#DCC8E6" d="M400,262 q-4,-17 14,-23 q16,-5 26,5 q8,8 6,18 z"/>
+    </g>
+
+    <path class="ln" fill="url(#p1sand)" d="M-6,260 q120,-14 242,-4 q138,7 258,-6 q90,-9 179,4 L673,381 L-6,381 Z"/>
+
+    <!-- foreground rocks -->
+    <g class="ln">
+      <path fill="#E8B4A0" d="M-24,356 q-10,-30 10,-42 q14,-8 26,-2 q8,-18 28,-13 q22,6 22,26 q14,8 10,31 z"/>
+      <path fill="#C4CDEA" d="M576,372 q-12,-34 10,-48 q16,-10 30,-2 q10,-20 32,-14 q24,7 24,30 q16,10 12,34 z"/>
+      <path fill="#B8D4B0" d="M78,320 q-4,-16 10,-22 q14,-6 24,2 q12,9 8,20 z"/>
+      <path fill="#CFC0E2" d="M300,352 q-4,-18 12,-25 q16,-7 28,3 q13,10 9,22 z"/>
+      <ellipse fill="#C9CFD6" cx="252" cy="322" rx="12" ry="8"/>
+      <ellipse fill="#DDC0AE" cx="392" cy="336" rx="15" ry="10"/>
+    </g>
+
+    <ellipse class="noln" cx="482" cy="302" rx="88" ry="14" fill="#1A1A1A" opacity=".2"/>
+    <ellipse class="noln" cx="152" cy="302" rx="44" ry="10" fill="#1A1A1A" opacity=".2"/>
+
+    <!-- ================= GOLIATH ================= -->
+    <g class="bob-slow">
+    <g class="ln" transform="translate(480,226)">
+
+      <!-- legs -->
+      <path fill="#A8DDB5" d="M-42,-4 h34 q6,0 6,8 v54 q0,8 -8,8 h-30 q-8,0 -8,-8 v-54 q0,-8 6,-8 z"/>
+      <path fill="#A8DDB5" d="M12,-4 h34 q6,0 6,8 v54 q0,8 -8,8 h-30 q-8,0 -8,-8 v-54 q0,-8 6,-8 z"/>
+      <path fill="#B08258" d="M-58,60 q0,-10 12,-10 h44 q12,0 12,10 q0,14 -14,14 h-40 q-14,0 -14,-14 z"/>
+      <path fill="#B08258" d="M-4,60 q0,-10 12,-10 h44 q12,0 12,10 q0,14 -14,14 h-40 q-14,0 -14,-14 z"/>
+      <path class="ln-thin" d="M-50,55 a5,5 0 0 1 10,0 M-36,54 a5,5 0 0 1 10,0 M-22,54 a5,5 0 0 1 10,0
+                                M4,55 a5,5 0 0 1 10,0 M18,54 a5,5 0 0 1 10,0 M32,54 a5,5 0 0 1 10,0"/>
+
+      <!-- kilt -->
+      <path fill="#B08258" d="M-50,-46 q-6,34 2,52 h96 q8,-18 2,-52 z"/>
+      <path class="ln-thin" d="M-22,-40 v44 M2,-40 v46 M26,-40 v44"/>
+      <rect fill="#8A6242" x="-52" y="-56" width="104" height="18" rx="8"/>
+      <rect fill="#E8C87A" x="-13" y="-54" width="26" height="14" rx="5"/>
+
+      <!-- torso -->
+      <path fill="url(#p1gol)" d="M-48,-108 q48,-14 96,0 q8,28 4,54 q-52,12 -104,0 q-4,-26 4,-54 z"/>
+      <path class="ln-thin" d="M0,-100 v46 M-26,-88 q26,12 52,0 M-24,-70 q24,10 48,0"/>
+
+      <!-- arms -->
+      <path fill="#A8DDB5" d="M-52,-108 q-24,4 -28,24 q-4,22 2,48 q2,10 14,10 q12,0 14,-12 q-4,-24 0,-42 q2,-14 14,-16 z"/>
+      <path fill="#A8DDB5" d="M56,-108 q26,6 30,26 q4,22 -2,46 q-2,10 -14,10 q-12,0 -14,-12 q4,-22 0,-40 q-2,-14 -14,-16 z"/>
+      <path fill="#BFCFC4" d="M-84,-42 q18,-8 36,0 q4,14 0,24 q-18,8 -36,0 q-4,-14 0,-24 z"/>
+      <path fill="#BFCFC4" d="M52,-42 q18,-8 36,0 q4,14 0,24 q-18,8 -36,0 q-4,-14 0,-24 z"/>
+      <circle fill="#A8DDB5" cx="-66" cy="0" r="20"/>
+      <circle fill="#A8DDB5" cx="70" cy="0" r="20"/>
+      <path class="ln-thin" d="M-78,-6 q13,-5 25,0 M-77,5 q12,-4 23,0 M58,-6 q13,-5 25,0 M59,5 q12,-4 23,0"/>
+
+      <!-- leather pauldron, sitting on the shoulder -->
+      <path fill="#C89A6B" d="M36,-114 q26,-8 40,6 q10,11 3,22 q-10,9 -24,2 q-14,-7 -19,-30 z"/>
+      <circle fill="#E8C87A" cx="58" cy="-98" r="5.5"/>
+
+      <!-- head -->
+      <circle fill="url(#p1gol)" cx="0" cy="-162" r="46"/>
+      <!-- helmet cap -->
+      <path fill="#BFCFC4" d="M-45,-170 q2,-40 45,-40 q43,0 45,40 q-45,-16 -90,0 z"/>
+      <path fill="#BFCFC4" d="M-6,-210 l6,-12 l6,12 z"/>
+      <path fill="#CFDBD2" d="M-8,-174 h16 v24 q0,7 -8,7 q-8,0 -8,-7 z"/>
+      <path class="ln-thin" d="M-40,-180 q40,-13 80,0"/>
+      <!-- eyes -->
+      <ellipse fill="#FFFFFF" cx="-21" cy="-158" rx="15" ry="17.5"/>
+      <ellipse fill="#FFFFFF" cx="21" cy="-158" rx="15" ry="17.5"/>
+      <circle class="noln" fill="#1A1A1A" cx="-17" cy="-154" r="7"/>
+      <circle class="noln" fill="#1A1A1A" cx="25" cy="-154" r="7"/>
+      <path class="ln-thin" stroke-width="4.4" d="M-38,-178 q15,-9 28,-2 M38,-178 q-15,-9 -28,-2"/>
+      <path class="ln-thin" d="M0,-142 q8,5 0,10"/>
+      <!-- scowl + tusks -->
+      <path fill="#7FB894" d="M-24,-126 q24,-9 48,0 q-9,14 -24,14 q-15,0 -24,-14 z"/>
+      <path fill="#FFFFFF" d="M-18,-125 l6,-9 l6,9 z"/>
+      <path fill="#FFFFFF" d="M6,-125 l6,-9 l6,9 z"/>
+      <ellipse class="noln" fill="#F5B5C8" opacity=".55" cx="-38" cy="-138" rx="11" ry="6.5"/>
+      <ellipse class="noln" fill="#F5B5C8" opacity=".55" cx="38" cy="-138" rx="11" ry="6.5"/>
+    </g>
+    </g>
+
+    <!-- ================= DAVID ================= -->
+    <g class="bob bob-off">
+    <g class="ln" transform="translate(150,300)">
+
+      <!-- back leg -->
+      <path fill="#A9C4EE" d="M6,-48 q14,-4 19,5 q7,18 15,33 q4,9 -6,13 q-12,4 -16,-6 q-9,-19 -14,-33 q-3,-9 2,-12 z"/>
+      <path fill="#B08258" d="M20,-4 q2,-8 12,-6 l22,5 q10,2 8,10 q-2,10 -13,8 l-20,-4 q-11,-2 -9,-13 z"/>
+      <!-- front leg -->
+      <path fill="#A9C4EE" d="M-6,-48 q-15,-4 -20,5 q-8,18 -17,33 q-4,9 6,13 q12,4 16,-6 q10,-19 16,-33 q4,-9 -1,-12 z"/>
+      <path fill="#B08258" d="M-50,2 q-2,-8 9,-9 l22,-3 q10,-1 11,8 q1,10 -10,11 l-20,2 q-11,1 -12,-9 z"/>
+
+      <!-- tunic -->
+      <path fill="#E8DCC4" d="M-24,-96 q24,-11 48,0 q8,28 4,52 q-28,10 -56,0 q-4,-24 4,-52 z"/>
+      <path fill="#B8946B" d="M-25,-92 q25,-12 50,0 l-3,10 q-22,-11 -44,0 z"/>
+      <path fill="#B8946B" d="M-26,-72 q26,10 52,0 l2,9 q-27,10 -54,0 z"/>
+
+      <!-- back arm pulling the pouch -->
+      <path fill="#A9C4EE" d="M-18,-84 q-10,-7 -19,-4 q-13,4 -20,7 q-8,3 -5,10 q3,7 11,3 q9,-4 18,-5 q9,-1 15,-11 z"/>
+      <ellipse fill="#A9C4EE" cx="-43" cy="-75" rx="9" ry="8"/>
+      <!-- sling bands -->
+      <path fill="none" stroke="#8A6242" stroke-width="3" d="M-50,-83 C 0,-92 40,-96 61,-93"/>
+      <path fill="none" stroke="#8A6242" stroke-width="3" d="M-50,-74 C 0,-79 40,-78 62,-76"/>
+      <path fill="#C89A6B" d="M-58,-84 q10,-6 18,2 q6,8 -2,14 q-10,6 -17,-2 q-6,-8 1,-14 z"/>
+      <!-- front arm holding the fork -->
+      <path fill="#A9C4EE" d="M16,-90 q10,-6 18,-2 q12,5 22,10 q7,3 3,10 q-4,7 -11,3 q-11,-5 -21,-9 q-9,-3 -11,-12 z"/>
+      <!-- sling fork -->
+      <path fill="none" stroke="#1A1A1A" stroke-width="9"  stroke-linecap="round" d="M52,-84 L62,-94 M52,-80 L64,-76 M52,-84 L50,-70"/>
+      <path fill="none" stroke="#C89A6B" stroke-width="4.5" stroke-linecap="round" d="M52,-84 L62,-94 M52,-80 L64,-76 M52,-84 L50,-70"/>
+      <ellipse fill="#A9C4EE" cx="50" cy="-76" rx="10" ry="9"/>
+
+      <!-- head -->
+      <circle fill="url(#p1dav)" cx="0" cy="-122" r="27"/>
+      <path fill="#8FA4E0" d="M-26,-126 q-3,-28 26,-29 q29,-1 27,27 q-11,-14 -27,-11 q-17,3 -26,13 z"/>
+      <path fill="#8FA4E0" d="M-27,-132 q-9,-8 -4,-16 q7,-6 13,-1 z"/>
+      <ellipse fill="#FFFFFF" cx="-9" cy="-122" rx="9.5" ry="11.5"/>
+      <ellipse fill="#FFFFFF" cx="10" cy="-122" rx="9.5" ry="11.5"/>
+      <circle class="noln" fill="#1A1A1A" cx="-6" cy="-120" r="4.8"/>
+      <circle class="noln" fill="#1A1A1A" cx="13" cy="-120" r="4.8"/>
+      <path class="ln-thin" stroke-width="3" d="M-18,-134 q10,-5 17,-1 M19,-134 q-9,-5 -16,-1"/>
+      <path class="ln-thin" d="M2,-110 q4,3 0,5"/>
+      <path class="ln-thin" d="M-6,-102 q9,6 17,-1"/>
+      <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-19" cy="-110" rx="7" ry="4.2"/>
+      <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="21" cy="-110" rx="7" ry="4.2"/>
+    </g>
+    </g>
+
+    <!-- trajectory + stone -->
+    <path fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"
+          stroke-dasharray="2 12" opacity=".28" d="M220,203 Q350,110 455,165"/>
+    <g class="stone">
+      <circle class="ln" fill="#C9CFD6" cx="220" cy="203" r="8"/>
+      <path class="ln-thin" d="M217,201 q4,-3 7,1"/>
+    </g>
+  </svg>
+  </div>
+</section>
+
+
+<!-- ==================================================================== -->
+<!-- PLATE 2 — NOAH'S ARK                                                 -->
+<!-- ==================================================================== -->
+<section class="plate">
+  <h2>02 &middot; Noah&rsquo;s Ark</h2>
+  <p class="meta">Memory match &mdash; Genesis 7:9</p>
+  <div class="frame">
+  <svg viewBox="0 0 667 375" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Noah's Ark memory match art plate">
+    <defs>
+      <linearGradient id="p2sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#AEE0F5"/><stop offset="1" stop-color="#DCF1E6"/>
+      </linearGradient>
+      <linearGradient id="p2floor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#CFA378"/><stop offset="1" stop-color="#B78B60"/>
+      </linearGradient>
+
+      <!-- reusable card back -->
+      <g id="p2back">
+        <rect class="ln" fill="#9FB8D4" x="0" y="0" width="80" height="80" rx="15"/>
+        <g fill="#C6D8EA" stroke="#1A1A1A" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85">
+          <path d="M12,42 C 16,60 27,68 40,68 C 53,68 64,60 68,42 Z"/>
+          <path d="M28,28 h24 a5,5 0 0 1 5,5 v9 h-34 v-9 a5,5 0 0 1 5,-5 z"/>
+          <path fill="none" d="M40,28 v-13"/>
+          <path d="M40,15 h13 l-5,5 l5,5 h-13 z"/>
+        </g>
+      </g>
+    </defs>
+
+    <rect width="667" height="375" fill="url(#p2sky)"/>
+
+    <!-- rainbow -->
+    <g fill="none" stroke-linecap="round" opacity=".8">
+      <path stroke="#F2A9A9" stroke-width="14" d="M73,340 a262,262 0 0 1 524,0"/>
+      <path stroke="#F7C89A" stroke-width="14" d="M87,340 a248,248 0 0 1 496,0"/>
+      <path stroke="#FBEBA0" stroke-width="14" d="M101,340 a234,234 0 0 1 468,0"/>
+      <path stroke="#BCDFB4" stroke-width="14" d="M115,340 a220,220 0 0 1 440,0"/>
+      <path stroke="#B2CCEF" stroke-width="14" d="M129,340 a206,206 0 0 1 412,0"/>
+      <path stroke="#CBB8E6" stroke-width="14" d="M143,340 a192,192 0 0 1 384,0"/>
+    </g>
+
+    <g class="ln">
+      <path fill="#FFFFFF" transform="translate(112,42)" d="M0,22 a17,17 0 0 1 21,-15 a22,22 0 0 1 38,-5 a19,19 0 0 1 27,20 z"/>
+      <path fill="#FFFFFF" transform="translate(496,52)" d="M0,20 a15,15 0 0 1 19,-14 a20,20 0 0 1 34,-4 a17,17 0 0 1 25,18 z"/>
+    </g>
+
+    <!-- ark frame: light posts + top beam, rafters kept above the grid -->
+    <g class="ln">
+      <path fill="#D2A472" d="M-4,0 h44 v375 h-44 z"/>
+      <path fill="#D2A472" d="M627,0 h44 v375 h-44 z"/>
+      <path fill="#BE9265" d="M-4,0 h675 v30 h-675 z"/>
+      <path fill="#D2A472" d="M40,30 L150,80 L150,98 L40,48 z"/>
+      <path fill="#D2A472" d="M627,30 L517,80 L517,98 L627,48 z"/>
+      <path class="ln-thin" opacity=".6" d="M12,48 v312 M28,48 v312 M639,48 v312 M655,48 v312"/>
+      <circle fill="#9E7250" cx="20" cy="70" r="4.5"/>
+      <circle fill="#9E7250" cx="20" cy="320" r="4.5"/>
+      <circle fill="#9E7250" cx="647" cy="70" r="4.5"/>
+      <circle fill="#9E7250" cx="647" cy="320" r="4.5"/>
+    </g>
+
+    <!-- deck floor -->
+    <g class="ln">
+      <path fill="url(#p2floor)" d="M-4,322 h675 v58 h-675 z"/>
+      <path class="ln-thin" opacity=".55" d="M96,322 v58 M216,322 v58 M336,322 v58 M456,322 v58 M576,322 v58"/>
+    </g>
+
+    <!-- ============ CARD GRID: cols 105/199/293/387/481, rows 118/212 ============ -->
+
+    <!-- r0c0 LION, mid-flip -->
+    <g class="flip">
+      <g class="flip-b"><use href="#p2back" x="105" y="118"/></g>
+      <g class="flip-f">
+        <rect class="ln" fill="#FBF3C4" x="105" y="118" width="80" height="80" rx="15"/>
+        <g class="ln" stroke-width="2.6" transform="translate(145,159)">
+          <path fill="#EBC98F" d="M26,0 A10,10 0 0 1 21,15 A10,10 0 0 1 8,24.7 A10,10 0 0 1 -8,24.7 A10,10 0 0 1 -21,15 A10,10 0 0 1 -26,0 A10,10 0 0 1 -21,-15 A10,10 0 0 1 -8,-24.7 A10,10 0 0 1 8,-24.7 A10,10 0 0 1 21,-15 A10,10 0 0 1 26,0 Z"/>
+          <circle fill="#B8C4E8" cx="0" cy="2" r="20"/>
+          <path fill="#B8C4E8" d="M-16,-12 a7,7 0 1 1 10,-8 z"/>
+          <path fill="#B8C4E8" d="M16,-12 a7,7 0 1 0 -10,-8 z"/>
+          <ellipse fill="#FFFFFF" cx="-7" cy="-2" rx="6" ry="7"/>
+          <ellipse fill="#FFFFFF" cx="7" cy="-2" rx="6" ry="7"/>
+          <circle class="noln" fill="#1A1A1A" cx="-6" cy="-1" r="3.2"/>
+          <circle class="noln" fill="#1A1A1A" cx="8" cy="-1" r="3.2"/>
+          <path fill="#F0C0D2" d="M-4,8 h8 l-4,5 z"/>
+          <path class="ln-thin" d="M0,13 q-5,5 -9,1 M0,13 q5,5 9,1"/>
+          <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-14" cy="7" rx="4.5" ry="2.8"/>
+          <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="15" cy="7" rx="4.5" ry="2.8"/>
+        </g>
+      </g>
+    </g>
+
+    <use href="#p2back" x="199" y="118"/>
+    <use href="#p2back" x="293" y="118"/>
+    <use href="#p2back" x="387" y="118"/>
+
+    <!-- r0c4 SHEEP, face up -->
+    <g>
+      <rect class="ln" fill="#FBF3C4" x="481" y="118" width="80" height="80" rx="15"/>
+      <g class="ln" stroke-width="2.6" transform="translate(521,159)">
+        <path fill="#FFFFFF" d="M24,-2 A9,9 0 0 1 19,12 A9,9 0 0 1 7,21 A9,9 0 0 1 -7,21 A9,9 0 0 1 -19,12 A9,9 0 0 1 -24,-2 A9,9 0 0 1 -19,-16 A9,9 0 0 1 -7,-24 A9,9 0 0 1 7,-24 A9,9 0 0 1 19,-16 A9,9 0 0 1 24,-2 Z"/>
+        <path fill="#C8E8D4" d="M-16,2 q-11,-4 -13,5 q-1,8 9,8 z"/>
+        <path fill="#C8E8D4" d="M16,2 q11,-4 13,5 q1,8 -9,8 z"/>
+        <ellipse fill="#C8E8D4" cx="0" cy="6" rx="16" ry="14"/>
+        <ellipse fill="#FFFFFF" cx="-6" cy="3" rx="5.5" ry="6.5"/>
+        <ellipse fill="#FFFFFF" cx="6" cy="3" rx="5.5" ry="6.5"/>
+        <circle class="noln" fill="#1A1A1A" cx="-5" cy="4" r="3"/>
+        <circle class="noln" fill="#1A1A1A" cx="7" cy="4" r="3"/>
+        <path class="ln-thin" d="M-4,13 q4,4 8,0"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-12" cy="10" rx="4" ry="2.6"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="13" cy="10" rx="4" ry="2.6"/>
+      </g>
+    </g>
+
+    <use href="#p2back" x="105" y="212"/>
+    <use href="#p2back" x="199" y="212"/>
+
+    <!-- r1c2 DONKEY, mid-flip (offset) -->
+    <g class="flip d2">
+      <g class="flip-b d2"><use href="#p2back" x="293" y="212"/></g>
+      <g class="flip-f d2">
+        <rect class="ln" fill="#FBF3C4" x="293" y="212" width="80" height="80" rx="15"/>
+        <g class="ln" stroke-width="2.6" transform="translate(333,253)">
+          <path fill="#C9B6E4" d="M-14,-14 q-9,-18 -3,-22 q7,-4 12,15 z"/>
+          <path fill="#C9B6E4" d="M14,-14 q9,-18 3,-22 q-7,-4 -12,15 z"/>
+          <ellipse fill="#C9B6E4" cx="0" cy="0" rx="19" ry="18"/>
+          <ellipse fill="#EBD9F0" cx="0" cy="11" rx="12" ry="9"/>
+          <ellipse fill="#FFFFFF" cx="-7" cy="-5" rx="5.5" ry="6.5"/>
+          <ellipse fill="#FFFFFF" cx="7" cy="-5" rx="5.5" ry="6.5"/>
+          <circle class="noln" fill="#1A1A1A" cx="-6" cy="-4" r="3"/>
+          <circle class="noln" fill="#1A1A1A" cx="8" cy="-4" r="3"/>
+          <ellipse class="noln" fill="#1A1A1A" cx="-4" cy="8" rx="2" ry="2.6"/>
+          <ellipse class="noln" fill="#1A1A1A" cx="4" cy="8" rx="2" ry="2.6"/>
+          <path class="ln-thin" d="M-4,15 q4,4 8,0"/>
+          <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-15" cy="4" rx="4.5" ry="2.8"/>
+          <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="16" cy="4" rx="4.5" ry="2.8"/>
+        </g>
+      </g>
+    </g>
+
+    <use href="#p2back" x="387" y="212"/>
+    <use href="#p2back" x="481" y="212"/>
+  </svg>
+  </div>
+</section>
+
+
+<!-- ==================================================================== -->
+<!-- PLATE 3 — DANIEL IN THE LIONS' DEN                                   -->
+<!-- ==================================================================== -->
+<section class="plate">
+  <h2>03 &middot; Daniel in the Lions&rsquo; Den</h2>
+  <p class="meta">Drag to dodge &mdash; Daniel 6</p>
+  <div class="frame">
+  <svg viewBox="0 0 667 375" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Daniel in the lions' den art plate">
+    <defs>
+      <linearGradient id="p3floor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F2D79A"/><stop offset="1" stop-color="#E3B972"/>
+      </linearGradient>
+      <linearGradient id="p3shaft" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FDF6CC" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#FBF3C4" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="p3wall" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6E6188"/><stop offset="1" stop-color="#9C8CB6"/>
+      </linearGradient>
+
+      <!-- reusable lion -->
+      <g id="p3lion">
+        <!-- tail -->
+        <path class="ln nss" fill="none" stroke-width="14" d="M-40,-26 C -62,-32 -70,-48 -60,-60"/>
+        <path class="nss" fill="none" stroke="#EBCC8C" stroke-width="8" d="M-40,-26 C -62,-32 -70,-48 -60,-60"/>
+        <path class="ln nss" fill="#E0A87C" d="M-66,-68 q11,-5 16,6 q4,11 -6,14 q-11,3 -14,-8 q-2,-9 4,-12 z"/>
+        <!-- haunch + body -->
+        <path class="ln nss" fill="#F0D69C" d="M-46,-46 q12,-22 40,-24 q34,-2 48,10 q10,10 8,30 q-2,18 -22,20 q-38,4 -62,-2 q-16,-4 -12,-34 z"/>
+        <!-- back legs -->
+        <path class="ln nss" fill="#F0D69C" d="M-30,-18 q10,-3 13,5 v14 q0,7 -8,7 q-8,0 -9,-7 l-1,-12 q-1,-6 5,-7 z"/>
+        <path class="ln nss" fill="#F0D69C" d="M-6,-16 q10,-3 13,5 v12 q0,7 -8,7 q-8,0 -9,-7 l-1,-10 q-1,-6 5,-7 z"/>
+        <!-- front legs -->
+        <path class="ln nss" fill="#F5DFA8" d="M28,-20 q10,-3 13,5 v16 q0,7 -8,7 q-8,0 -9,-7 l-1,-14 q-1,-6 5,-7 z"/>
+        <path class="ln nss" fill="#F5DFA8" d="M50,-22 q10,-3 13,5 v18 q0,7 -8,7 q-8,0 -9,-7 l-1,-16 q-1,-6 5,-7 z"/>
+        <ellipse class="ln nss" fill="#F5DFA8" cx="34" cy="10" rx="11" ry="6"/>
+        <ellipse class="ln nss" fill="#F5DFA8" cx="56" cy="10" rx="11" ry="6"/>
+        <!-- ears behind mane -->
+        <circle class="ln nss" fill="#E0A87C" cx="42" cy="-92" r="9"/>
+        <circle class="ln nss" fill="#E0A87C" cx="80" cy="-92" r="9"/>
+        <!-- scalloped mane -->
+        <path class="ln nss" fill="#E8B48A" transform="translate(61,-68)"
+              d="M30,0 A11,11 0 0 1 24.3,17.6 A11,11 0 0 1 9.3,28.5 A11,11 0 0 1 -9.3,28.5 A11,11 0 0 1 -24.3,17.6 A11,11 0 0 1 -30,0 A11,11 0 0 1 -24.3,-17.6 A11,11 0 0 1 -9.3,-28.5 A11,11 0 0 1 9.3,-28.5 A11,11 0 0 1 24.3,-17.6 A11,11 0 0 1 30,0 Z"/>
+        <!-- face -->
+        <circle class="ln nss" fill="#F7E2B0" cx="61" cy="-66" r="25"/>
+        <ellipse class="ln nss" fill="#FFFFFF" cx="52" cy="-72" rx="7.5" ry="8.5"/>
+        <ellipse class="ln nss" fill="#FFFFFF" cx="70" cy="-72" rx="7.5" ry="8.5"/>
+        <circle fill="#1A1A1A" cx="54" cy="-70" r="4"/>
+        <circle fill="#1A1A1A" cx="72" cy="-70" r="4"/>
+        <path class="ln-thin nss" stroke-width="3.4" d="M43,-85 q10,-5 17,1 M79,-85 q-10,-5 -17,1"/>
+        <path class="ln nss" fill="#F0C0D2" d="M55,-58 h12 l-6,7 z"/>
+        <path class="ln-thin nss" d="M61,-51 q-6,6 -12,1 M61,-51 q6,6 12,1"/>
+        <ellipse fill="#F5B5C8" opacity=".55" cx="43" cy="-58" rx="6" ry="3.6"/>
+        <ellipse fill="#F5B5C8" opacity=".55" cx="79" cy="-58" rx="6" ry="3.6"/>
+      </g>
+    </defs>
+
+    <rect width="667" height="375" fill="url(#p3wall)"/>
+
+    <!-- stone block wall: smaller blocks, two muted tones -->
+    <g class="ln">
+      <g fill="#B9A2AE">
+        <rect x="-20" y="-4" width="70" height="38" rx="10"/><rect x="56" y="-4" width="70" height="38" rx="10"/>
+        <rect x="132" y="-4" width="70" height="38" rx="10"/><rect x="208" y="-4" width="70" height="38" rx="10"/>
+        <rect x="284" y="-4" width="70" height="38" rx="10"/><rect x="360" y="-4" width="70" height="38" rx="10"/>
+        <rect x="436" y="-4" width="70" height="38" rx="10"/><rect x="512" y="-4" width="70" height="38" rx="10"/>
+        <rect x="588" y="-4" width="70" height="38" rx="10"/>
+      </g>
+      <g fill="#A9A0C0">
+        <rect x="-58" y="40" width="70" height="38" rx="10"/><rect x="18" y="40" width="70" height="38" rx="10"/>
+        <rect x="94" y="40" width="70" height="38" rx="10"/><rect x="170" y="40" width="70" height="38" rx="10"/>
+        <rect x="246" y="40" width="70" height="38" rx="10"/><rect x="322" y="40" width="70" height="38" rx="10"/>
+        <rect x="398" y="40" width="70" height="38" rx="10"/><rect x="474" y="40" width="70" height="38" rx="10"/>
+        <rect x="550" y="40" width="70" height="38" rx="10"/><rect x="626" y="40" width="70" height="38" rx="10"/>
+      </g>
+      <g fill="#B9A2AE">
+        <rect x="-20" y="84" width="70" height="38" rx="10"/><rect x="56" y="84" width="70" height="38" rx="10"/>
+        <rect x="132" y="84" width="70" height="38" rx="10"/><rect x="208" y="84" width="70" height="38" rx="10"/>
+        <rect x="284" y="84" width="70" height="38" rx="10"/><rect x="360" y="84" width="70" height="38" rx="10"/>
+        <rect x="436" y="84" width="70" height="38" rx="10"/><rect x="512" y="84" width="70" height="38" rx="10"/>
+        <rect x="588" y="84" width="70" height="38" rx="10"/>
+      </g>
+      <g fill="#A9A0C0">
+        <rect x="-58" y="128" width="70" height="38" rx="10"/><rect x="18" y="128" width="70" height="38" rx="10"/>
+        <rect x="94" y="128" width="70" height="38" rx="10"/><rect x="170" y="128" width="70" height="38" rx="10"/>
+        <rect x="246" y="128" width="70" height="38" rx="10"/><rect x="322" y="128" width="70" height="38" rx="10"/>
+        <rect x="398" y="128" width="70" height="38" rx="10"/><rect x="474" y="128" width="70" height="38" rx="10"/>
+        <rect x="550" y="128" width="70" height="38" rx="10"/><rect x="626" y="128" width="70" height="38" rx="10"/>
+      </g>
+      <g fill="#B9A2AE">
+        <rect x="-20" y="172" width="70" height="38" rx="10"/><rect x="56" y="172" width="70" height="38" rx="10"/>
+        <rect x="132" y="172" width="70" height="38" rx="10"/><rect x="208" y="172" width="70" height="38" rx="10"/>
+        <rect x="284" y="172" width="70" height="38" rx="10"/><rect x="360" y="172" width="70" height="38" rx="10"/>
+        <rect x="436" y="172" width="70" height="38" rx="10"/><rect x="512" y="172" width="70" height="38" rx="10"/>
+        <rect x="588" y="172" width="70" height="38" rx="10"/>
+      </g>
+    </g>
+
+    <!-- light shaft -->
+    <path class="noln shaft" fill="url(#p3shaft)" d="M288,-4 h92 l80,290 h-252 z"/>
+
+    <!-- floor -->
+    <path class="ln" fill="url(#p3floor)" d="M-6,240 q160,-13 336,-6 q170,7 343,-4 L673,381 L-6,381 Z"/>
+    <g class="ln">
+      <path fill="#DDBE8C" d="M18,272 q-4,-16 12,-22 q17,-7 28,4 q12,10 7,24 z"/>
+      <path fill="#DDBE8C" d="M604,258 q-3,-13 11,-18 q14,-5 23,3 q10,9 5,20 z"/>
+      <ellipse fill="#E4C795" cx="120" cy="330" rx="21" ry="10"/>
+      <ellipse fill="#E4C795" cx="566" cy="316" rx="17" ry="8"/>
+    </g>
+    <path class="ln-thin" opacity=".4" d="M160,296 q22,-6 44,0 M418,330 q26,-7 52,0 M246,348 q24,-6 48,0"/>
+
+    <!-- bone -->
+    <g class="ln" transform="translate(190,352) rotate(-8) scale(1.45)">
+      <path fill="#F4EEDC" d="M0,0 h36 a6,6 0 0 1 0,-8 a6,6 0 1 1 7,8 a6,6 0 1 1 -7,8 a6,6 0 0 1 0,-8 h-36 a6,6 0 0 1 0,8 a6,6 0 1 1 -7,-8 a6,6 0 1 1 7,-8 a6,6 0 0 1 0,8 z"/>
+    </g>
+
+    <!-- lion: back left -->
+    <g class="prowl-a">
+      <ellipse class="noln" cx="128" cy="272" rx="58" ry="11" fill="#1A1A1A" opacity=".18"/>
+      <use href="#p3lion" transform="translate(104,268) scale(0.86)"/>
+    </g>
+
+    <!-- lion: back right (flipped) -->
+    <g class="prowl-b">
+      <ellipse class="noln" cx="552" cy="266" rx="54" ry="10" fill="#1A1A1A" opacity=".18"/>
+      <use href="#p3lion" transform="translate(576,262) scale(-0.82,0.82)"/>
+    </g>
+
+    <!-- ================= DANIEL ================= -->
+    <g class="bob">
+      <ellipse class="noln" cx="333" cy="312" rx="50" ry="11" fill="#1A1A1A" opacity=".2"/>
+      <g class="ln" transform="translate(333,312)">
+        <!-- robe -->
+        <path fill="#FBF3C4" d="M-23,-116 q23,-11 46,0 q19,46 23,90 q-46,14 -92,0 q4,-44 23,-90 z"/>
+        <path fill="#E8D9A8" d="M-25,-82 q25,10 50,0 l3,11 q-27,11 -56,0 z"/>
+        <!-- sleeves -->
+        <path fill="#FBF3C4" d="M-22,-106 q-13,10 -16,26 q-3,16 4,26 q4,6 11,3 q7,-3 4,-11 q-5,-9 -3,-19 q2,-11 10,-17 z"/>
+        <path fill="#FBF3C4" d="M22,-106 q13,10 16,26 q3,16 -4,26 q-4,6 -11,3 q-7,-3 -4,-11 q5,-9 3,-19 q-2,-11 -10,-17 z"/>
+        <!-- clasped mitten hands -->
+        <ellipse fill="#C9B6E4" cx="-6" cy="-50" rx="11" ry="9"/>
+        <ellipse fill="#C9B6E4" cx="7" cy="-52" rx="11" ry="9"/>
+        <!-- head -->
+        <circle fill="#C9B6E4" cx="0" cy="-142" r="27"/>
+        <path fill="#9E86C4" d="M-26,-146 q-3,-28 26,-29 q29,-1 27,27 q-11,-14 -27,-11 q-17,3 -26,13 z"/>
+        <path fill="#9E86C4" d="M-24,-142 q-10,14 -3,27 q-10,-2 -11,-15 q-1,-12 14,-12 z"/>
+        <path fill="#9E86C4" d="M24,-142 q10,14 3,27 q10,-2 11,-15 q1,-12 -14,-12 z"/>
+        <path class="ln-thin" stroke-width="4" d="M-18,-142 q9,10 17,0 M1,-142 q9,10 17,0"/>
+        <path class="ln-thin" stroke-width="3" d="M-19,-155 q10,-5 17,-1 M19,-155 q-10,-5 -17,-1"/>
+        <path class="ln-thin" d="M2,-136 q4,3 0,5"/>
+        <path class="ln-thin" d="M-8,-126 q9,6 17,-1"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-20" cy="-131" rx="7" ry="4.2"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="20" cy="-131" rx="7" ry="4.2"/>
+        <!-- sandals -->
+        <path fill="#B08258" d="M-30,-12 q0,-8 10,-8 h16 q10,0 10,8 q0,9 -11,9 h-14 q-11,0 -11,-9 z"/>
+        <path fill="#B08258" d="M-2,-12 q0,-8 10,-8 h16 q10,0 10,8 q0,9 -11,9 h-14 q-11,0 -11,-9 z"/>
+      </g>
+    </g>
+
+    <!-- lion: foreground right, larger -->
+    <g class="prowl-c">
+      <ellipse class="noln" cx="470" cy="350" rx="72" ry="13" fill="#1A1A1A" opacity=".2"/>
+      <use href="#p3lion" transform="translate(506,346) scale(-1.16,1.16)"/>
+    </g>
+  </svg>
+  </div>
+</section>
+
+
+<!-- ==================================================================== -->
+<!-- PLATE 4 — WATER TO WINE                                              -->
+<!-- ==================================================================== -->
+<section class="plate">
+  <h2>04 &middot; Water to Wine</h2>
+  <p class="meta">Swipe to fill &mdash; John 2:1&ndash;11</p>
+  <div class="frame">
+  <svg viewBox="0 0 667 375" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Water to wine art plate">
+    <defs>
+      <linearGradient id="p4wall" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FBF3C4"/><stop offset="1" stop-color="#F0D8A2"/>
+      </linearGradient>
+      <linearGradient id="p4table" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#D2A472"/><stop offset="1" stop-color="#B0855A"/>
+      </linearGradient>
+      <linearGradient id="p4clay" x1="0" y1="0" x2="1" y2=".3">
+        <stop offset="0" stop-color="#D8AC82"/><stop offset="1" stop-color="#B78B60"/>
+      </linearGradient>
+      <linearGradient id="p4water" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#D4EEF9"/><stop offset="1" stop-color="#A6D6EE"/>
+      </linearGradient>
+      <linearGradient id="p4wine" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#D9AACB"/><stop offset=".5" stop-color="#B57BA6"/><stop offset="1" stop-color="#8E5583"/>
+      </linearGradient>
+      <clipPath id="p4jar">
+        <path d="M316,158 C 306,182 290,200 290,232 C 290,266 310,282 333,282 C 356,282 376,266 376,232 C 376,200 360,182 350,158 Z"/>
+      </clipPath>
+    </defs>
+
+    <rect width="667" height="375" fill="url(#p4wall)"/>
+
+    <!-- alcove -->
+    <path class="ln" fill="#EAD096" d="M182,375 v-142 a152,152 0 0 1 304,0 v142 z"/>
+    <path class="ln-thin" opacity=".35" d="M206,375 v-136 a128,128 0 0 1 256,0 v136"/>
+
+    <!-- garland -->
+    <g class="ln">
+      <path fill="none" stroke="#1A1A1A" stroke-width="6.5" d="M-6,24 Q120,92 250,42 Q400,-14 540,50 Q612,82 671,42"/>
+      <path fill="none" stroke="#B8D4B0" stroke-width="3.5" d="M-6,24 Q120,92 250,42 Q400,-14 540,50 Q612,82 671,42"/>
+      <g fill="#B8D4B0">
+        <ellipse cx="52"  cy="50" rx="12" ry="7" transform="rotate(22 52 50)"/>
+        <ellipse cx="118" cy="70" rx="12" ry="7" transform="rotate(8 118 70)"/>
+        <ellipse cx="196" cy="64" rx="12" ry="7" transform="rotate(-16 196 64)"/>
+        <ellipse cx="316" cy="22" rx="12" ry="7" transform="rotate(-14 316 22)"/>
+        <ellipse cx="404" cy="16" rx="12" ry="7" transform="rotate(10 404 16)"/>
+        <ellipse cx="492" cy="40" rx="12" ry="7" transform="rotate(24 492 40)"/>
+        <ellipse cx="592" cy="68" rx="12" ry="7" transform="rotate(-18 592 68)"/>
+      </g>
+      <g fill="#F2A9C4">
+        <g transform="translate(158,72)"><circle cx="0" cy="-7" r="6"/><circle cx="7" cy="-2" r="6"/><circle cx="4" cy="7" r="6"/><circle cx="-4" cy="7" r="6"/><circle cx="-7" cy="-2" r="6"/><circle fill="#FBEBA0" cx="0" cy="0" r="4"/></g>
+        <g transform="translate(360,12)"><circle cx="0" cy="-7" r="6"/><circle cx="7" cy="-2" r="6"/><circle cx="4" cy="7" r="6"/><circle cx="-4" cy="7" r="6"/><circle cx="-7" cy="-2" r="6"/><circle fill="#FBEBA0" cx="0" cy="0" r="4"/></g>
+        <g transform="translate(548,60)"><circle cx="0" cy="-7" r="6"/><circle cx="7" cy="-2" r="6"/><circle cx="4" cy="7" r="6"/><circle cx="-4" cy="7" r="6"/><circle cx="-7" cy="-2" r="6"/><circle fill="#FBEBA0" cx="0" cy="0" r="4"/></g>
+      </g>
+    </g>
+
+    <!-- background jars standing on the floor, mostly hidden by the table -->
+    <g class="ln">
+      <path fill="#C89A6B" d="M88,258 C 80,274 68,286 68,304 C 68,326 84,336 104,336 C 124,336 140,326 140,304 C 140,286 128,274 120,258 Z"/>
+      <path fill="#B0855A" d="M86,254 h36 v8 h-36 z"/>
+      <ellipse fill="#BE9265" cx="104" cy="254" rx="20" ry="7"/>
+      <ellipse fill="#9C7550" cx="104" cy="254" rx="12" ry="3.6"/>
+
+      <path fill="#C89A6B" d="M566,264 C 559,278 548,289 548,305 C 548,325 562,334 580,334 C 598,334 612,325 612,305 C 612,289 601,278 594,264 Z"/>
+      <path fill="#B0855A" d="M564,260 h32 v8 h-32 z"/>
+      <ellipse fill="#BE9265" cx="580" cy="260" rx="18" ry="6.5"/>
+      <ellipse fill="#9C7550" cx="580" cy="260" rx="11" ry="3.4"/>
+    </g>
+
+    <!-- ================= GUEST ================= -->
+    <g class="bob">
+      <g class="ln" transform="translate(478,296)">
+        <!-- robe -->
+        <path fill="#B8D4B0" d="M-24,-88 q24,-12 48,0 q17,46 19,88 h-86 q2,-42 19,-88 z"/>
+        <path fill="#C89A6B" d="M-11,-90 q11,-5 22,0 l-11,17 z"/>
+        <!-- far arm, hand tucked behind the table -->
+        <path fill="#A8DDB5" d="M20,-80 q13,9 17,24 q4,12 2,22 q-2,8 -10,6 q-8,-2 -6,-10 q2,-8 -1,-18 q-3,-12 -12,-18 z"/>
+        <ellipse fill="#A8DDB5" cx="30" cy="-14" rx="11" ry="10"/>
+        <!-- near arm raising the cup -->
+        <path fill="#A8DDB5" d="M-20,-80 q-14,7 -18,22 q-4,14 2,24 q4,7 11,3 q7,-4 3,-11 q-4,-8 -1,-16 q3,-9 13,-12 z"/>
+        <ellipse fill="#A8DDB5" cx="-34" cy="-36" rx="11" ry="10"/>
+        <!-- cup -->
+        <path fill="#C89A6B" d="M-49,-58 h30 l-5,20 q-10,5 -20,0 z"/>
+        <ellipse fill="#B57BA6" cx="-34" cy="-58" rx="15" ry="5"/>
+        <!-- head -->
+        <circle fill="#A8DDB5" cx="0" cy="-116" r="27"/>
+        <path fill="#7FB894" d="M-26,-120 q-3,-28 26,-29 q29,-1 27,27 q-11,-14 -27,-11 q-17,3 -26,13 z"/>
+        <path fill="#7FB894" d="M-25,-114 q-9,11 -4,24 q-9,-2 -10,-13 q-1,-11 14,-11 z"/>
+        <path class="ln-thin" stroke-width="4" d="M-18,-116 q9,-11 17,0 M1,-116 q9,-11 17,0"/>
+        <path class="ln-thin" stroke-width="3" d="M-19,-130 q10,-5 17,-1 M19,-130 q-10,-5 -17,-1"/>
+        <path fill="#F0C0D2" d="M-9,-106 q9,-4 18,0 q-3,13 -9,13 q-6,0 -9,-13 z"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="-21" cy="-106" rx="7.5" ry="4.4"/>
+        <ellipse class="noln" fill="#F5B5C8" opacity=".6" cx="21" cy="-106" rx="7.5" ry="4.4"/>
+      </g>
+    </g>
+
+    <!-- ================= HERO JAR ================= -->
+    <g class="ln">
+      <path fill="url(#p4clay)" d="M311,152 C 300,178 283,198 283,232 C 283,270 305,288 333,288 C 361,288 383,270 383,232 C 383,198 366,178 355,152 Z"/>
+
+      <g clip-path="url(#p4jar)">
+        <g class="fill">
+          <rect class="noln" x="278" y="216" width="112" height="120" fill="url(#p4water)"/>
+          <rect class="noln wine" x="278" y="216" width="112" height="120" fill="url(#p4wine)"/>
+          <ellipse class="noln" cx="333" cy="218" rx="56" ry="8" fill="#FFFFFF" opacity=".28"/>
+          <path class="ln-thin" stroke-width="2.6" opacity=".7" d="M277,217 q28,-6 56,0 q28,6 56,0"/>
+          <g class="noln" fill="#FFFFFF" opacity=".75">
+            <circle class="bub"      cx="310" cy="270" r="5"/>
+            <circle class="bub bub2" cx="342" cy="276" r="4"/>
+            <circle class="bub bub3" cx="358" cy="266" r="6"/>
+            <circle class="bub bub4" cx="324" cy="280" r="3.5"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- handles -->
+      <path fill="none" stroke="#1A1A1A" stroke-width="15" d="M288,190 C 268,196 268,222 284,232"/>
+      <path fill="none" stroke="#C89A6B" stroke-width="9" d="M288,190 C 268,196 268,222 284,232"/>
+      <path fill="none" stroke="#1A1A1A" stroke-width="15" d="M378,190 C 398,196 398,222 382,232"/>
+      <path fill="none" stroke="#C89A6B" stroke-width="9" d="M378,190 C 398,196 398,222 382,232"/>
+      <!-- neck + rim -->
+      <path fill="#C89A6B" d="M307,148 h52 v12 h-52 z"/>
+      <ellipse fill="#DCB088" cx="333" cy="148" rx="30" ry="10"/>
+      <ellipse fill="#A97F55" cx="333" cy="148" rx="18" ry="5.5"/>
+    </g>
+
+    <!-- table in front -->
+    <g class="ln">
+      <path fill="url(#p4table)" d="M22,286 h623 a11,11 0 0 1 11,11 v18 a11,11 0 0 1 -11,11 h-623 a11,11 0 0 1 -11,-11 v-18 a11,11 0 0 1 11,-11 z"/>
+      <path class="ln-thin" opacity=".55" d="M12,306 h643"/>
+      <path fill="#B0855A" d="M78,326 h34 v52 h-34 z"/>
+      <path fill="#B0855A" d="M556,326 h34 v52 h-34 z"/>
+    </g>
+
+    <!-- spare cup on the table -->
+    <g class="ln">
+      <path fill="#C89A6B" d="M188,258 h30 l-5,22 q-10,6 -20,0 z"/>
+      <ellipse fill="#DCB088" cx="203" cy="258" rx="15" ry="5.5"/>
+      <ellipse fill="#B57BA6" cx="203" cy="258" rx="9" ry="3"/>
+    </g>
+  </svg>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Style lock applied:</strong> uniform #1A1A1A outline &middot; flat cel fill, no texture or rim light &middot; pastel non-human skin (periwinkle / mint / lavender) &middot; oversized white eyes with large pupils &middot; blush on every face &middot; flat black ellipse shadows &middot; desaturated palette throughout &middot; zero HUD elements.</p>
+  <p>Each plate is a 667&times;375 viewBox. Motion is CSS keyframes only and respects <code>prefers-reduced-motion</code>.</p>
+</footer>
+
+</div>
+</body>
+</html>

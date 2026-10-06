@@ -69,8 +69,12 @@ npx cap open android  # Opens Android Studio
 ```
 biblical-mini-games/
 ├── index.html              # Entry point
-├── start-server.bat        # Windows: double-click to run the dev server
-├── SETUP.md                # This file
+├── docs/
+│   ├── SETUP.md            # This file
+│   ├── biblical_game_design_doc.md  # CANONICAL spec for all 13 mini-games
+│   ├── Art_Plate_Prompts.md         # Art generation prompts, per scene
+│   ├── UI_Mockup_Prompts.md         # HTML/CSS screen and HUD mockups
+│   └── art_plates_mockup.html       # Superseded hand-authored SVG plates
 ├── src/
 │   ├── main.js             # Phaser game config & launch
 │   ├── utils/
