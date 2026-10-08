@@ -31,8 +31,9 @@ class GamePickerScene extends Phaser.Scene {
       this.scene.start('MenuScene');
     });
 
-    // Game list — 5 columns x 3 rows (15 slots)
-    const games = ALL_GAME_KEYS.map(key => ({
+    // Game list — 5 columns, as many rows as the playable list needs. Retired games are not
+    // listed; see RETIRED_GAME_KEYS in constants.js.
+    const games = PLAYABLE_GAME_KEYS.map(key => ({
       key: key,
       name: GAME_NAMES[key],
       icon: this.getIcon(key),
@@ -45,7 +46,14 @@ class GamePickerScene extends Phaser.Scene {
     const gapY = 8;
     const gridW = cols * cardW + (cols - 1) * gapX;
     const startX = (GAME_WIDTH - gridW) / 2 + cardW / 2;
-    const startY = 55;
+
+    // Centred in the band between the header and the difficulty toggle, rather than pinned to
+    // y=55. At thirteen games the grid filled all three rows and 55 was the only value that fit;
+    // at ten it is two rows, and pinning the top would leave a 100px hole above the toggle.
+    const BAND_TOP = 42, BAND_BOTTOM = 315;
+    const rows = Math.ceil(games.length / cols);
+    const gridH = rows * cardH + (rows - 1) * gapY;
+    const startY = Math.max(55, BAND_TOP + (BAND_BOTTOM - BAND_TOP - gridH) / 2);
 
     games.forEach((game, i) => {
       const col = i % cols;

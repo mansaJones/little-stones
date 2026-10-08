@@ -57,7 +57,7 @@ class SessionManager {
     const lastGame = this.gamesPlayed.length > 0
       ? this.gamesPlayed[this.gamesPlayed.length - 1].game
       : null;
-    const pool = ALL_GAME_KEYS.filter(k => k !== lastGame);
+    const pool = PLAYABLE_GAME_KEYS.filter(k => k !== lastGame);
     return Phaser.Math.RND.pick(pool);
   }
 
