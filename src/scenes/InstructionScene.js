@@ -30,6 +30,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.WALK_AROUND_JERICHO]: { icon: '🌀', gesture: 'DRAG IN CIRCLES', anim: 'tap' },
       [GAME_KEYS.HE_MUST_INCREASE]: { icon: '⬆️', gesture: 'SWIPE TO RESIZE', anim: 'tap' },
       [GAME_KEYS.LOST_SHEEP]: { icon: '🐑', gesture: 'TAP TO SEARCH', anim: 'tap' },
+      [GAME_KEYS.SAMSON_JAWBONE]: { icon: '💪', gesture: 'DRAG TO CHASE', anim: 'tap' },
     };
 
     const info = gestureMap[this.gameKey];

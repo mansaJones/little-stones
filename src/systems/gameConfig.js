@@ -97,6 +97,19 @@ const GAME_CONFIG = {
     medium: { laps: 7, timeLimit: 10.0, targetTaps: 16, hornTime: 4.0, hornDrain: 2.5, obstacles: false },
     hard:   { laps: 7, timeLimit: 9.0,  targetTaps: 20, hornTime: 4.0, hornDrain: 3.5, obstacles: true  },
   },
+  samsonJawbone: {
+    // Difficulty is ONE dial: how fast a Philistine flees, against Samson's FIXED 265 px/s cap
+    // (SJ_SAMSON_SPEED). That is 0.43x / 0.70x / 0.91x of his speed -- on HARD a Philistine in
+    // open ground very nearly outruns him, so the player has to herd them into an edge. The bonk
+    // target rises alongside it to keep the pace honest; round length, Samson's cap and the flee
+    // radius are deliberately identical across all three tiers.
+    //
+    // onField is how many are alive at once -- a bonked one is replaced ~0.5s later, so the field
+    // never empties before the target is reached.
+    easy:   { timeLimit: 8.0, targetBonks: 5, fleeSpeed: 115, onField: 3 },
+    medium: { timeLimit: 8.0, targetBonks: 7, fleeSpeed: 185, onField: 4 },
+    hard:   { timeLimit: 8.0, targetBonks: 9, fleeSpeed: 240, onField: 4 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -229,6 +242,15 @@ const GAME_STORIES = {
     instruction: "Swipe up to grow GOD, swipe down to shrink ME!",
     instructionHard: "Be precise — the tiles slowly revert!",
   },
+  [GAME_KEYS.SAMSON_JAWBONE]: {
+    title: "Samson and the Jawbone",
+    reference: "Judges 15:14-16",
+    story: "Samson was tied up with brand-new ropes, but God made him strong \u2014 the ropes fell off like burnt thread! With only a donkey's jawbone, Samson chased off a whole army of Philistines.",
+    successMessage: "God gave Samson strength! The Philistines ran away!",
+    failMessage: "They slipped away! Keep chasing!",
+    instruction: "Drag Samson around the field to bonk the Philistines!",
+    instructionHard: "They are nearly as fast as you \u2014 corner them against the edges!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -276,6 +298,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.WALK_AROUND_JERICHO]: 'walkAroundJericho',
   [GAME_KEYS.HE_MUST_INCREASE]: 'heMustIncrease',
   [GAME_KEYS.LOST_SHEEP]: 'lostSheep',
+  [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
 };
 
 // Adaptive difficulty modifiers

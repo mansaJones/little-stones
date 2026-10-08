@@ -43,14 +43,17 @@ class GamePickerScene extends Phaser.Scene {
     const cardH = 80;
     const gapX = 10;
     const gapY = 8;
-    const gridW = cols * cardW + (cols - 1) * gapX;
-    const startX = (GAME_WIDTH - gridW) / 2 + cardW / 2;
     const startY = 55;
 
     games.forEach((game, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
-      const x = startX + col * (cardW + gapX);
+
+      // Each ROW is centred on its own width, not on a full row's. Eleven games at five columns
+      // is 5/5/1, and a lone last card left-aligned under two full rows reads as a bug.
+      const inRow = Math.min(cols, games.length - row * cols);
+      const rowW = inRow * cardW + (inRow - 1) * gapX;
+      const x = (GAME_WIDTH - rowW) / 2 + cardW / 2 + col * (cardW + gapX);
       const y = startY + row * (cardH + gapY) + cardH / 2;
 
       // Card background
@@ -153,6 +156,7 @@ class GamePickerScene extends Phaser.Scene {
       [GAME_KEYS.WALK_AROUND_JERICHO]: '🏰',
       [GAME_KEYS.HE_MUST_INCREASE]: '⬆️',
       [GAME_KEYS.LOST_SHEEP]: '🐑',
+      [GAME_KEYS.SAMSON_JAWBONE]: '💪',
     };
     return icons[key] || '📖';
   }
