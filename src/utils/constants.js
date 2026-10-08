@@ -96,6 +96,24 @@ const ALL_GAME_KEYS = [
   GAME_KEYS.LOST_SHEEP,
 ];
 
+// Games pulled from play on 2026-10-08. Their scenes, art and config all stay in the build and
+// stay registered in main.js — this list only decides what the picker offers and what the random
+// chooser is allowed to land on, so putting one back is deleting a line here.
+//
+// Deliberately NOT done by deleting them from ALL_GAME_KEYS: dataManager keys every saved
+// profile's miniGameStats off that list, so dropping a key there would strand the history of
+// anyone who had already played these.
+const RETIRED_GAME_KEYS = [
+  GAME_KEYS.TOWER_OF_BABEL,
+  GAME_KEYS.HOUSE_ON_ROCK,
+  GAME_KEYS.HE_MUST_INCREASE,
+];
+
+// What a player can actually reach. ALL_GAME_KEYS stays complete; this is the playable subset.
+const PLAYABLE_GAME_KEYS = ALL_GAME_KEYS.filter(function (k) {
+  return RETIRED_GAME_KEYS.indexOf(k) === -1;
+});
+
 const DEBUG_MODE = false; // Set true during development
 let adminMode = false; // Set by game picker — returns to picker after each game
 let adminDifficulty = DIFFICULTY.EASY; // Set by the game picker's difficulty toggle; applied on every admin round
