@@ -62,6 +62,19 @@ const LJ_ROCK_W = 26;
 // against: 12 / 10 / 9 leaves 5 / 3 / 2 seconds of slack.
 const LJ_MAX_ANGULAR = Math.PI * 2;
 
+// The march counts in WHICHEVER direction the child sets off in. The first deliberate drag locks
+// that direction for the round; from then on it is "forward" and dragging back the other way walks
+// progress down, exactly as it always did. Before this, progress was floored at zero against a
+// fixed clockwise sense, so a child who started anticlockwise got nothing at all and no feedback
+// about why.
+//
+// The lock needs a deadband, and it has to be on ACCUMULATED travel rather than a single frame's
+// step: a slow, careful start moves a tiny amount per frame and would otherwise lock on whichever
+// way a stray pixel of jitter happened to point. 0.15 rad is 18-39px of drag depending on where
+// you are on the ellipse — a deliberate gesture, not a twitch — and jitter nets out to nothing
+// while it accumulates.
+const LJ_DIR_LOCK = 0.15;
+
 // Facing deadband, px/sec. At the left and right ends of the ellipse horizontal velocity passes
 // through zero, so a bare sign test strobes the sprite every frame there. Below this speed the
 // phalanx holds whatever way it was already facing.
@@ -104,6 +117,8 @@ class WalkAroundJerichoGame extends Phaser.Scene {
     this.targetAngle = undefined;           // UNWRAPPED pointer angle; see handlePointer
     this.lastPointerAngle = undefined;
     this.progress = 0;                      // unwrapped radians marched; 2π = one lap
+    this.marchDir = 0;                      // 0 = not chosen yet, +1 clockwise, -1 anticlockwise
+    this.dirProbe = 0;                      // net travel before the direction locks
     this.facingLeft = true;
     this.stallUntil = 0;
     this.stalled = false;
@@ -281,7 +296,20 @@ class WalkAroundJerichoGame extends Phaser.Scene {
       this.angle += step;
       // Progress is UNWRAPPED and signed: it accumulates past 2π rather than resetting, and
       // dragging backwards walks it back. Wrapping it here is what loses or double-counts a lap.
-      this.progress = Math.max(0, this.progress + step);
+      //
+      // It is also measured against this.marchDir rather than against clockwise, so a child who
+      // sets off anticlockwise marches normally. Until the direction locks, nothing accumulates —
+      // and then the probe's own travel is credited, because walking round the city is walking
+      // round the city whether or not the code had made its mind up yet.
+      if (this.marchDir === 0) {
+        this.dirProbe += step;
+        if (Math.abs(this.dirProbe) >= LJ_DIR_LOCK) {
+          this.marchDir = Math.sign(this.dirProbe);
+          this.progress = Math.abs(this.dirProbe);
+        }
+      } else {
+        this.progress = Math.max(0, this.progress + step * this.marchDir);
+      }
 
       const p = this.pointOnPath(this.angle);
       this.phalanx.setPosition(p.x, p.y).setDepth(this.phalanxDepth());
