@@ -51,9 +51,17 @@ a character walking past a rock, so the field was not shrunk to avoid it.
 
 | Tier | fleeSpeed | vs Samson's cap | targetBonks | onField |
 |---|---|---|---|---|
-| EASY | 115 | 0.43× | 5 | 3 |
-| MEDIUM | 185 | 0.70× | 7 | 4 |
-| HARD | 240 | 0.91× | 9 | 4 |
+| EASY | 65 | 0.25× | 5 | 3 |
+| MEDIUM | 100 | 0.38× | 7 | 4 |
+| HARD | 135 | 0.51× | 9 | 4 |
+
+**Halved on playtest**, from 115 / 185 / 240. §14 called those "playtest starting points" and
+flagged HARD as untested; at 0.91× of Samson's cap a fleeing Philistine in open ground was not
+catchable by a child. **§14's numbers are now stale and the doc should be updated.**
+
+Idle wander is a separate fixed 42px/s (`SJ_WANDER_SPEED`), not a fraction of flee speed. As a
+fraction it fell with the halving and an idle Philistine on EASY drifted at 23px/s, which read as a
+field of statues.
 
 Samson rides **45px above the finger** (`SJ_GRAB_DY`), exactly as the Fiery Furnace angel does, for
 the same reason: there is no cursor on touch, and at 375px of stage height a sprite under the thumb
@@ -78,6 +86,29 @@ That took one bug fix to reach, and it is worth recording because it nearly beca
 > floor applied *after* the clamp (`unstack()`) took HARD from 4/8 to 8/8 and the closest pair from
 > 0.0px to 29.7px.
 
+### Two behaviours that supersede §14
+
+**Philistines turn and run at the walls; they are not pinned.** §14 asks for "the flee vector
+clamped to the play area so they get pinned against edges instead of sliding along them forever.
+Cornering is the skill." Playtested, that reads as enemies welded to the frame rather than as a
+skill. `deflectAtWalls()` now zeroes whichever component drives into a wall and renormalises, so
+they keep full speed along the edge; in a corner, where both are blocked, they head back toward the
+middle of the field. Measured: a Philistine dropped in a corner with Samson on top of him travels
+27px and is caught, and spends 0 of 65 frames welded to the corner.
+
+**The Philistines have their own, shorter field.** Samson renders 45px above the finger and the
+finger cannot leave the screen, so the lowest he can stand is `GAME_HEIGHT + SJ_GRAB_DY = 330` —
+14px above the field's own floor. At y=344 that left him a 34.7px horizontal catch window instead
+of the full 41px, and a Philistine fleeing along the bottom edge slid through it. `SJ_PHIL_FIELD`
+therefore floors them at `SJ_SAMSON_FLOOR - 16 = 314`, which restores the window to 40.2px of 41.
+It is derived from Samson's reach rather than hard-coded, so changing `SJ_GRAB_DY` carries through.
+The bumper is invisible — the field has no visible boundary anywhere else.
+
+**This was a hole in the harness, not just in the game.** The chase bot asked for a pointer at
+`target.y + 45`, which for a target on the bottom edge is y=389 on a 375-tall stage. It was testing
+a Samson with more reach than any thumb has. The bot now clamps to the screen, and there is a check
+that no Philistine can ever stand below where Samson can.
+
 ### HARD's flee speed — §14's open question
 
 §14 flags it: *"Untested: whether HARD's flee speed is fun or maddening for the 6-8 group. If it's
@@ -94,8 +125,10 @@ running directly away from you that can never close, in a way it could against t
 House on Rock. So the numbers above are not evidence that HARD is too hard — they are evidence that
 this harness cannot answer the question.
 
-**HARD still needs a human playtest.** The config was left exactly as §14 specifies, and if it does
-turn out to be maddening, the sweeps above say neither obvious dial will rescue it on its own.
+**That playtest happened, and HARD was indeed too hard.** The fix was halving the flee speeds
+above. Re-running the lag sweep afterwards: EASY went from 2/4 to 4/4 at both lags, and HARD from
+2/4 to 4/4 at zero lag. MEDIUM and HARD still fail the 250ms-lag model, which remains the wrong
+model for a chase rather than a verdict on the game. The real check is the next playtest.
 
 ## Processing
 

@@ -48,6 +48,25 @@ const SJ_FIELD = { x0: 44, x1: 620, y0: 118, y1: 344 };
 // itself and the Philistine it is about to reach.
 const SJ_GRAB_DY = -45;
 
+// ---- The bottom bumper ----
+// Samson renders 45px above the finger and the finger cannot go below the bottom of the screen,
+// so the lowest he can ever stand is GAME_HEIGHT + SJ_GRAB_DY = 330 — fourteen pixels short of the
+// field's own floor. That sliver is not cosmetic: at y=344 a Philistine's bonk circle clears his
+// by 21.9px vertically, which leaves only 34.7px of horizontal window instead of the full 41px he
+// has everywhere else, and a Philistine fleeing along the bottom edge slides straight through it.
+// In play it reads as an enemy that simply cannot be caught.
+//
+// So the Philistines get their own, shorter field, derived from Samson's actual reach rather than
+// hard-coded — change SJ_GRAB_DY or the field and this follows.
+const SJ_SAMSON_FLOOR = Math.min(SJ_FIELD.y1, GAME_HEIGHT + SJ_GRAB_DY);
+const SJ_PHIL_FIELD = {
+  x0: SJ_FIELD.x0, x1: SJ_FIELD.x1,
+  y0: SJ_FIELD.y0, y1: SJ_SAMSON_FLOOR - 16,
+};
+
+// How close to a wall counts as "pressed against it" for the turn-and-run deflection below.
+const SJ_EDGE_MARGIN = 26;
+
 // Held CONSTANT across tiers, per §14 — flee speed is the only difficulty dial. The cap is also
 // what makes the 8-second clock mean anything: a Samson who snapped to the finger would clear the
 // field in two seconds. Same reasoning as the angel.
@@ -63,7 +82,12 @@ const SJ_SAMSON_R = 26;
 const SJ_PHIL_R = 15;
 
 const SJ_FLEE_RADIUS = 115;      // constant across tiers, per §14
-const SJ_WANDER_FRAC = 0.35;     // idle wander speed, as a fraction of that tier's flee speed
+
+// Idle wander is a fixed speed, not a fraction of that tier's flee speed. As a fraction it fell
+// with the flee speed, and once fleeing was slowed down for playtest an idle Philistine on EASY
+// drifted at 23px/s — close enough to standing still that the field looked like a row of statues.
+// Fixed, the milling looks the same on every tier and flee speed stays the only difficulty dial.
+const SJ_WANDER_SPEED = 42;
 const SJ_TURN_RATE = 2.2;        // rad/sec of random heading drift while wandering
 const SJ_SEPARATION = 34;        // keep them from stacking into one blob a single pass clears
 const SJ_SEPARATION_PUSH = 90;
@@ -204,8 +228,8 @@ class SamsonJawboneGame extends Phaser.Scene {
       const p = this.edgeAwayFrom(this.samson.x, this.samson.y);
       x = p.x; y = p.y;
     } else {
-      x = Phaser.Math.Between(SJ_FIELD.x0 + 60, SJ_FIELD.x1 - 60);
-      y = Phaser.Math.Between(SJ_FIELD.y0 + 20, SJ_FIELD.y1 - 20);
+      x = Phaser.Math.Between(SJ_PHIL_FIELD.x0 + 60, SJ_PHIL_FIELD.x1 - 60);
+      y = Phaser.Math.Between(SJ_PHIL_FIELD.y0 + 20, SJ_PHIL_FIELD.y1 - 20);
     }
     const keys = v === 0
       ? { idle: SJ_ASSETS.philA.key, run: SJ_ASSETS.philARun.key, bonk: SJ_ASSETS.philABonk.key }
@@ -223,10 +247,10 @@ class SamsonJawboneGame extends Phaser.Scene {
   // The edge furthest from Samson, so a fresh Philistine never materialises in his lap.
   edgeAwayFrom(sx, sy) {
     const opts = [
-      { x: SJ_FIELD.x0 + 6, y: Phaser.Math.Between(SJ_FIELD.y0, SJ_FIELD.y1) },
-      { x: SJ_FIELD.x1 - 6, y: Phaser.Math.Between(SJ_FIELD.y0, SJ_FIELD.y1) },
-      { x: Phaser.Math.Between(SJ_FIELD.x0, SJ_FIELD.x1), y: SJ_FIELD.y0 + 6 },
-      { x: Phaser.Math.Between(SJ_FIELD.x0, SJ_FIELD.x1), y: SJ_FIELD.y1 - 6 },
+      { x: SJ_PHIL_FIELD.x0 + 6, y: Phaser.Math.Between(SJ_PHIL_FIELD.y0, SJ_PHIL_FIELD.y1) },
+      { x: SJ_PHIL_FIELD.x1 - 6, y: Phaser.Math.Between(SJ_PHIL_FIELD.y0, SJ_PHIL_FIELD.y1) },
+      { x: Phaser.Math.Between(SJ_PHIL_FIELD.x0, SJ_PHIL_FIELD.x1), y: SJ_PHIL_FIELD.y0 + 6 },
+      { x: Phaser.Math.Between(SJ_PHIL_FIELD.x0, SJ_PHIL_FIELD.x1), y: SJ_PHIL_FIELD.y1 - 6 },
     ];
     let best = opts[0], bestD = -1;
     opts.forEach(o => {
@@ -287,7 +311,7 @@ class SamsonJawboneGame extends Phaser.Scene {
 
   movePhilistines(dt) {
     const flee = this.config.fleeSpeed;
-    const wander = flee * SJ_WANDER_FRAC;
+    const wander = SJ_WANDER_SPEED;
 
     this.philistines.forEach(p => {
       if (p.bonked) return;
@@ -304,8 +328,9 @@ class SamsonJawboneGame extends Phaser.Scene {
           if (!p.popped) { p.popped = true; this.popAlert(s.x, s.y - SJ_PHIL_H); }
         }
         const away = Math.atan2(s.y - this.samson.y, s.x - this.samson.x);
-        vx = Math.cos(away) * flee;
-        vy = Math.sin(away) * flee;
+        const d = this.deflectAtWalls(s, Math.cos(away), Math.sin(away));
+        vx = d.x * flee;
+        vy = d.y * flee;
       } else {
         if (p.fleeing) {
           p.fleeing = false;
@@ -333,11 +358,12 @@ class SamsonJawboneGame extends Phaser.Scene {
       s.x += vx * dt;
       s.y += vy * dt;
 
-      // Clamped to the field, NOT wrapped and not bounced. §14: the flee vector is clamped "so
-      // they get pinned against edges instead of sliding along them forever. Cornering is the
-      // skill." A bounce would hand them a free escape past Samson every time they touched a wall.
-      s.x = Phaser.Math.Clamp(s.x, SJ_FIELD.x0, SJ_FIELD.x1);
-      s.y = Phaser.Math.Clamp(s.y, SJ_FIELD.y0, SJ_FIELD.y1);
+      // A last-resort clamp only. deflectAtWalls() above turns them along the wall before they
+      // ever reach it, so this should never actually bite — it exists so a bad heading cannot put
+      // one outside the field. Note the field here is SJ_PHIL_FIELD, which is shorter at the
+      // bottom than Samson's: see the bumper note at the top.
+      s.x = Phaser.Math.Clamp(s.x, SJ_PHIL_FIELD.x0, SJ_PHIL_FIELD.x1);
+      s.y = Phaser.Math.Clamp(s.y, SJ_PHIL_FIELD.y0, SJ_PHIL_FIELD.y1);
 
       if (dt > 0) {
         const pvx = (s.x - beforeX) / dt;
@@ -349,6 +375,48 @@ class SamsonJawboneGame extends Phaser.Scene {
     });
 
     this.unstack();
+  }
+
+  // Turn and run ALONG the wall rather than into it.
+  //
+  // This replaces the behaviour §14 asks for — "the flee vector clamped to the play area so they
+  // get pinned against edges instead of sliding along them forever. Cornering is the skill."
+  // Playtested, that is not what it feels like: a Philistine running straight away from Samson
+  // presses into the edge and stops dead, and the round turns into mopping up motionless figures
+  // stuck to the frame. Superseded deliberately, on playtest evidence. §14 should be updated.
+  //
+  // So: zero whichever component is driving into a wall and renormalise, which keeps the full flee
+  // speed but redirects it along the edge. In a corner, where both components are blocked, head
+  // back toward the middle of the field — that is the "turn and run the other way" that makes a
+  // chase out of what was a pin.
+  deflectAtWalls(s, ax, ay) {
+    const F = SJ_PHIL_FIELD;
+    const nearL = s.x <= F.x0 + SJ_EDGE_MARGIN, nearR = s.x >= F.x1 - SJ_EDGE_MARGIN;
+    const nearT = s.y <= F.y0 + SJ_EDGE_MARGIN, nearB = s.y >= F.y1 - SJ_EDGE_MARGIN;
+    const blockX = (nearL && ax < 0) || (nearR && ax > 0);
+    const blockY = (nearT && ay < 0) || (nearB && ay > 0);
+    if (!blockX && !blockY) return { x: ax, y: ay };
+
+    if (blockX && blockY) {
+      const a = Math.atan2((F.y0 + F.y1) / 2 - s.y, (F.x0 + F.x1) / 2 - s.x);
+      return { x: Math.cos(a), y: Math.sin(a) };
+    }
+
+    if (blockX) {
+      // Run along the wall, the way that opens distance from Samson. If he is level, pick the
+      // end of the wall with more room, so they never choose the direction that corners them.
+      let dir = Math.sign(s.y - this.samson.y);
+      if (!dir) dir = (F.y1 - s.y) > (s.y - F.y0) ? 1 : -1;
+      if (dir < 0 && nearT) dir = 1;
+      if (dir > 0 && nearB) dir = -1;
+      return { x: 0, y: dir };
+    }
+
+    let dir = Math.sign(s.x - this.samson.x);
+    if (!dir) dir = (F.x1 - s.x) > (s.x - F.x0) ? 1 : -1;
+    if (dir < 0 && nearL) dir = 1;
+    if (dir > 0 && nearR) dir = -1;
+    return { x: dir, y: 0 };
   }
 
   // A hard positional floor, applied AFTER the clamp.
@@ -374,10 +442,10 @@ class SamsonJawboneGame extends Phaser.Scene {
         }
         const push = (SJ_SEPARATION - d) / 2;
         const ux = (dx / d) * push, uy = (dy / d) * push;
-        a.x = Phaser.Math.Clamp(a.x + ux, SJ_FIELD.x0, SJ_FIELD.x1);
-        a.y = Phaser.Math.Clamp(a.y + uy, SJ_FIELD.y0, SJ_FIELD.y1);
-        b.x = Phaser.Math.Clamp(b.x - ux, SJ_FIELD.x0, SJ_FIELD.x1);
-        b.y = Phaser.Math.Clamp(b.y - uy, SJ_FIELD.y0, SJ_FIELD.y1);
+        a.x = Phaser.Math.Clamp(a.x + ux, SJ_PHIL_FIELD.x0, SJ_PHIL_FIELD.x1);
+        a.y = Phaser.Math.Clamp(a.y + uy, SJ_PHIL_FIELD.y0, SJ_PHIL_FIELD.y1);
+        b.x = Phaser.Math.Clamp(b.x - ux, SJ_PHIL_FIELD.x0, SJ_PHIL_FIELD.x1);
+        b.y = Phaser.Math.Clamp(b.y - uy, SJ_PHIL_FIELD.y0, SJ_PHIL_FIELD.y1);
       }
     }
   }
@@ -411,8 +479,8 @@ class SamsonJawboneGame extends Phaser.Scene {
 
     // Tumbles off the NEAREST edge, so the exit always looks like it came from the hit rather
     // than from a fixed direction.
-    const toLeft = s.x - SJ_FIELD.x0, toRight = SJ_FIELD.x1 - s.x;
-    const toTop = s.y - SJ_FIELD.y0, toBottom = SJ_FIELD.y1 - s.y;
+    const toLeft = s.x - SJ_PHIL_FIELD.x0, toRight = SJ_PHIL_FIELD.x1 - s.x;
+    const toTop = s.y - SJ_PHIL_FIELD.y0, toBottom = SJ_PHIL_FIELD.y1 - s.y;
     const m = Math.min(toLeft, toRight, toTop, toBottom);
     let ex = s.x, ey = s.y;
     if (m === toLeft) ex = -80;

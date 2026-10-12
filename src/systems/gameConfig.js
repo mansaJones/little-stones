@@ -99,16 +99,20 @@ const GAME_CONFIG = {
   },
   samsonJawbone: {
     // Difficulty is ONE dial: how fast a Philistine flees, against Samson's FIXED 265 px/s cap
-    // (SJ_SAMSON_SPEED). That is 0.43x / 0.70x / 0.91x of his speed -- on HARD a Philistine in
-    // open ground very nearly outruns him, so the player has to herd them into an edge. The bonk
-    // target rises alongside it to keep the pace honest; round length, Samson's cap and the flee
-    // radius are deliberately identical across all three tiers.
+    // (SJ_SAMSON_SPEED). That is 0.25x / 0.38x / 0.51x of his speed, so he closes on them at every
+    // tier and the difference is only how long the chase takes. The bonk target rises alongside it
+    // to keep the pace honest; round length, Samson's cap and the flee radius are deliberately
+    // identical across all three tiers.
+    //
+    // HALVED from 115 / 185 / 240 on playtest. §14 called those "playtest starting points" and
+    // flagged HARD as untested; at 0.91x of Samson's cap a fleeing Philistine in open ground was
+    // not catchable by a child, which is the note that came back. §14's own numbers are now stale.
     //
     // onField is how many are alive at once -- a bonked one is replaced ~0.5s later, so the field
     // never empties before the target is reached.
-    easy:   { timeLimit: 8.0, targetBonks: 5, fleeSpeed: 115, onField: 3 },
-    medium: { timeLimit: 8.0, targetBonks: 7, fleeSpeed: 185, onField: 4 },
-    hard:   { timeLimit: 8.0, targetBonks: 9, fleeSpeed: 240, onField: 4 },
+    easy:   { timeLimit: 8.0, targetBonks: 5, fleeSpeed: 65,  onField: 3 },
+    medium: { timeLimit: 8.0, targetBonks: 7, fleeSpeed: 100, onField: 4 },
+    hard:   { timeLimit: 8.0, targetBonks: 9, fleeSpeed: 135, onField: 4 },
   },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
