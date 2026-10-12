@@ -35,6 +35,7 @@ const config = {
     WalkAroundJerichoGame,
     HeMustIncreaseGame,
     LostSheepGame,
+    SamsonJawboneGame,
   ],
   // Disable right-click context menu
   disableContextMenu: true,

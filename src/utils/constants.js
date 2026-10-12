@@ -62,6 +62,7 @@ const GAME_KEYS = {
   WALK_AROUND_JERICHO: 'WalkAroundJerichoGame',
   HE_MUST_INCREASE: 'HeMustIncreaseGame',
   LOST_SHEEP: 'LostSheepGame',
+  SAMSON_JAWBONE: 'SamsonJawboneGame',
 };
 
 const GAME_NAMES = {
@@ -78,6 +79,7 @@ const GAME_NAMES = {
   [GAME_KEYS.WALK_AROUND_JERICHO]: 'Walk Around Jericho',
   [GAME_KEYS.HE_MUST_INCREASE]: 'He Must Increase',
   [GAME_KEYS.LOST_SHEEP]: 'Find the Lost Sheep',
+  [GAME_KEYS.SAMSON_JAWBONE]: 'Samson and the Jawbone',
 };
 
 const ALL_GAME_KEYS = [
@@ -94,6 +96,7 @@ const ALL_GAME_KEYS = [
   GAME_KEYS.WALK_AROUND_JERICHO,
   GAME_KEYS.HE_MUST_INCREASE,
   GAME_KEYS.LOST_SHEEP,
+  GAME_KEYS.SAMSON_JAWBONE,
 ];
 
 // Games pulled from play on 2026-10-08. Their scenes, art and config all stay in the build and

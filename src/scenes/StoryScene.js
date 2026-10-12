@@ -49,6 +49,8 @@ class StoryScene extends Phaser.Scene {
       [GAME_KEYS.DAVID_VS_GOLIATH]: '🎯',
       [GAME_KEYS.WALK_AROUND_JERICHO]: '🏰',
       [GAME_KEYS.HE_MUST_INCREASE]: '⬆️',
+      [GAME_KEYS.LOST_SHEEP]: '🐑',
+      [GAME_KEYS.SAMSON_JAWBONE]: '💪',
     };
     this.add.text(leftCx, verticalCenter, icons[this.gameKey] || '📖', {
       fontSize: '40px',
