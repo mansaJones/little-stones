@@ -591,6 +591,78 @@ Where the code and this section disagree, the code is right and this section is 
 
 ---
 
+### 14. SAMSON AND THE JAWBONE
+**Biblical Reference:** Judges 15:14-16  
+**Story Context:** "Samson was tied up with brand-new ropes, but God made him strong — the ropes fell off like burnt thread! With only a donkey's jawbone, Samson chased off a whole army of Philistines."
+
+**Core Mechanic:** Drag Samson around the field to bonk fleeing Philistine troublemakers  
+**Visual:** An open hillside field. Samson swings a jawbone on a continuous loop. Unarmoured Philistine troublemakers wander the field and scatter when he gets close.
+
+**Input Model:** Offset drag — Samson renders roughly 45px above the player's finger, same as the Fiery Furnace angel, so the thumb never hides him or the Philistine he is about to reach. He lerps toward the pointer with a speed cap; he does not snap to it.
+
+**Win Conditions:** every tier is an 8-second round. Live values are in `gameConfig.js`; the flee
+speeds below were halved after the first playtest (see Progressive Elements).
+- **EASY**: Bonk **5** Philistines within 8 seconds. They amble away (65px/s, 0.25x Samson).
+- **MEDIUM**: Bonk **7** within 8 seconds. They flee at a moderate speed (100px/s, 0.38x).
+- **HARD**: Bonk **9** within 8 seconds. They flee briskly (135px/s, 0.51x) — Samson still closes
+  on them in open ground, but it takes him a moment.
+
+**Lose Conditions:**
+- Timer expires before the bonk target is reached
+- Note: there is no other way to lose. Touching a Philistine is always good — it bonks them. Samson has no hurt state and no health.
+
+**Progressive Elements:**
+- **Flee speed relative to Samson's speed cap. This is the difficulty dial.** 0.25x / 0.38x / 0.51x
+  of his fixed 265px/s. He closes on them at every tier; what changes is how long the chase takes.
+- **Halved on playtest (2026-10-12), from 0.43x / 0.70x / 0.91x.** At 0.91x a fleeing Philistine in
+  open ground was not catchable by a child, and the round degenerated into chasing things that
+  stayed exactly out of reach. Do not raise these without a playtest.
+- Bonk target rises 5 / 7 / 9 to keep the pace honest as fleeing gets harder.
+- Samson's speed cap, flee radius and round length are held constant across tiers.
+
+**Feedback:**
+- Samson's jawbone swing loops continuously, with a whoosh sound on each swing
+- Philistines get a "!" pop and a scramble animation when they start fleeing
+- Bonk: cartoon puff, little spinning stars over the head, boing sound, Philistine tumbles off the nearest screen edge
+- Bonk counter (3/7) in the HUD
+- SUCCESS: The remaining Philistines run off-screen, Samson raises the jawbone, "God gave Samson strength!"
+- FAILURE: Philistines dance just out of reach, "Keep chasing!"
+
+**Implementation Notes:**
+- **Contact = bonk.** Overlap between Samson's hit circle and a Philistine's body circle bonks immediately, on any frame. The swing loop is cosmetic. If hits only counted on swing frames, kids would visibly touch a Philistine and get nothing, which reads as a bug.
+- **Speed cap** is what makes the timer mean anything. Without it, a snap-to-finger Samson clears the field in two seconds. Same reasoning as the Fiery Furnace angel.
+- **Flee behaviour:** each Philistine wanders on a slow random heading (a fixed 42px/s, deliberately
+  NOT a fraction of flee speed — as a fraction it fell with the playtest cut and idle Philistines
+  looked like statues). Inside the flee radius of Samson it runs directly away from him.
+- **At the walls they turn and run along the edge; they are NOT pinned.** *This replaces the
+  original rule, which clamped the flee vector so they pressed into edges and called cornering the
+  skill. Playtested, that reads as enemies welded to the frame rather than as a skill.* Zero
+  whichever component of the flee vector drives into a wall and renormalise, so they keep full
+  speed along it. In a corner, where both components are blocked, head back toward the middle of
+  the field. Changed 2026-10-12.
+- Add a small separation force between Philistines so they do not stack into one blob, which would let one pass bonk several.
+- **The Philistines need their own, shorter field than Samson.** He renders 45px above the finger
+  and the finger cannot leave the screen, so the lowest he can stand is `GAME_HEIGHT + grabDY`.
+  That is short of the field's own floor, and down there his horizontal catch window narrows from
+  the full hit radius to a sliver that a Philistine fleeing along the bottom edge slides straight
+  through — in play, an enemy that cannot be caught. Floor the Philistines a little above the
+  lowest Samson can reach. Derive it from his reach rather than hard-coding it, so changing the
+  drag offset carries through. Added 2026-10-12.
+- **Respawn:** a bonked Philistine is replaced by a new one entering from a random edge away from Samson after ~0.5s, keeping a fixed number on the field (3 on EASY, 4 on MEDIUM and HARD). The field never empties before the target.
+- **Samson facing:** the sprite is drawn in profile facing LEFT and mirrored by horizontal travel. Flip only when |vx| clears a threshold and hold the current facing below it, or the sprite strobes when the player wiggles. Same problem as the Furnace angel and the Jericho phalanx.
+- **Philistine facing:** each faces its own direction of travel, same threshold rule.
+- **Optional 1-second intro:** Samson stands bound in ropes, the ropes flash and drop away, then control begins. This is the Judges 15:14 beat and makes the point that the strength is God's. It runs before the timer starts.
+- **Config:** add a `samsonJawbone` entry to `src/systems/gameConfig.js`. Name the round length `timeLimit` so `getAdjustedConfig` scales it. The bonk target (`targetBonks`) and flee speed are not scaled by adaptive difficulty; if that turns out to matter, add `targetBonks` to that function's list.
+- **Resolved 2026-10-12:** HARD's flee speed *was* maddening, and the flee speeds were halved
+  rather than the bonk targets lowered. Worth recording for next time: an automated bot with a
+  tracking lag could not tell the difference — sweeping flee speed across its whole range left it
+  losing either way — because a bot that re-aims in discrete steps at a stale position can never
+  close on something running directly away. For a chase mechanic, only a human playtest answers
+  this question.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 14.
+
+---
+
 ## Difficulty System
 
 ### Level-Based Difficulty Progression
@@ -602,11 +674,11 @@ Level 2: Mini-games 1-5 unlocked (EASY difficulty)
 Level 3: Mini-games 1-7 unlocked (EASY → MEDIUM transition)
 Level 4: Mini-games 1-9 unlocked (MEDIUM difficulty)
 Level 5: Mini-games 1-10 unlocked (MEDIUM difficulty)
-Level 6: Mini-games 1-12 unlocked (MEDIUM difficulty)
-Level 7: All 13 mini-games unlocked (MEDIUM → HARD transition)
-Level 8: All 13 mini-games (HARD difficulty)
-Level 9: All 13 mini-games (HARD difficulty)
-Level 10: All 13 mini-games (EXPERT difficulty - 15% harder than HARD)
+Level 6: Mini-games 1-13 unlocked (MEDIUM difficulty)
+Level 7: All 14 mini-games unlocked (MEDIUM → HARD transition)
+Level 8: All 14 mini-games (HARD difficulty)
+Level 9: All 14 mini-games (HARD difficulty)
+Level 10: All 14 mini-games (EXPERT difficulty - 15% harder than HARD)
 ```
 
 **Unlocking Levels:**
