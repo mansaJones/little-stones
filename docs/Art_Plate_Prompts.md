@@ -1084,6 +1084,117 @@ tan with long ears and a cream tail, mid-hop, surprised and happy."
 
 ---
 
+### Scene 14: Samson and the Jawbone — *drag to bonk the Philistines (Judges 15:14-16)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §14** — mechanic, win/lose conditions and
+config. What follows here is art only.
+
+In short: the player drags Samson around an open field. He swings a jawbone on a loop, and any
+Philistine he touches gets bonked and tumbles away. The Philistines scatter when he gets close.
+
+**Tone, stated once:** this is cartoon slapstick. The Philistines are mischievous troublemakers, not
+soldiers, and a bonk sends them tumbling with stars over their heads. No weapons on them, no blood,
+no one lying still. The jawbone is a smooth cartoon prop, not a skull fragment.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Open hillside field. Play area completely empty. |
+| 1 | `philistine_a` / `_b` (+ `_run`, `_bonked`) | Spawned at edges, wander and flee. |
+| 2 | `samson_swing_back` / `_swing_fwd` / `_victory` | Follows the player's drag, offset ~45px above the finger. |
+| 3 | `samson_ropes` | Intro only. Samson bound, before the ropes drop. |
+
+Bonk puffs, spinning stars and the "!" pop are **Phaser effects, not sprites** — same reason as the
+Roll the Stone glow and the Jericho horn blast. Effects drawn onto magenta fringe badly when keyed.
+
+#### Backdrop plate
+
+```
+Scene: An open hillside at Lehi, as a backdrop, seen from a slightly high angle.
+
+Setting: A wide gently sloping field of pale sage and mint grass with simple
+outlined contours, a few rounded pastel rocks in dusty rose and tan pushed to
+the very edges and corners of the frame. Soft lavender-blue hills along the
+top edge, and a strip of warm peach and pale gold sky with one outlined cloud.
+
+Keep the whole centre and the middle of every edge completely open and flat —
+no rocks, bushes, trees or animals anywhere characters will run. Characters
+are drawn on top of this, so the ground must be simple and uncluttered.
+
+No characters.
+```
+
+#### Colour readability
+
+| Must read apart | What carries it |
+|---|---|
+| **Samson vs Philistines** | Samson is the only periwinkle figure and the only one with long hair and a jawbone. Philistines are mint and lavender with short hair. |
+| **Philistines vs grass** | Bright tunics (mustard, dusty rose) carry them against the sage field. Mint skin alone would sink into the grass. |
+| Philistine vs Philistine | Barely matters — two variants exist so the field does not look copy-pasted. |
+
+Mint for the Philistines is deliberate: Goliath (Scene 12) is mint, so the Philistines read as his
+people across the roster. The Angel is also mint, but never shares a screen with them.
+
+#### `samson_swing_back` sprite — base pose
+
+Run this first; the other Samson poses are edits of it, one change per turn.
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+SAMSON, mid-stride, in profile facing LEFT. Full body, head to feet.
+- Periwinkle blue skin. Never a realistic human skin tone.
+- Very long dark brown hair worn in seven thick rounded braids that swing out
+  behind him — this is his defining feature, make it big and obvious.
+- Chunky, broad, cheerful build. A simple short tan tunic with a rope belt,
+  bare arms, sandals.
+- Large white oval eyes with big black pupils, soft pink blush on both cheeks,
+  and a big determined grin. Playful, not angry.
+- In one hand he holds a DONKEY JAWBONE raised up behind his head, wound up to
+  swing: a smooth curved cream bone like a big boomerang, with a row of small
+  rounded blunt teeth along one edge. Cartoon prop, clean and simple.
+- No shadow, no motion lines.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with a small even margin of magenta around him.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `samson_swing_fwd` | "Same character, same framing. Change only the pose: the jawbone is swung forward and down in front of him, arm extended, mid-swing." |
+| `samson_victory` | "Same character. Change only the pose: standing, facing forward, holding the jawbone high over his head with both hands, eyes closed in a huge happy smile." |
+| `samson_ropes` | "Same character, standing, facing forward. Thick tan ropes are wrapped around his arms and chest. He looks calm and confident, eyes looking up. No jawbone." |
+
+#### `philistine_a` sprite — base pose
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+A PHILISTINE TROUBLEMAKER, mid-stride, in profile facing LEFT. Full body.
+- Mint green skin. Never a realistic human skin tone.
+- Short scruffy dark hair, no helmet, no armour, nothing in his hands.
+- A simple short mustard yellow tunic with a sash, sandals.
+- Large white oval eyes with big black pupils, soft pink blush, and a cheeky
+  mischievous grin. A rascal, not a villain.
+- Slightly smaller and rounder than Samson.
+- No shadow, no motion lines.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with a small even margin of magenta around him.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `philistine_a_run` | "Same character, same framing. Change only the pose: running away fast, arms flailing, looking back over his shoulder with wide surprised eyes and an open-mouth 'uh oh' face." |
+| `philistine_a_bonked` | "Same character. Change only the pose: tumbling backward head over heels, arms and legs out, eyes as dizzy swirls, a silly dazed smile. Funny, not hurt." |
+| `philistine_b` | "Same style and pose as the original troublemaker. A different person: lavender skin, a dusty rose tunic, curly hair and a round belly." Then repeat the run and bonked edits for `_b`. |
+
+**`_bonked` must stay comedic.** If a generation comes back looking injured — eyes closed flat,
+lying still, anything red — reject it and repeat "funny, not hurt, eyes as dizzy swirls".
+
+---
+
 ## Known risks
 
 - **Style drift after 6–8 generations** in one conversation. Watch for thinning outlines and colours
