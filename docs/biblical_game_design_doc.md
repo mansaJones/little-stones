@@ -481,35 +481,6 @@ across all three, so crowding is the difficulty.
 - **Untested:** two phases make this ~16s at EASY, one of the longest rounds in the roster. If it drags in playtest, trim the timers. The laps stay at 7 — the number is the story.
 - Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 10.
 
-**As built** — `src/games/WalkAroundJerichoGame.js`, rewritten against the delivered art 2026-10-06.
-The file it replaced still implemented the old tap-to-walk design on a square four-waypoint path.
-Where the code and this section disagree, the code is right and this section is the bug.
-
-- **The path is measured, not chosen.** `LJ_PATH = {cx: 332, cy: 176, rx: 262, ry: 118}`, fitted to
-  the ring on the backdrop plate; all 240 sampled points land on it. Re-measure if the plate is
-  redrawn. Method and constraints are in `assets/games/jericho/ASSETS.md`.
-- **The pointer's angle is unwrapped, and the phalanx chases that running total** — not the raw
-  `atan2` value. Following the raw angle looks identical until the player spins faster than the
-  one-lap-per-second cap: the finger laps the phalanx, gets more than π ahead, the shortest-path
-  difference flips sign, and the phalanx marches BACKWARDS. Spin hard enough and net progress is
-  zero. Against a running total the finger builds a queue the phalanx works through at its top
-  speed — capped, but every bit of input counts, always in the direction dragged.
-- **Depth is near-half / far-half of the ring, not feet-y.** Sorting by feet-y looks right until
-  the lower arc, where the phalanx's feet are still above the city's base line and it slides behind
-  walls it is clearly walking in front of.
-- **The phalanx scales 1.0 → 0.76 toward the far side.** The optional depth cue above, but it also
-  buys height: the top of the march is y=58, so a full-size sprite taller than that has its spear
-  tips clipped off the stage. Shrinking at the far side allows a 76px phalanx at the near side,
-  which matters because it is the thing the child is steering.
-- Two things in this section are **not implemented**: there are no footstep or horn sounds, and no
-  dust puffs at the phalanx's feet — nothing in this build has audio, and the dust was dropped as
-  clutter at this sprite size. The city shakes on each horn tap and on each state swap, which is
-  what the swap needs anyway: the four city plates are separate generations and are not
-  pixel-aligned, so the swap pops without it.
-- Scoring uses the MARCH time, not the total. The horn is a formality once you are there, so
-  including it would let a dawdled horn drag down a fast march and the reverse. `perfect` is HARD
-  only: finishing without ever being stalled by a rock.
-
 ---
 
 ### 12. RESIZABLE TILES - "HE MUST INCREASE, I MUST DECREASE"
@@ -600,23 +571,17 @@ Where the code and this section disagree, the code is right and this section is 
 
 **Input Model:** Offset drag — Samson renders roughly 45px above the player's finger, same as the Fiery Furnace angel, so the thumb never hides him or the Philistine he is about to reach. He lerps toward the pointer with a speed cap; he does not snap to it.
 
-**Win Conditions:** every tier is an 8-second round. Live values are in `gameConfig.js`; the flee
-speeds below were halved after the first playtest (see Progressive Elements).
-- **EASY**: Bonk **5** Philistines within 8 seconds. They amble away (65px/s, 0.25x Samson).
-- **MEDIUM**: Bonk **7** within 8 seconds. They flee at a moderate speed (100px/s, 0.38x).
-- **HARD**: Bonk **9** within 8 seconds. They flee briskly (135px/s, 0.51x) — Samson still closes
-  on them in open ground, but it takes him a moment.
+**Win Conditions:** every tier is an 8-second round. Numbers are playtest starting points; the live values are in `gameConfig.js`.
+- **EASY**: Bonk **5** Philistines within 8 seconds. They flee slowly.
+- **MEDIUM**: Bonk **7** within 8 seconds. They flee at a moderate speed.
+- **HARD**: Bonk **9** within 8 seconds. They flee nearly as fast as Samson moves.
 
 **Lose Conditions:**
 - Timer expires before the bonk target is reached
 - Note: there is no other way to lose. Touching a Philistine is always good — it bonks them. Samson has no hurt state and no health.
 
 **Progressive Elements:**
-- **Flee speed relative to Samson's speed cap. This is the difficulty dial.** 0.25x / 0.38x / 0.51x
-  of his fixed 265px/s. He closes on them at every tier; what changes is how long the chase takes.
-- **Halved on playtest (2026-10-12), from 0.43x / 0.70x / 0.91x.** At 0.91x a fleeing Philistine in
-  open ground was not catchable by a child, and the round degenerated into chasing things that
-  stayed exactly out of reach. Do not raise these without a playtest.
+- **Flee speed relative to Samson's speed cap. This is the difficulty dial.** On HARD a Philistine in open ground can nearly outrun him, so the player has to herd them toward an edge or corner.
 - Bonk target rises 5 / 7 / 9 to keep the pace honest as fleeing gets harder.
 - Samson's speed cap, flee radius and round length are held constant across tiers.
 
@@ -631,35 +596,338 @@ speeds below were halved after the first playtest (see Progressive Elements).
 **Implementation Notes:**
 - **Contact = bonk.** Overlap between Samson's hit circle and a Philistine's body circle bonks immediately, on any frame. The swing loop is cosmetic. If hits only counted on swing frames, kids would visibly touch a Philistine and get nothing, which reads as a bug.
 - **Speed cap** is what makes the timer mean anything. Without it, a snap-to-finger Samson clears the field in two seconds. Same reasoning as the Fiery Furnace angel.
-- **Flee behaviour:** each Philistine wanders on a slow random heading (a fixed 42px/s, deliberately
-  NOT a fraction of flee speed — as a fraction it fell with the playtest cut and idle Philistines
-  looked like statues). Inside the flee radius of Samson it runs directly away from him.
-- **At the walls they turn and run along the edge; they are NOT pinned.** *This replaces the
-  original rule, which clamped the flee vector so they pressed into edges and called cornering the
-  skill. Playtested, that reads as enemies welded to the frame rather than as a skill.* Zero
-  whichever component of the flee vector drives into a wall and renormalise, so they keep full
-  speed along it. In a corner, where both components are blocked, head back toward the middle of
-  the field. Changed 2026-10-12.
+- **Flee behaviour:** each Philistine wanders on a slow random heading. Inside the flee radius of Samson it runs directly away from him, with the flee vector clamped to the play area so they get pinned against edges instead of sliding along them forever. Cornering is the skill.
 - Add a small separation force between Philistines so they do not stack into one blob, which would let one pass bonk several.
-- **The Philistines need their own, shorter field than Samson.** He renders 45px above the finger
-  and the finger cannot leave the screen, so the lowest he can stand is `GAME_HEIGHT + grabDY`.
-  That is short of the field's own floor, and down there his horizontal catch window narrows from
-  the full hit radius to a sliver that a Philistine fleeing along the bottom edge slides straight
-  through — in play, an enemy that cannot be caught. Floor the Philistines a little above the
-  lowest Samson can reach. Derive it from his reach rather than hard-coding it, so changing the
-  drag offset carries through. Added 2026-10-12.
 - **Respawn:** a bonked Philistine is replaced by a new one entering from a random edge away from Samson after ~0.5s, keeping a fixed number on the field (3 on EASY, 4 on MEDIUM and HARD). The field never empties before the target.
 - **Samson facing:** the sprite is drawn in profile facing LEFT and mirrored by horizontal travel. Flip only when |vx| clears a threshold and hold the current facing below it, or the sprite strobes when the player wiggles. Same problem as the Furnace angel and the Jericho phalanx.
 - **Philistine facing:** each faces its own direction of travel, same threshold rule.
 - **Optional 1-second intro:** Samson stands bound in ropes, the ropes flash and drop away, then control begins. This is the Judges 15:14 beat and makes the point that the strength is God's. It runs before the timer starts.
 - **Config:** add a `samsonJawbone` entry to `src/systems/gameConfig.js`. Name the round length `timeLimit` so `getAdjustedConfig` scales it. The bonk target (`targetBonks`) and flee speed are not scaled by adaptive difficulty; if that turns out to matter, add `targetBonks` to that function's list.
-- **Resolved 2026-10-12:** HARD's flee speed *was* maddening, and the flee speeds were halved
-  rather than the bonk targets lowered. Worth recording for next time: an automated bot with a
-  tracking lag could not tell the difference — sweeping flee speed across its whole range left it
-  losing either way — because a bot that re-aims in discrete steps at a stale position can never
-  close on something running directly away. For a chase mechanic, only a human playtest answers
-  this question.
+- **Untested:** whether HARD's flee speed is fun or maddening for the 6-8 group. If it's maddening, lower the flee speed before touching the target.
 - Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 14.
+
+---
+
+### 15. BABY MOSES IN THE BASKET
+**Biblical Reference:** Exodus 2:1-10  
+**Story Context:** "Baby Moses' mother put him in a little basket on the river. God watched over him, and Pharaoh's daughter found him and kept him safe!"
+
+**Core Mechanic:** Tilt the device to steer the basket down the river  
+**Visual:** A river seen from above, flowing right to left across the screen. The basket floats in the left third and steers up and down across the river's width. Reeds, rocks and a sleepy hippo drift in from the right. Pharaoh's daughter waits on the bank at the end of the run.
+
+**Input Model:** Device tilt steers the basket toward the top or bottom bank. Drag up/down is the fallback whenever motion is unavailable or permission is denied (desktop, or a parent who taps "Don't Allow").
+
+**Win Conditions:** the river run takes 7 seconds with zero bumps at every tier, and the round is 10 seconds. Each bump stalls the basket for 0.6s, so the timer is really a bump budget.
+- **EASY**: Reach Pharaoh's daughter within 10 seconds. Sparse obstacles, wide channels.
+- **MEDIUM**: Same, with denser obstacles and a hippo that surfaces mid-run.
+- **HARD**: Same, with dense obstacles and a sideways current that pushes the basket toward the banks.
+
+**Lose Conditions:**
+- Timer expires before the basket reaches Pharaoh's daughter
+- Note: the basket never tips and never sinks, and the baby is never in danger. A bump makes the basket spin gently and the baby giggles.
+
+**Progressive Elements:**
+- **Obstacle density is the difficulty dial.** Run length and stall time are held constant.
+- MEDIUM: the hippo surfaces as a moving obstacle
+- HARD: a sideways current the player has to lean against
+
+**Feedback:**
+- Ripple trail behind the basket
+- Bump: soft bonk, basket spins once, baby giggles
+- Progress strip in the HUD: basket icon sliding toward a princess icon
+- SUCCESS: Pharaoh's daughter lifts the basket from the reeds, "God kept baby Moses safe!"
+- FAILURE: Basket still bobbing peacefully downstream, "Keep steering!"
+
+**Implementation Notes:**
+- **Motion permission on iOS.** iOS Safari only delivers device motion after `DeviceMotionEvent.requestPermission()` (or the `DeviceOrientationEvent` equivalent) is called from a user gesture. Call it from the "Tap to start" on the instruction screen. `@capacitor/motion` is built on the same Web APIs and has the same requirement in the native build. Never call it on page load: it fails silently and the game looks broken.
+- **Landscape axes.** The orientation axes do not rotate with the screen. Read `screen.orientation.angle` and pick the axis and sign from it, so landscape-left and landscape-right both steer the same way. Easy to miss when you only test on one hand.
+- **Calibrate neutral at round start.** Capture the current tilt as zero, because kids hold phones at every angle. Use a ±3° dead zone, map ±25° to full steering speed, and low-pass the signal so hand tremor doesn't jitter the basket.
+- **Hand-authored obstacle patterns per tier, not random spawns.** Random placement can produce a wall with no gap. Every pattern keeps a channel at least 1.5× the basket's width.
+- The river scrolls as a TileSprite, and obstacles move at the same speed (see `Art_Plate_Prompts.md` Scene 15 for why the water is mirror-tiled).
+- **Config:** add `babyMoses` to `gameConfig.js`. Use `timeLimit` for the round so adaptive difficulty scales it; `runTime` and `bumpStall` stay fixed.
+- **Untested:** six-year-olds tilt with their whole body. If playtest shows drag winning on fun, make drag the default and tilt the option. Don't fight the kids on this.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 15.
+
+---
+
+### 16. PETER WALKS ON WATER
+**Biblical Reference:** Matthew 14:22-33  
+**Story Context:** "Jesus walked on the stormy sea and called Peter to come. When Peter kept his eyes on Jesus, he walked on water too!"
+
+**Core Mechanic:** Hold your finger on Jesus to keep Peter walking  
+**Visual:** A choppy pastel sea at twilight. The disciples' boat sits at the left; Peter steps off it and walks right, across the water, toward Jesus standing on the waves at the right.
+
+**Input Model:** Press and hold on Jesus. The hit zone is about 1.5× his sprite. While the finger stays on him, Peter walks. Lift or slide off and Peter stops and slowly sinks; put the finger back and he rises and walks on.
+
+**Win Conditions:** Peter's full walk takes 5 seconds of holding at every tier.
+- **EASY**: Reach Jesus within 8 seconds. Jesus stands still.
+- **MEDIUM**: Reach Jesus within 8 seconds. Jesus drifts slowly up and down, so the finger has to follow him.
+- **HARD**: Reach Jesus within 8 seconds. Jesus drifts faster, and big waves sweep across and hide him for a moment.
+
+**Lose Conditions:**
+- The sink meter fills (Peter is waist-deep)
+- Timer expires before Peter reaches Jesus
+- Note: Peter never goes under. When the sink meter fills, Jesus reaches out and pulls him up. That is exactly what Matthew 14:31 says happens, so the fail state is a rescue.
+
+**Progressive Elements:**
+- **Jesus' drift speed (none / slow / faster) is the difficulty dial.**
+- HARD: wave occlusions. The child has to keep their finger where Jesus *is*, not where they can see him. That is the lesson, delivered as a mechanic.
+
+**Feedback:**
+- Jesus glows softly while the finger is on him. Kids need to *see* that the hold registered.
+- Peter's feet splash on each step
+- Sinking: the waterline rises up Peter's body with a few bubbles
+- SUCCESS: Jesus takes Peter's hand, the wind drops, "Peter walked on water!"
+- FAILURE: Jesus lifts Peter up by the hand, both safe, "Keep your eyes on Jesus!"
+
+**Implementation Notes:**
+- **Don't rely on `pointerout` for touch.** It's unreliable on touch input. Each frame, check `pointer.isDown` and the pointer's distance to Jesus' current position.
+- 150ms grace before sinking starts, so a finger twitch doesn't punish.
+- Treat `touchcancel` (a system gesture, a notification pulling focus) as a lift, not an error.
+- Sinking is a `setCrop` on Peter's sprite plus a waterline overlay, not extra sink sprites. Cheaper, and continuous.
+- Pose is a pure function of (holding, sink level), same pattern as Wrestle the Angel: initial = Peter at the boat's edge; mid-win = walking; mid-lose = sinking and reaching out; win-final = hand in hand; lose-final = being lifted. No frightened state.
+- **Config:** add `peterWater`. Use `timeLimit`, plus `walkTime`, `sinkRate` and `driftSpeed`. The slack is `timeLimit − walkTime`.
+- Jesus uses the canonical seafoam design from Roll the Stone.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 16.
+
+---
+
+### 17. ZACCHAEUS CLIMBS THE TREE
+**Biblical Reference:** Luke 19:1-10  
+**Story Context:** "Zacchaeus was too short to see Jesus, so he climbed a tree! Jesus looked up and said, 'Come down, I'm visiting your house today!'"
+
+**Core Mechanic:** Tap the left and right sides of the screen, one after the other, to climb  
+**Visual:** A big sycamore-fig tree on the right. A crowd lines the road at the bottom. Jesus walks along the road from the left edge, and his walk is the timer.
+
+**Input Model:** The screen is split into left and right halves. Each tap on the side opposite the last tap climbs one step. Two big hand icons pulse in the bottom corners on the instruction screen.
+
+**Win Conditions:**
+- **EASY**: 14 alternating taps within 8 seconds. A same-side tap does nothing.
+- **MEDIUM**: 18 alternating taps within 7 seconds. A same-side tap slips him down 1 step.
+- **HARD**: 22 alternating taps within 6 seconds. A same-side tap slips him down 2 steps.
+
+**Lose Conditions:**
+- Jesus reaches the tree before Zacchaeus reaches the lookout branch (timer)
+- Note: Jesus never walks past him. In the fail state, Jesus stops under the tree and looks around while Zacchaeus peeks from a low branch. Jesus came looking for him; the game shouldn't say otherwise.
+
+**Progressive Elements:**
+- Tap target and time tighten together
+- **The slip penalty is the real dial**: none, then 1 step, then 2. It turns mashing into rhythm.
+
+**Feedback:**
+- Rustle sound and a few falling leaves on each step
+- Slip: wobble, "whoops!", short slide down
+- Crowd heads bob as Jesus passes
+- SUCCESS: Jesus stops under the tree, looks up and waves, "Zacchaeus, come down!"
+- FAILURE: Zacchaeus peeks between the leaves, "Climb higher!"
+
+**Implementation Notes:**
+- Climb height is continuous progress, not snapped to drawn branches. The tap target changes per tier; the tree art doesn't.
+- **Two-thumb exploit:** if both halves register within 40ms, count one tap, not two. Otherwise a kid with two thumbs on the glass wins for free.
+- Jesus' walk is a tween from the left edge to the tree's x over `timeLimit`, driven by the same clamped clock as the loss timeout. Keep the HUD timer too; not every kid reads the diegetic one.
+- Auto-clicker guard on tap timestamps, same as Wrestle the Angel.
+- **Config:** add `zacchaeus` with `timeLimit` and `targetTaps`, so adaptive difficulty scales both for free. `slipSteps` stays fixed.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 17.
+
+---
+
+### 18. JOSEPH'S COAT OF MANY COLORS
+**Biblical Reference:** Genesis 37:3  
+**Story Context:** "Jacob gave his son Joseph a beautiful coat of many colors. Every color showed how much his father loved him!"
+
+**Core Mechanic:** Watch the coat's stripes light up in order, then tap the same colors in the same order  
+**Visual:** Joseph stands in the centre wearing a cream coat with plain stripe bands. A row of clay dye pots sits along the bottom.
+
+**Input Model:** Tap the dye pots. Input is locked while the pattern plays back.
+
+**Win Conditions:** the 8-second answer timer starts after the playback finishes. Watching never eats into answer time.
+- **EASY**: Repeat a 3-color pattern from 4 dye pots within 8 seconds
+- **MEDIUM**: Repeat a 4-color pattern from 5 dye pots within 8 seconds
+- **HARD**: Repeat a 5-color pattern from 6 dye pots within 8 seconds. Colors may repeat.
+
+**Lose Conditions:**
+- Tap a wrong color
+- Answer timer expires
+
+**Progressive Elements:**
+- **Pattern length (3 / 4 / 5) is the difficulty dial.**
+- More dye pots to choose from
+- HARD allows repeats (red, blue, red), which is much harder than it sounds
+
+**Feedback:**
+- Playback: each stripe flashes its color with its own musical note
+- Answering: each correct tap paints the next stripe, so the coat fills in as the child answers
+- SUCCESS: The coat is complete, Joseph twirls, "What a beautiful coat!"
+- FAILURE: The stripes fade back to cream, "Watch closely!"
+
+**Implementation Notes:**
+- **Never color alone.** Each dye pot carries a distinct symbol (dot, star, heart, wave, square, moon) and its own note. Roughly 1 in 12 boys has a color vision deficiency; without the symbols, this game is a wall for them.
+- Playback speed is a config value: about 0.6s per stripe on EASY, down to 0.45s on HARD.
+- The coat's stripes are tinted at runtime, not generated per combination (see `Art_Plate_Prompts.md` Scene 18).
+- Use the clamped game clock for the playback timing as well as the answer timer, so a throttled tab doesn't desync the playback from the sound.
+- The story card deliberately stops at the coat. The brothers' jealousy and selling Joseph are a different game, if ever.
+- **Config:** add `josephCoat`. Name the answer timer `timeLimit` so adaptive difficulty scales it; `patternLength`, `potCount`, `allowRepeats` and `playbackStep` stay fixed.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 18.
+
+---
+
+### 19. NEHEMIAH REBUILDS THE WALL
+**Biblical Reference:** Nehemiah 2:17-18; 4:6; 6:15  
+**Story Context:** "Jerusalem's walls were broken down. Nehemiah got everyone working together, and they rebuilt the whole wall in just 52 days!"
+
+**Core Mechanic:** Tap to drop swinging stones into a gap in the wall  
+**Visual:** Jerusalem's wall runs across the screen with a tall gap in the middle. A wooden crane swings a stone block on a rope above the gap. Nehemiah directs from the side.
+
+**Input Model:** Tap anywhere to release the swinging stone. It drops straight down.
+
+**Win Conditions:** the gap holds 8 stones at every tier. Lower tiers start with some already placed (Nehemiah 4:6: the wall was joined "to half its height").
+- **EASY**: 4 stones already placed, place 4 more within 12 seconds. Slow swing, wide tolerance.
+- **MEDIUM**: 2 already placed, place 6 within 12 seconds. Medium swing and tolerance.
+- **HARD**: 0 placed, place all 8 within 12 seconds. Faster swing, tight tolerance.
+
+**Lose Conditions:**
+- Timer expires before the gap is filled
+- A stone that misses tumbles onto the rubble and the next one swings in after 0.8s. The only cost is time.
+
+**Progressive Elements:**
+- **Stones to place (4 / 6 / 8) is the main dial.**
+- Swing speed and landing tolerance tighten together
+
+**Feedback:**
+- Landing: thunk plus a dust puff; a sparkle for a near-perfect centre drop
+- Miss: the stone bounces off the rubble, "oops!"
+- Workers on the wall cheer each placed stone
+- SUCCESS: The wall is whole, workers cheer, "The wall is finished!"
+- FAILURE: The gap is still open, "Keep building!"
+
+**Implementation Notes:**
+- **No physics engine.** Landing is a deterministic check: if |stone x − gap centre| ≤ tolerance, snap to centre and stack. Real physics would wobble and topple, which would be unfair here. (Babel uses toppling on purpose; this is its mirror.)
+- **Fixed stone size, fixed gap.** Changing the count per tier by resizing stones would stretch the outlines. Pre-placing stones on lower tiers keeps every asset at one size.
+- Straight-down drops on every tier, with no horizontal carry from the swing. Carry would be "realistic" and a nightmare for six-year-olds.
+- The swing is a sine pendulum on the shared clamped clock.
+- **Config:** add `nehemiahWall` with `timeLimit`, `stonesToPlace`, `tolerance` and `swingSpeed`.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 19.
+
+---
+
+### 20. MOSES PARTS THE RED SEA
+**Biblical Reference:** Exodus 14:21-22  
+**Story Context:** "Moses stretched out his hand over the sea. God split the water in two, and His people walked across on dry ground!"
+
+**Core Mechanic:** Spread two fingers apart to part the sea, and hold it open while the people cross  
+**Visual:** Side view. Moses stands on the near shore at the left with his staff raised. The sea fills the middle of the screen. The far shore is at the right. Spreading the fingers opens a dry path straight across, with walls of water above and below it.
+
+**Input Model:** Two-finger vertical spread. The width of the dry path follows the vertical distance between the fingers. With a single finger (desktop mouse, or a kid who uses one finger), the path width follows that finger's distance from the centre line, doubled.
+
+**Win Conditions:**
+- **EASY**: Get 4 people across within 10 seconds. The path needs to be at least 30% of the screen height for people to walk.
+- **MEDIUM**: 6 people within 10 seconds. Path at least 40%.
+- **HARD**: 8 people within 10 seconds. Path at least 50%.
+
+**Lose Conditions:**
+- Timer expires before everyone has crossed
+- Note: nobody is ever in the water. If the path narrows below the minimum, people stop and wait on dry ground. The water walls can't close on anyone. The Egyptian army isn't in this game; the story's ending is not material for this audience.
+
+**Progressive Elements:**
+- **Crosser count and required width rise together.** On a phone, 50% of the screen height between two fingers is a real stretch, which is the point.
+
+**Feedback:**
+- The water walls follow the fingers with slight lag, so they feel heavy
+- The path glows gold when it's wide enough to walk
+- People walk across carrying bundles; anyone mid-path pauses if it narrows
+- SUCCESS: Everyone cheers on the far shore, the water gently closes behind them over an empty path, "God made a way!"
+- FAILURE: Some people still waiting on the near shore, "Hold the water open!"
+
+**Implementation Notes:**
+- **Phaser tracks one touch pointer by default.** Call `this.input.addPointer(1)` in `create()` to track a second, or the second finger is ignored and the game is unplayable on touch.
+- Use only the y-distance between the two pointers; ignore x.
+- Single-pointer fallback kicks in when only one pointer has been down for more than 300ms.
+- The water walls are two sprites that move apart, not scale. Scaling would stretch the outlines.
+- **Config:** add `redSea` with `timeLimit`, `crossers` and `requiredSpread`.
+- Moses' design follows the `moses.png` style reference.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 20.
+
+---
+
+### 21. FEEDING THE 5,000
+**Biblical Reference:** John 6:1-13  
+**Story Context:** "A boy shared his five loaves and two fish. Jesus thanked God, and everyone ate. There were even twelve baskets left over!"
+
+**Core Mechanic:** Drag the basket left and right to catch the bread and fish  
+**Visual:** A grassy hillside. Jesus stands at the top centre breaking bread, and loaves and fish tumble down. The boy holds a basket at the bottom.
+
+**Input Model:** Horizontal drag only. The basket follows the finger's x with a speed cap; vertical movement is ignored.
+
+**Win Conditions:**
+- **EASY**: Catch 8 within 10 seconds. Slow fall.
+- **MEDIUM**: Catch 12 within 10 seconds (the twelve baskets).
+- **HARD**: Catch 15 within 10 seconds. Fast fall, and items sway as they drop.
+
+**Lose Conditions:**
+- Timer expires before the catch target is reached
+- Note: no penalty for a miss. The story is abundance; there's always more. A missed loaf lands on the grass and someone in the crowd happily picks it up.
+
+**Progressive Elements:**
+- **Fall speed and catch target rise together.**
+- HARD: items sway side to side as they fall
+
+**Feedback:**
+- Catch: a little pop, and the basket visibly fills
+- Miss: a crowd member picks it up and munches. Every miss still feeds someone.
+- SUCCESS: The basket overflows, the crowd cheers, "Everyone had enough!"
+- FAILURE: "Catch some more!"
+
+**Implementation Notes:**
+- **Spawn guarantee:** spawn rate × time ≥ 1.6 × the catch target, so the target is always reachable.
+- Speed cap on the basket, same reasoning as Samson: without it, catching is free.
+- Items spawn across the width but never two at the same x within 0.5s, so pairs stay catchable.
+- Basket fill is three overlay states, swapped at 1/3 and 2/3 of the target.
+- **Config:** add `feedingFiveThousand` with `timeLimit`, `targetCatches`, `fallSpeed` and `swayAmount`. `targetCatches` is not scaled by adaptive difficulty.
+- Jesus uses the canonical seafoam design.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 21.
+
+---
+
+### 22. JONAH AND THE BIG FISH
+**Biblical Reference:** Jonah 1:17; 2:10; 3:1-3  
+**Story Context:** "Jonah ran away from God and was swallowed by a big fish! After three days, the fish spat him onto dry land, and Jonah obeyed God."
+
+**Core Mechanic:** Tap to stop a power meter and launch Jonah from the fish onto the beach  
+**Visual:** Side view. A big friendly fish floats in the water at the left. A beach runs along the right with a target zone marked in the sand. Palm trees stand beyond the beach.
+
+**Input Model:** A power meter swings up and down on its own. Tap to lock the power, and the fish spits Jonah in an arc.
+
+**Win Conditions:**
+- **EASY**: Land Jonah in the zone within 3 attempts. Wide zone, slow meter.
+- **MEDIUM**: Within 2 attempts. Medium zone, faster meter.
+- **HARD**: Within 2 attempts. Narrow zone, fast meter, and the fish bobs so the launch height varies.
+
+**Lose Conditions:**
+- Out of attempts
+- Timer (12 seconds) expires
+- Too short: Jonah splashes into the shallows and the fish scoops him back up. Too far: he lands in a palm tree. Both are funny, never scary.
+
+**Progressive Elements:**
+- **Zone width and meter speed are the dials.**
+- Fewer attempts from MEDIUM up
+- HARD: fish bobbing changes the launch point each attempt
+
+**Feedback:**
+- The fish's cheeks puff up as the meter swings
+- "PTOO!" sound, Jonah tumbles through the air with seaweed on his head
+- Sand puff on landing
+- A faint ghost marker shows where the last attempt landed
+- SUCCESS: Jonah sits up on the beach, picks seaweed off his head and waves, "Jonah got a second chance!"
+- FAILURE: Jonah dangles from a palm tree, grinning, "Try again!"
+
+**Implementation Notes:**
+- **Deterministic arc, not physics.** Landing x is a fixed function of power, so the result is predictable and the child can learn from it.
+- **The ghost marker is the teaching tool.** Seeing "too far last time" is how a six-year-old corrects. Don't cut it.
+- The meter is a ping-pong tween on the clamped game clock, not wall-clock.
+- The inside of the fish is never shown. The fish starts with its mouth closed; Jonah only appears when he's spat out.
+- **Config:** add `jonahFish` with `timeLimit`, `attempts`, `zoneWidth` and `meterSpeed`.
+- Jonah's design follows the `jonah.png` style reference.
+- Art assets and generation prompts: see `Art_Plate_Prompts.md` Scene 22.
 
 ---
 
@@ -670,15 +938,15 @@ speeds below were halved after the first playtest (see Progressive Elements).
 **Level Structure:**
 ```
 Level 1: Mini-games 1-3 unlocked (EASY difficulty only)
-Level 2: Mini-games 1-5 unlocked (EASY difficulty)
-Level 3: Mini-games 1-7 unlocked (EASY → MEDIUM transition)
-Level 4: Mini-games 1-9 unlocked (MEDIUM difficulty)
-Level 5: Mini-games 1-10 unlocked (MEDIUM difficulty)
-Level 6: Mini-games 1-13 unlocked (MEDIUM difficulty)
-Level 7: All 14 mini-games unlocked (MEDIUM → HARD transition)
-Level 8: All 14 mini-games (HARD difficulty)
-Level 9: All 14 mini-games (HARD difficulty)
-Level 10: All 14 mini-games (EXPERT difficulty - 15% harder than HARD)
+Level 2: Mini-games 1-6 unlocked (EASY difficulty)
+Level 3: Mini-games 1-9 unlocked (EASY → MEDIUM transition)
+Level 4: Mini-games 1-12 unlocked (MEDIUM difficulty)
+Level 5: Mini-games 1-15 unlocked (MEDIUM difficulty)
+Level 6: Mini-games 1-18 unlocked (MEDIUM difficulty)
+Level 7: All 22 mini-games unlocked (MEDIUM → HARD transition)
+Level 8: All 22 mini-games (HARD difficulty)
+Level 9: All 22 mini-games (HARD difficulty)
+Level 10: All 22 mini-games (EXPERT difficulty - 15% harder than HARD)
 ```
 
 **Unlocking Levels:**
@@ -776,7 +1044,7 @@ Losing ANY mini-game resets combo to 0
 **Achievement Points:**
 - First time completing each mini-game: +200 points
 - First perfect completion of each game: +300 points
-- Complete all 13 games at least once: +1000 points
+- Complete all 22 games at least once: +1000 points
 - Earn 10-combo: +500 points
 - Complete level without losing a life: +500 points
 
@@ -1004,7 +1272,7 @@ Epic Avatars (2,000 points each):
 └─ Joseph (coat of many colors)
 
 Legendary Avatars (Achievement-only):
-├─ Complete all 13 games perfectly → Jesus avatar
+├─ Complete all 22 games perfectly → Jesus avatar
 ├─ Earn 20-combo → Angel avatar
 ├─ Play 30 days in a row → Apostle Paul avatar
 ```
@@ -1025,8 +1293,8 @@ Legendary Avatars (Achievement-only):
 "Combo Starter" - Earn 3-combo (200 pts)
 "Combo Master" - Earn 10-combo (500 pts)
 "Combo Legend" - Earn 20-combo (1,000 pts + Legendary Avatar)
-"All Rounder" - Complete all 13 mini-games at least once (1,000 pts)
-"Bible Scholar" - Complete all 13 mini-games perfectly (2,000 pts)
+"All Rounder" - Complete all 22 mini-games at least once (1,000 pts)
+"Bible Scholar" - Complete all 22 mini-games perfectly (2,000 pts)
 "Speed Demon" - Complete 10 mini-games under target time (500 pts)
 ```
 
@@ -1093,10 +1361,6 @@ Friday - "Education Day"
 Saturday - "Explorer Day"
 ├─ Play 3 different mini-games you haven't played this week
 └─ Reward: 350 bonus points
-
-Sunday - "Master Day"
-├─ Complete all 13 mini-games at least once
-└─ Reward: 1,000 bonus points + Special Sunday Avatar
 ```
 
 **Daily Challenge UI:**
@@ -1324,7 +1588,7 @@ scenes/
     ├── WrestleAngelGame.js
     ├── WaterToWineGame.js
     ├── LetThereBeLight.js
-    └── ... (all 13 mini-games)
+    └── ... (all 22 mini-games)
 ```
 
 **Base Mini-Game Class:**
@@ -1498,7 +1762,16 @@ const GameData = {
     'wrestle_angel': { played: 0, won: 0, best_time: null },
     'water_to_wine': { played: 0, won: 0, best_time: null },
     'lost_sheep': { played: 0, won: 0, best_time: null },
-    // ... all 13 games
+    'samson_jawbone': { played: 0, won: 0, best_time: null },
+    'baby_moses': { played: 0, won: 0, best_time: null },
+    'peter_water': { played: 0, won: 0, best_time: null },
+    'zacchaeus': { played: 0, won: 0, best_time: null },
+    'joseph_coat': { played: 0, won: 0, best_time: null },
+    'nehemiah_wall': { played: 0, won: 0, best_time: null },
+    'red_sea': { played: 0, won: 0, best_time: null },
+    'feeding_5000': { played: 0, won: 0, best_time: null },
+    'jonah_fish': { played: 0, won: 0, best_time: null },
+    // ... all 22 games
   },
   settings: {
     soundEnabled: true,
@@ -1854,7 +2127,7 @@ For playtesting, include a hidden debug panel accessible by triple-tapping the v
 ┌─────────────────────────────────────────┐
 │  DEBUG PANEL (triple-tap version to open)│
 │                                          │
-│  Current Game: [dropdown - all 13 games] │
+│  Current Game: [dropdown - all 22 games] │
 │  Difficulty:   [EASY / MEDIUM / HARD]    │
 │                                          │
 │  Time Limit:   [slider: 1.0s - 15.0s]   │
@@ -2465,7 +2738,7 @@ For the prototype (browser), safe areas don't apply — but structuring the code
 ✗ No UI/UX flow defined  
 
 ### YOU NOW HAVE:
-✓ Complete win/lose specs for all 13 mini-games
+✓ Complete win/lose specs for all 22 mini-games
 ✓ Difficulty parameters (EASY/MEDIUM/HARD/EXPERT) for each game
 ✓ Full scoring system with combos and multipliers
 ✓ Complete lives system with ad integration
@@ -2490,7 +2763,7 @@ For the prototype (browser), safe areas don't apply — but structuring the code
 
 2. **Prioritize for MVP** - You don't need to build everything at once:
    - **Phase 1 MVP:** 3 mini-games, basic scoring, lives system, simple UI
-   - **Phase 2:** Remaining 10 mini-games, combo system, achievements
+   - **Phase 2:** Remaining 19 mini-games, combo system, achievements
    - **Phase 3:** Daily challenges, leaderboards, advanced features
 
 3. **Create asset list** - Based on this doc, list all visual/audio assets needed
