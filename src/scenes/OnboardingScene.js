@@ -93,8 +93,8 @@ class OnboardingScene extends Phaser.Scene {
       const gv = Phaser.Math.Interpolation.Linear([(colorTop >> 8) & 0xFF, (colorBottom >> 8) & 0xFF], ratio);
       const b = Phaser.Math.Interpolation.Linear([colorTop & 0xFF, colorBottom & 0xFF], ratio);
       g.fillStyle(Phaser.Display.Color.GetColor(Math.round(r), Math.round(gv), Math.round(b)));
-      const y = (GAME_HEIGHT / steps) * i;
-      g.fillRect(0, y, GAME_WIDTH, GAME_HEIGHT / steps + 1);
+      const y = -STAGE_Y + (CANVAS_HEIGHT / steps) * i;
+      g.fillRect(-STAGE_X, y, CANVAS_WIDTH, CANVAS_HEIGHT / steps + 1);
     }
   }
 }

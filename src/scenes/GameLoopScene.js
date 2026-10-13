@@ -8,6 +8,14 @@ class GameLoopScene extends Phaser.Scene {
     super('GameLoopScene');
   }
 
+  init(data) {
+    this.gameKey = data.gameKey;
+  }
+
+  preload() {
+    queueGameBackdrop(this, this.gameKey);
+  }
+
   create(data) {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
@@ -16,10 +24,15 @@ class GameLoopScene extends Phaser.Scene {
     const points = data.points || 0;
     const story = GAME_STORIES[gameKey];
 
-    // Background
-    this.add.graphics()
-      .fillStyle(result === 'WIN' ? 0x0a2a0a : 0x2a0a0a, 1)
-      .fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    // The level art the round was just played on, washed green on a win and red on a loss. The
+    // flat colour this replaced WAS the win/loss signal, so the tint carries it rather than the
+    // art replacing it.
+    const tint = result === 'WIN' ? SCRIM_WIN : SCRIM_LOSS;
+    if (!drawGameBackdrop(this, gameKey, tint)) {
+      this.add.graphics()
+        .fillStyle(result === 'WIN' ? 0x0a2a0a : 0x2a0a0a, 1)
+        .fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
 
     if (result === 'WIN') {
       // --- WIN --- Two-column: left = visuals, right = info

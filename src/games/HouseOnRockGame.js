@@ -192,23 +192,23 @@ class HouseOnRockGame extends Phaser.Scene {
 
   handlePointerDown(pointer) {
     if (this.phase !== 'play') return;
-    if (!this.holdsHouse(pointer.x, pointer.y)) return;
+    if (!this.holdsHouse(pointer.worldX, pointer.worldY)) return;
 
     if (this.bob) { this.bob.stop(); this.bob = null; }
     this.tweens.killTweensOf(this.house);
     this.returning = false;
     this.dragging = true;
     // Grab by the point that was actually touched, so the house does not jump under the finger.
-    this.grabOffsetX = this.house.x - pointer.x;
-    this.grabOffsetY = this.house.y - pointer.y;
+    this.grabOffsetX = this.house.x - pointer.worldX;
+    this.grabOffsetY = this.house.y - pointer.worldY;
     this.dragTargetX = this.house.x;
     this.dragTargetY = this.house.y;
   }
 
   handlePointerMove(pointer) {
     if (!this.dragging || this.phase !== 'play') return;
-    this.dragTargetX = pointer.x + this.grabOffsetX;
-    this.dragTargetY = Phaser.Math.Clamp(pointer.y + this.grabOffsetY, HR_MIN_Y, HR_MAX_Y);
+    this.dragTargetX = pointer.worldX + this.grabOffsetX;
+    this.dragTargetY = Phaser.Math.Clamp(pointer.worldY + this.grabOffsetY, HR_MIN_Y, HR_MAX_Y);
   }
 
   handlePointerUp() {

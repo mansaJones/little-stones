@@ -219,7 +219,7 @@ class WrestleTheAngelGame extends Phaser.Scene {
       // Red flash
       const flash = this.add.graphics().setDepth(30);
       flash.fillStyle(0xFF4757, 0.3);
-      flash.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+      flash.fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
       this.tweens.add({
         targets: flash,
         alpha: 0,

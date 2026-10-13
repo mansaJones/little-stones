@@ -12,8 +12,11 @@ class MenuScene extends Phaser.Scene {
     const cy = GAME_HEIGHT / 2;
 
     // ---- Background image (fills the whole canvas) ----
-    const bg = this.add.image(cx, cy, 'menu-bg');
-    bg.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    // Covers the canvas rather than the stage, keeping its own aspect: on a wide phone the
+    // stage is a window onto a larger canvas, and a stage-sized image would leave bare edges.
+    const bg = this.add.image(CANVAS_WIDTH / 2 - STAGE_X, CANVAS_HEIGHT / 2 - STAGE_Y, 'menu-bg');
+    const src = this.textures.get('menu-bg').getSourceImage();
+    bg.setScale(Math.max(CANVAS_WIDTH / src.width, CANVAS_HEIGHT / src.height));
 
     // ---- Title: "Little Stones" above the characters' heads ----
     // Characters are roughly centered; title sits above them

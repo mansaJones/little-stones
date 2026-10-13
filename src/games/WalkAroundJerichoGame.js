@@ -231,7 +231,7 @@ class WalkAroundJerichoGame extends Phaser.Scene {
   handlePointer(pointer) {
     if (this.phase !== 'march') return;
     if (!pointer.isDown) return;            // the march is a DRAG, not a hover
-    this.trackPointer(pointer.x, pointer.y);
+    this.trackPointer(pointer.worldX, pointer.worldY);
   }
 
   trackPointer(px, py) {
@@ -250,7 +250,7 @@ class WalkAroundJerichoGame extends Phaser.Scene {
       // Re-anchor on every fresh touch: the gap between lifting a finger and putting it down
       // somewhere else is not a drag and must not count as distance marched.
       this.lastPointerAngle = undefined;
-      this.trackPointer(pointer.x, pointer.y);
+      this.trackPointer(pointer.worldX, pointer.worldY);
       return;
     }
     if (this.phase !== 'horn') return;

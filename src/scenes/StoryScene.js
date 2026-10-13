@@ -7,13 +7,23 @@ class StoryScene extends Phaser.Scene {
     super('StoryScene');
   }
 
-  create(data) {
+  // init and preload both receive the same data object create does. The backdrop has to be queued
+  // in preload, which does not take an argument, so the key is stashed here first.
+  init(data) {
     this.gameKey = data.gameKey;
     this.isFirstGame = data.isFirstGame || false;
+  }
+
+  preload() {
+    queueGameBackdrop(this, this.gameKey);
+  }
+
+  create(data) {
     const story = GAME_STORIES[this.gameKey];
 
-    // Dark gradient background
-    this.drawGradientBG(0x0f0c29, 0x302b63);
+    // The mini-game's own level art, behind a dark wash. Falls back to the original gradient for
+    // the games that have no plate.
+    if (!drawGameBackdrop(this, this.gameKey)) this.drawGradientBG(0x0f0c29, 0x302b63);
 
     // LEFT SIDE (~40% width, ~267px): Glowing orb + story icon (centered vertically)
     const leftCx = GAME_WIDTH * 0.2;
@@ -166,7 +176,9 @@ class StoryScene extends Phaser.Scene {
       const gv = Phaser.Math.Interpolation.Linear([(colorTop >> 8) & 0xFF, (colorBottom >> 8) & 0xFF], ratio);
       const b = Phaser.Math.Interpolation.Linear([colorTop & 0xFF, colorBottom & 0xFF], ratio);
       g.fillStyle(Phaser.Display.Color.GetColor(Math.round(r), Math.round(gv), Math.round(b)));
-      g.fillRect(0, (GAME_HEIGHT / steps) * i, GAME_WIDTH, GAME_HEIGHT / steps + 1);
+      // Spans the CANVAS, not the stage, so there is no unpainted bleed around it.
+      g.fillRect(-STAGE_X, -STAGE_Y + (CANVAS_HEIGHT / steps) * i,
+                 CANVAS_WIDTH, CANVAS_HEIGHT / steps + 1);
     }
   }
 }

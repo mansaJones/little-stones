@@ -119,8 +119,8 @@ class FieryFurnaceGame extends Phaser.Scene {
 
   handlePointer(pointer) {
     if (!this.gameActive) return;
-    this.angelTargetX = Phaser.Math.Clamp(pointer.x, 20, GAME_WIDTH - 20);
-    this.angelTargetY = Phaser.Math.Clamp(pointer.y + FF_ANGEL_GRAB_DY, 40, GAME_HEIGHT - 20);
+    this.angelTargetX = Phaser.Math.Clamp(pointer.worldX, 20, GAME_WIDTH - 20);
+    this.angelTargetY = Phaser.Math.Clamp(pointer.worldY + FF_ANGEL_GRAB_DY, 40, GAME_HEIGHT - 20);
   }
 
   // ================================================================

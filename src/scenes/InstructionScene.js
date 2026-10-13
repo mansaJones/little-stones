@@ -7,13 +7,19 @@ class InstructionScene extends Phaser.Scene {
     super('InstructionScene');
   }
 
-  create(data) {
+  init(data) {
     this.gameKey = data.gameKey;
     this.isFirstGame = data.isFirstGame || false;
+  }
+
+  preload() {
+    queueGameBackdrop(this, this.gameKey);
+  }
+
+  create(data) {
     const story = GAME_STORIES[this.gameKey];
 
-    // Background
-    this.drawGradientBG(0x302b63, 0x24243e);
+    if (!drawGameBackdrop(this, this.gameKey)) this.drawGradientBG(0x302b63, 0x24243e);
 
     // Gesture animation based on game type
     const gestureMap = {
@@ -159,7 +165,9 @@ class InstructionScene extends Phaser.Scene {
       const gv = Phaser.Math.Interpolation.Linear([(colorTop >> 8) & 0xFF, (colorBottom >> 8) & 0xFF], ratio);
       const b = Phaser.Math.Interpolation.Linear([colorTop & 0xFF, colorBottom & 0xFF], ratio);
       g.fillStyle(Phaser.Display.Color.GetColor(Math.round(r), Math.round(gv), Math.round(b)));
-      g.fillRect(0, (GAME_HEIGHT / steps) * i, GAME_WIDTH, GAME_HEIGHT / steps + 1);
+      // Spans the CANVAS, not the stage, so there is no unpainted bleed around it.
+      g.fillRect(-STAGE_X, -STAGE_Y + (CANVAS_HEIGHT / steps) * i,
+                 CANVAS_WIDTH, CANVAS_HEIGHT / steps + 1);
     }
   }
 }
