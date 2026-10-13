@@ -254,16 +254,16 @@ class HeMustIncreaseGame extends Phaser.Scene {
   handlePointerDown(pointer) {
     // Re-anchor on every fresh touch. The gap between lifting a thumb at the bottom of the stage
     // and putting it back at the top is not a swipe, and must not be read as one.
-    this.lastPointerY = pointer.y;
+    this.lastPointerY = pointer.worldY;
   }
 
   handlePointerMove(pointer) {
     if (this.phase !== 'play') return;
     if (!pointer.isDown) return;            // this is a DRAG, not a hover
-    if (this.lastPointerY === undefined) { this.lastPointerY = pointer.y; return; }
+    if (this.lastPointerY === undefined) { this.lastPointerY = pointer.worldY; return; }
 
-    const dy = this.lastPointerY - pointer.y;   // up is positive
-    this.lastPointerY = pointer.y;
+    const dy = this.lastPointerY - pointer.worldY;   // up is positive
+    this.lastPointerY = pointer.worldY;
     if (dy === 0) return;
 
     if (dy < 0) this.wobbled = true;        // only INPUT counts as a wobble; HARD's revert does not

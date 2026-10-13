@@ -2,8 +2,49 @@
 // CONSTANTS - Global game constants
 // ============================================
 
+// ---- The STAGE: the authored design space ----
+// Every coordinate in this codebase is in stage space, including every hand-measured gameplay
+// field. It is 667x375 and it never changes.
 const GAME_WIDTH = 667;
 const GAME_HEIGHT = 375;
+
+// ---- The CANVAS: what the device actually gets ----
+// Phaser.Scale.FIT against a fixed 667x375 (aspect 1.78) letterboxes on anything that is not an
+// iPhone SE. Measured: modern phones in landscape are 2.16-2.22, so they filled 80-82% of the
+// screen with 75-91px of black down each side; tablets at 1.33 were worse again.
+//
+// So the canvas is sized to the DEVICE's aspect at boot and the stage is centred inside it. FIT
+// then has nothing to letterbox. The stage keeps its exact size and position in world space, so
+// every measured field and every HUD coordinate still means what it meant; the extra area around
+// it is bleed, filled with the scene's own backdrop.
+//
+// These are `let` because they are computed once at boot, in computeCanvasSize() below.
+let CANVAS_WIDTH = GAME_WIDTH;
+let CANVAS_HEIGHT = GAME_HEIGHT;
+let STAGE_X = 0;      // where the stage's left edge sits inside the canvas
+let STAGE_Y = 0;      // and its top edge
+
+// Clamps on how far the canvas may be stretched past the stage. Without them a freak viewport --
+// a desktop window dragged very wide, a foldable half-open -- would demand an enormous bleed and
+// shrink the playable area to a stripe in the middle.
+const CANVAS_MAX_ASPECT = 2.40;   // wider than a Galaxy Fold's outer screen
+const CANVAS_MIN_ASPECT = 1.25;   // narrower than a 4:3 tablet
+
+function computeCanvasSize(viewW, viewH) {
+  const stageAspect = GAME_WIDTH / GAME_HEIGHT;
+  let aspect = (viewW && viewH) ? viewW / viewH : stageAspect;
+  aspect = Math.max(CANVAS_MIN_ASPECT, Math.min(CANVAS_MAX_ASPECT, aspect));
+
+  if (aspect > stageAspect) {          // wider than the stage: grow sideways
+    CANVAS_HEIGHT = GAME_HEIGHT;
+    CANVAS_WIDTH = Math.round(GAME_HEIGHT * aspect);
+  } else {                             // taller than the stage: grow downwards
+    CANVAS_WIDTH = GAME_WIDTH;
+    CANVAS_HEIGHT = Math.round(GAME_WIDTH / aspect);
+  }
+  STAGE_X = Math.round((CANVAS_WIDTH - GAME_WIDTH) / 2);
+  STAGE_Y = Math.round((CANVAS_HEIGHT - GAME_HEIGHT) / 2);
+}
 
 const COLORS = {
   SKY_BLUE: 0x4A90E2,

@@ -215,11 +215,11 @@ class RollTheStoneGame extends Phaser.Scene {
 
   onPointerDown(pointer) {
     if (!this.gameActive) return;
-    const dx = pointer.x - this.boulder.x;
-    const dy = pointer.y - this.boulder.y;
+    const dx = pointer.worldX - this.boulder.x;
+    const dy = pointer.worldY - this.boulder.y;
     if (Math.sqrt(dx * dx + dy * dy) <= this.BOULDER_R + 22) {
       this.isDragging = true;
-      this.dragStartPX = pointer.x;
+      this.dragStartPX = pointer.worldX;
       this.dragStartBX = this.boulder.x;
     }
   }
@@ -227,7 +227,7 @@ class RollTheStoneGame extends Phaser.Scene {
   onPointerMove(pointer) {
     if (!this.gameActive || !this.isDragging) return;
 
-    const rawDelta = pointer.x - this.dragStartPX;
+    const rawDelta = pointer.worldX - this.dragStartPX;
     const delta = Math.min(0, rawDelta); // leftward only
     const weightedDelta = delta * (1 - this.config.weight);
 
@@ -329,7 +329,7 @@ class RollTheStoneGame extends Phaser.Scene {
     this.updateTombLight(1);
     const flash = this.add.graphics().setDepth(60).setAlpha(0);
     flash.fillStyle(0xFFE8A0, 1);
-    flash.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    flash.fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
     this.tweens.add({
       targets: flash, alpha: 0.45, duration: 350, yoyo: true, hold: 120,
       onComplete: () => flash.destroy(),

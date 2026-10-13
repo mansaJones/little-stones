@@ -64,7 +64,10 @@ function drawGameBackdrop(scene, gameKey, tintColor) {
   if (!bd || !scene.textures.exists(bd.key)) return false;
   scene.add.image(0, 0, bd.key)
     .setOrigin(0).setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setDepth(-20);
-  scene.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, tintColor || SCRIM_NEUTRAL, bd.scrim)
+  // The scrim spans the CANVAS so the wash is uniform across the bleed too; the plate above stays
+  // at exactly stage size, because every measured gameplay field was measured against it there.
+  scene.add.rectangle(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT,
+                      tintColor || SCRIM_NEUTRAL, bd.scrim)
     .setOrigin(0).setDepth(-19);
 
   // A dark band fading up from the bottom edge.
@@ -77,6 +80,30 @@ function drawGameBackdrop(scene, gameKey, tintColor) {
   // scenes, and it protects whatever chrome those pages grow later.
   const band = scene.add.graphics().setDepth(-18);
   band.fillGradientStyle(0x000000, 0x000000, 0x000000, 0x000000, 0, 0, 0.55, 0.55);
-  band.fillRect(0, GAME_HEIGHT - 95, GAME_WIDTH, 95);
+  // Anchored to the STAGE's bottom edge, where the chrome actually is, but spanning the canvas
+  // width so it does not stop short in the bleed.
+  band.fillRect(-STAGE_X, GAME_HEIGHT - 95, CANVAS_WIDTH, 95);
   return true;
+}
+
+
+// Fill the area around the stage with the scene's own backdrop, zoomed to cover and dimmed.
+//
+// The stage-sized plate above this stays exactly where it was - the gameplay fields in every game
+// were hand-measured against a backdrop drawn at 667x375, and rescaling it to the canvas would
+// move every one of them. So this is a second, larger copy underneath: same art, cover-scaled so
+// it is never distorted, darkened so the stage still reads as the thing you are looking at.
+//
+// Called once from main.js for every scene, rather than from 16 backdrop sites. A game scene's
+// key IS its game key, and the interstitials carry theirs on `gameKey`, so one lookup serves both.
+function drawBackdropBleed(scene) {
+  if (STAGE_X === 0 && STAGE_Y === 0) return;         // canvas matches the stage; nothing to fill
+  const bd = GAME_BACKDROPS[scene.gameKey || scene.scene.key];
+  if (!bd || !scene.textures.exists(bd.key)) return;
+  const src = scene.textures.get(bd.key).getSourceImage();
+  if (!src || !src.width) return;
+  scene.add.image(CANVAS_WIDTH / 2 - STAGE_X, CANVAS_HEIGHT / 2 - STAGE_Y, bd.key)
+    .setScale(Math.max(CANVAS_WIDTH / src.width, CANVAS_HEIGHT / src.height))
+    .setTint(0x5A5A6E)
+    .setDepth(-10000);
 }

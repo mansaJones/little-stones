@@ -210,16 +210,16 @@ class DavidVsGoliathGame extends Phaser.Scene {
 
     // Check if pointer is near David
     const davidDist = Phaser.Math.Distance.Between(
-      pointer.x,
-      pointer.y,
+      pointer.worldX,
+      pointer.worldY,
       this.david.x,
       this.david.y
     );
 
     if (davidDist < 60) {
       this.gameState.isDragging = true;
-      this.gameState.dragStartX = pointer.x;
-      this.gameState.dragStartY = pointer.y;
+      this.gameState.dragStartX = pointer.worldX;
+      this.gameState.dragStartY = pointer.worldY;
       this.slingLine.visible = true;
     }
   }
@@ -230,8 +230,8 @@ class DavidVsGoliathGame extends Phaser.Scene {
     const dragDist = Phaser.Math.Distance.Between(
       this.gameState.dragStartX,
       this.gameState.dragStartY,
-      pointer.x,
-      pointer.y
+      pointer.worldX,
+      pointer.worldY
     );
 
     // Draw sling line (from David to current pointer)
@@ -240,17 +240,17 @@ class DavidVsGoliathGame extends Phaser.Scene {
     this.slingLine.lineBetween(
       this.david.x,
       this.david.y,
-      pointer.x,
-      pointer.y
+      pointer.worldX,
+      pointer.worldY
     );
 
     // Draw aim line if enabled and dragging back (left)
-    if (this.aimLineEnabled && pointer.x < this.david.x) {
+    if (this.aimLineEnabled && pointer.worldX < this.david.x) {
       const angle = Phaser.Math.Angle.Between(
         this.david.x,
         this.david.y,
-        pointer.x,
-        pointer.y
+        pointer.worldX,
+        pointer.worldY
       );
 
       this.aimLine.clear();
@@ -276,8 +276,8 @@ class DavidVsGoliathGame extends Phaser.Scene {
     const angle = Phaser.Math.Angle.Between(
       this.david.x,
       this.david.y,
-      pointer.x,
-      pointer.y
+      pointer.worldX,
+      pointer.worldY
     );
 
     // Fire stone

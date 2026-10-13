@@ -31,7 +31,7 @@ class GameLoopScene extends Phaser.Scene {
     if (!drawGameBackdrop(this, gameKey, tint)) {
       this.add.graphics()
         .fillStyle(result === 'WIN' ? 0x0a2a0a : 0x2a0a0a, 1)
-        .fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        .fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
     if (result === 'WIN') {

@@ -266,8 +266,8 @@ class SamsonJawboneGame extends Phaser.Scene {
 
   handlePointer(pointer) {
     if (this.phase !== 'play') return;
-    this.targetX = Phaser.Math.Clamp(pointer.x, SJ_FIELD.x0, SJ_FIELD.x1);
-    this.targetY = Phaser.Math.Clamp(pointer.y + SJ_GRAB_DY, SJ_FIELD.y0, SJ_FIELD.y1);
+    this.targetX = Phaser.Math.Clamp(pointer.worldX, SJ_FIELD.x0, SJ_FIELD.x1);
+    this.targetY = Phaser.Math.Clamp(pointer.worldY + SJ_GRAB_DY, SJ_FIELD.y0, SJ_FIELD.y1);
   }
 
   // ================================================================

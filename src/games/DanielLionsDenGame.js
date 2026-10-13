@@ -224,7 +224,7 @@ class DanielLionsDenGame extends Phaser.Scene {
   handlePointer(pointer) {
     if (!this.gameActive) return;
     this.target = this.clampToFloor(
-      { x: pointer.x, y: pointer.y + LD_GRAB_DY }, this.danielHalfW);
+      { x: pointer.worldX, y: pointer.worldY + LD_GRAB_DY }, this.danielHalfW);
   }
 
   // ================================================================

@@ -176,7 +176,9 @@ class StoryScene extends Phaser.Scene {
       const gv = Phaser.Math.Interpolation.Linear([(colorTop >> 8) & 0xFF, (colorBottom >> 8) & 0xFF], ratio);
       const b = Phaser.Math.Interpolation.Linear([colorTop & 0xFF, colorBottom & 0xFF], ratio);
       g.fillStyle(Phaser.Display.Color.GetColor(Math.round(r), Math.round(gv), Math.round(b)));
-      g.fillRect(0, (GAME_HEIGHT / steps) * i, GAME_WIDTH, GAME_HEIGHT / steps + 1);
+      // Spans the CANVAS, not the stage, so there is no unpainted bleed around it.
+      g.fillRect(-STAGE_X, -STAGE_Y + (CANVAS_HEIGHT / steps) * i,
+                 CANVAS_WIDTH, CANVAS_HEIGHT / steps + 1);
     }
   }
 }

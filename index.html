@@ -26,8 +26,11 @@
       justify-content: center;
       background: #1a1a2e;
     }
-    /* On desktop, constrain to landscape phone proportions */
-    @media screen and (min-width: 700px) {
+    /* On a real desktop -- mouse, not a finger -- frame the game in landscape phone
+       proportions. Gated on hover/pointer rather than width alone: in landscape a Pixel 7 is
+       915px wide and an iPad Pro is 1194px, so a width-only test shrinks the game on the very
+       devices it is meant for. */
+    @media screen and (min-width: 700px) and (hover: hover) and (pointer: fine) {
       #game-container {
         max-width: 844px;
         max-height: 475px;

@@ -296,7 +296,7 @@ class LetThereBeLightGame extends Phaser.Scene {
   flipToDay() {
     const flash = this.add.graphics().setDepth(45).setAlpha(0);
     flash.fillStyle(0xFFF4C0, 1);
-    flash.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    flash.fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
     this.tweens.add({ targets: flash, alpha: 0.55, duration: 180, yoyo: true, onComplete: () => flash.destroy() });
 
     this.tweens.add({ targets: this.bgLight, alpha: 1, duration: 650, ease: 'Sine.easeInOut' });

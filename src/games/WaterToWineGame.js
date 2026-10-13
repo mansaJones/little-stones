@@ -218,7 +218,7 @@ class WaterToWineGame extends Phaser.Scene {
 
   moveHand(pointer) {
     if (this.handHint) { this.handHint.stop(); this.handHint = null; }
-    this.hand.setPosition(pointer.x, pointer.y);
+    this.hand.setPosition(pointer.worldX, pointer.worldY);
   }
 
   // neutral until half the time is gone, sad after that — unless more than half the vase is
@@ -337,8 +337,8 @@ class WaterToWineGame extends Phaser.Scene {
     if (!this.gameActive) return;
     this.stroking = true;
     this.hand.setScale(this.handScale * 0.9);
-    this.lastStamp = { x: pointer.x, y: pointer.y };
-    this.stamp(pointer.x, pointer.y);
+    this.lastStamp = { x: pointer.worldX, y: pointer.worldY };
+    this.stamp(pointer.worldX, pointer.worldY);
     this.lastStampTime = this.elapsedSeconds();
     this.recomputeCoverage();
   }
@@ -347,14 +347,14 @@ class WaterToWineGame extends Phaser.Scene {
     if (!this.gameActive || !this.stroking || !pointer.isDown) return;
 
     // Fast swipes arrive as sparse move events: dab along the segment so the trail is solid.
-    const from = this.lastStamp || { x: pointer.x, y: pointer.y };
-    const dx = pointer.x - from.x, dy = pointer.y - from.y;
+    const from = this.lastStamp || { x: pointer.worldX, y: pointer.worldY };
+    const dx = pointer.worldX - from.x, dy = pointer.worldY - from.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const step = this.config.brushRadius * 0.4;
     const n = Math.max(1, Math.ceil(dist / step));
     for (let i = 1; i <= n; i++) this.stamp(from.x + dx * i / n, from.y + dy * i / n);
 
-    this.lastStamp = { x: pointer.x, y: pointer.y };
+    this.lastStamp = { x: pointer.worldX, y: pointer.worldY };
     this.lastStampTime = this.elapsedSeconds();
     this.recomputeCoverage();
   }
@@ -407,7 +407,7 @@ class WaterToWineGame extends Phaser.Scene {
 
     const flash = this.add.graphics().setDepth(20);
     flash.fillStyle(0xffffff, 0.7);
-    flash.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    flash.fillRect(-STAGE_X, -STAGE_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
     this.tweens.add({ targets: flash, alpha: 0, duration: 450 });
 
     for (let i = 0; i < 16; i++) {
