@@ -73,6 +73,7 @@ const config = {
     HeMustIncreaseGame,
     LostSheepGame,
     SamsonJawboneGame,
+    BabyMosesGame,
   ],
   plugins: {
     scene: [{ key: 'StageOffset', plugin: StageOffsetPlugin, mapping: 'stageOffset' }],
