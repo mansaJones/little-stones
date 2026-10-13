@@ -7,13 +7,19 @@ class InstructionScene extends Phaser.Scene {
     super('InstructionScene');
   }
 
-  create(data) {
+  init(data) {
     this.gameKey = data.gameKey;
     this.isFirstGame = data.isFirstGame || false;
+  }
+
+  preload() {
+    queueGameBackdrop(this, this.gameKey);
+  }
+
+  create(data) {
     const story = GAME_STORIES[this.gameKey];
 
-    // Background
-    this.drawGradientBG(0x302b63, 0x24243e);
+    if (!drawGameBackdrop(this, this.gameKey)) this.drawGradientBG(0x302b63, 0x24243e);
 
     // Gesture animation based on game type
     const gestureMap = {

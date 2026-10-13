@@ -7,13 +7,23 @@ class StoryScene extends Phaser.Scene {
     super('StoryScene');
   }
 
-  create(data) {
+  // init and preload both receive the same data object create does. The backdrop has to be queued
+  // in preload, which does not take an argument, so the key is stashed here first.
+  init(data) {
     this.gameKey = data.gameKey;
     this.isFirstGame = data.isFirstGame || false;
+  }
+
+  preload() {
+    queueGameBackdrop(this, this.gameKey);
+  }
+
+  create(data) {
     const story = GAME_STORIES[this.gameKey];
 
-    // Dark gradient background
-    this.drawGradientBG(0x0f0c29, 0x302b63);
+    // The mini-game's own level art, behind a dark wash. Falls back to the original gradient for
+    // the games that have no plate.
+    if (!drawGameBackdrop(this, this.gameKey)) this.drawGradientBG(0x0f0c29, 0x302b63);
 
     // LEFT SIDE (~40% width, ~267px): Glowing orb + story icon (centered vertically)
     const leftCx = GAME_WIDTH * 0.2;
