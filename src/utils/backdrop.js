@@ -42,6 +42,7 @@ const GAME_BACKDROPS = {
   // The STILL river. The game itself scrolls a mirror-tiled crop of this same plate, which is a
   // separate texture (bm-tile) -- these pages do not scroll, so they get the whole picture.
   [GAME_KEYS.BABY_MOSES]:          { key: 'bm-bg',  file: 'assets/games/baby-moses/bg.jpg',         scrim: 0.74 },
+  [GAME_KEYS.PETER_WATER]:         { key: 'pw-bg',  file: 'assets/games/peter-water/bg.jpg',        scrim: 0.68 },
 };
 
 // Scrim colours. GameLoopScene carried its win/loss signal in a flat background colour, so the

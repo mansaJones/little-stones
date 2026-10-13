@@ -135,6 +135,25 @@ const GAME_CONFIG = {
     medium: { timeLimit: 10.0, obstacles: 'medium', hippoAt: 3.2, current: 0  },
     hard:   { timeLimit: 10.0, obstacles: 'hard',   hippoAt: 2.6, current: 55 },
   },
+  peterWater: {
+    // Difficulty is ONE dial, and §16 names it: "Jesus' drift speed (none / slow / faster) is the
+    // difficulty dial." Everything else is held flat on purpose -- the walk is 5 seconds of
+    // HOLDING at every tier, and the round is 8, so the slack is timeLimit - walkTime = 3s of not
+    // holding. timeLimit is the only key adaptive difficulty touches.
+    //
+    // driftSpeed is in radians/second against a fixed 30px amplitude (PW_DRIFT_AMP), so a higher
+    // number means Jesus bobs FASTER through the same water, not further out of reach.
+    //
+    // sinkRate is flat across tiers: at 0.55/s a finger that comes off stays off for 1.8 seconds
+    // before the rescue triggers, which is well inside the 3s of slack. Letting go is meant to
+    // cost, not to end the round.
+    //
+    // Zero means off throughout, matching windForce / relocateAfter elsewhere: driftSpeed 0 = he
+    // stands still, waveEvery 0 = no wave ever hides him.
+    easy:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 0,   waveEvery: 0   },
+    medium: { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 1.1, waveEvery: 0   },
+    hard:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 2.0, waveEvery: 2.1 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -285,6 +304,15 @@ const GAME_STORIES = {
     instruction: "Tilt to steer the basket past the reeds and rocks!",
     instructionHard: "The current pushes you at the banks \u2014 lean against it!",
   },
+  [GAME_KEYS.PETER_WATER]: {
+    title: "Peter Walks on Water",
+    reference: "Matthew 14:22-33",
+    story: "Jesus walked on the stormy sea and called Peter to come. When Peter kept his eyes on Jesus, he walked on water too!",
+    successMessage: "Peter walked on water! He kept his eyes on Jesus.",
+    failMessage: "Jesus caught him straight away \u2014 keep your eyes on Jesus!",
+    instruction: "Press and hold on Jesus to keep Peter walking!",
+    instructionHard: "Waves will hide Him \u2014 hold where He IS, not where you can see Him!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -334,6 +362,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.LOST_SHEEP]: 'lostSheep',
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
+  [GAME_KEYS.PETER_WATER]: 'peterWater',
 };
 
 // Adaptive difficulty modifiers
