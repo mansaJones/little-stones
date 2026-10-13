@@ -113,7 +113,7 @@ don't mention. Rewriting the whole prompt each time throws away the consistency 
 ## Pass A — Scene plates
 
 Calibrate on **David vs Goliath** first: `david.png` came from this same Google model, so it is the
-tightest possible style anchor. Confirm the style holds before running the other twelve.
+tightest possible style anchor. Confirm the style holds before running the other twenty-one.
 
 ### Scene 12: David vs Goliath — *aim & release (1 Samuel 17)*
 
@@ -231,7 +231,7 @@ Everything welded to the character stays in the character sprite.
 
 ---
 
-## The remaining 12 scene blocks
+## The remaining 21 scene blocks
 
 Numbered to match `ALL_GAME_KEYS` order in `src/utils/constants.js`. Remember the standard footer.
 
@@ -1195,6 +1195,569 @@ lying still, anything red — reject it and repeat "funny, not hurt, eyes as diz
 
 ---
 
+### Scene 15: Baby Moses in the Basket — *tilt to steer (Exodus 2:1-10)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §15.** Art only below.
+
+In short: a top-down river scrolls right to left, and the player tilts to steer a floating basket
+past reeds, rocks and a hippo to Pharaoh's daughter.
+
+#### Layering — read before generating anything
+
+The river **scrolls**, so the water can't be one composed plate.
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | `river_tile` | Water and both banks, top-down. Scrolled as a TileSprite. |
+| 1 | `reed_clump`, `river_rock`, `hippo` | Obstacles, spawned from tier patterns. |
+| 2 | `basket_moses` | The player. |
+| 3 | `pharaoh_daughter` | Slides in on the bank at the end of the run. |
+
+**Making the water scroll without a seam.** Gemini won't reliably produce a seamless tile. Generate
+the plate, crop a vertical band from its middle, and tile it with **every other copy mirrored on X**.
+Mirror-tiling hides the seam on organic textures like water and grass. Banks run horizontally along
+the top and bottom, so they continue cleanly across mirrored copies.
+
+#### `river_tile` plate
+
+```
+Scene: A gentle river seen from directly above, as a backdrop.
+
+Setting: Calm water in soft powder blue and pale mint fills the middle of the
+frame from the left edge to the right edge, with simple outlined ripple lines
+running horizontally. A grassy bank in pale sage runs along the top edge and
+another along the bottom edge, both perfectly straight and parallel, edged with
+small tufts of grass and a few tiny pink flowers.
+
+Nothing in the water — no reeds, no rocks, no animals, no boats. The water area
+must be completely open.
+
+No characters.
+```
+
+#### `basket_moses` sprite
+
+```
+Now draw a new object in exactly the same art style, alone, as a game sprite,
+seen from directly above.
+
+A small round woven reed BASKET in muted tan with a simple crosshatch weave and
+a bold black outline. Inside, tucked in a soft cream blanket, a tiny BABY with
+periwinkle blue skin, a round head, big white eyes, pink blush and a happy
+gummy smile, one little hand waving.
+
+No water, no shadow. Flat solid uniform magenta background (#FF00FF), no
+gradient. Square 1:1 framing with an even magenta margin.
+```
+
+#### Obstacle and bank sprites
+
+Generate each as an edit turn after the basket, same top-down view, same magenta framing:
+- **`reed_clump`**: "A clump of tall sage green reeds seen from above, with a few cattail tops in muted tan."
+- **`river_rock`**: "A round flat rock in dusty rose and grey poking out of the water, seen from above."
+- **`hippo`**: "A sleepy friendly hippo in soft lavender-grey, only the top of its head, eyes and ears above the water, seen from above. Eyes half closed, content. Not menacing."
+
+`pharaoh_daughter`, side view (generate as a fresh sprite, not top-down):
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+PHARAOH'S DAUGHTER, kneeling at a riverbank with both arms reaching forward to
+lift something gently. Soft mauve skin, black hair in a straight bob with a
+thin pale gold headband, a simple flowing white dress with a pale gold collar.
+Big white eyes, pink blush, a warm surprised smile.
+
+No water, no ground, no shadow. Flat solid uniform magenta background
+(#FF00FF), no gradient. Square 1:1 framing with an even magenta margin.
+```
+
+**Mixed views are intentional.** The play layer is top-down; Pharaoh's daughter appears side-on at
+the bank as an end-of-run character. If that reads oddly in playtest, regenerate her top-down.
+
+### Scene 16: Peter Walks on Water — *hold on Jesus (Matthew 14:22-33)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §16.** Art only below.
+
+In short: Peter walks from a boat at the left toward Jesus at the right, but only while the
+player's finger stays on Jesus.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Twilight sea. Walking lane across the middle kept clear. |
+| 1 | `fishing_boat` | Left edge, static. |
+| 2 | `peter_walk` / `_sink` / `_rescued` | Moves along the lane; sinking is a runtime crop. |
+| 3 | `jesus_water` / `_reach` | Right side; drifts on MEDIUM and HARD. |
+| 4 | `wave_sweep` | HARD only. Rolls across and briefly hides Jesus. |
+
+#### Backdrop plate
+
+```
+Scene: The Sea of Galilee on a stormy evening, as a backdrop.
+
+Setting: A choppy sea fills the lower two thirds of the frame, drawn as rows
+of rounded outlined waves in powder blue, periwinkle and soft teal, with small
+white foam curls on their tips. The sky is a twilight gradient from pale
+lavender at the top to soft peach at the horizon, with three puffy outlined
+clouds tinged dusty grey. A few small outlined raindrops slant across the sky.
+
+Keep a clear horizontal band across the middle of the frame, from the left
+edge to the right edge, where figures will walk on top of the water. Keep the
+whole frame stylised and gentle — stormy, but never frightening.
+
+No boats, no characters.
+```
+
+#### Colour readability
+
+| Must read apart | What carries it |
+|---|---|
+| **Peter vs the sea** | Periwinkle skin sits close to the waves, so Peter wears a warm **dusty rose** tunic. The tunic carries him. |
+| **Jesus vs the sea** | Seafoam skin and a white robe against blue water. The white robe does the work. |
+| **Jesus vs the wave sweep** | The wave sweep is deliberately cooler and darker than the backdrop, so it reads as "in front". |
+
+#### `peter_walk` sprite
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+PETER, a fisherman, walking carefully in profile facing RIGHT, full body.
+- Periwinkle blue skin. Never a realistic human skin tone.
+- Short curly dark brown hair and a short rounded beard.
+- A warm dusty rose tunic with a rope belt, bare feet.
+- Arms held slightly out for balance. Big white eyes fixed straight ahead,
+  pink blush, a nervous but brave little smile.
+- No water, no shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with a small even margin of magenta around him.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `peter_sink` | "Same character, same framing. Change only the pose: one arm reaching up and forward, eyes wide, mouth in a small 'oh!' — worried, not terrified." |
+| `peter_rescued` | "Same character. Change only the pose: holding hands with someone just out of frame to the right, smiling with relief." |
+
+#### `jesus_water` sprite
+
+Use the canonical JESUS sprite prompt from **Scene 6**, changing only: *"Standing calmly, facing
+LEFT, one hand held out toward the viewer's left, inviting."* Then an edit turn for **`jesus_reach`**:
+"Same character. Change only the pose: leaning forward, reaching down with one hand to lift someone
+up, kind and steady."
+
+#### `fishing_boat` and `wave_sweep`
+
+- **`fishing_boat`**: a small wooden boat in muted tan, side view, one furled sail, two disciples peeking over the side (mint and lavender skin), on magenta.
+- **`wave_sweep`**: a single tall rolling wave in a slightly deeper periwinkle with a white foam curl, side view, on magenta. Generate wider than tall so it covers Jesus fully at the shared scale.
+
+### Scene 17: Zacchaeus Climbs the Tree — *alternate taps to climb (Luke 19:1-10)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §17.** Art only below.
+
+In short: Zacchaeus climbs a big tree as the player alternates left and right taps, while Jesus
+walks along the road toward the tree.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Jericho street with the sycamore tree on the right. |
+| 1 | `crowd_strip` | A row of people along the road at the bottom. |
+| 2 | `jesus_walk` | Walks left to right along the road. Diegetic timer. |
+| 3 | `zacchaeus_climb_l` / `_climb_r` / `_slip` / `_wave` | Moves up the trunk. |
+
+The tree is in the plate because it never changes. Zacchaeus' height is continuous, so the trunk
+needs a long clear climbing line from the roots to the lookout branch.
+
+#### Backdrop plate
+
+```
+Scene: A busy street in Jericho, as a backdrop.
+
+Setting: A dusty road in pale tan runs across the bottom of the frame. On the
+right side stands one very large sycamore-fig tree: a thick, chunky trunk in
+muted brown with a bold black outline, rising almost the full height of the
+frame, with a few sturdy low branches and a big rounded canopy of sage and
+mint leaves at the top. Small flat-roofed houses in cream and dusty rose line
+the background on the left. Warm pastel sky in peach and pale gold with one
+outlined cloud.
+
+Keep the front of the trunk clear and climbable from the roots to the canopy,
+with one wide branch near the top where someone could sit. Keep the road open
+across the whole width.
+
+No people.
+```
+
+#### `zacchaeus_climb_l` sprite — base pose
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+ZACCHAEUS, a very short man, climbing — seen from behind and slightly to the
+side, hugging an invisible tree trunk, left arm reaching up high and right
+knee raised.
+- Lavender skin. Never a realistic human skin tone.
+- Noticeably short and round, with a big head. A small neat black beard.
+- A mustard yellow robe with a dusty rose sash, and a small round cap.
+- Looking up over his shoulder with big eager eyes, pink blush and a
+  determined grin.
+- No tree, no ground, no shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with a small even margin of magenta around him.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `zacchaeus_climb_r` | "Same character and framing. Mirror the limbs: right arm reaching up high, left knee raised." |
+| `zacchaeus_slip` | "Same character. Change only the pose: both arms flailing, sliding down, eyes wide, mouth in a silly 'whoa!'" |
+| `zacchaeus_wave` | "Same character. Change only the pose: sitting on a branch, waving down happily with one hand, huge smile." |
+
+The two climb poses alternate on each tap, so the climb animates with the rhythm for free.
+
+#### `jesus_walk` and `crowd_strip`
+
+- **`jesus_walk`**: the canonical JESUS prompt from **Scene 6**, changing only *"walking in profile facing RIGHT, mid-stride."* Add an edit turn for **`jesus_lookup`**: "Same character, stopped, head tilted up, smiling and waving up at someone above."
+- **`crowd_strip`**: "A wide row of six cheerful people seen from behind, shoulder to shoulder, mixed pastel skin (periwinkle, mint, mauve, lavender), cream and tan robes, some on tiptoe." Wide framing on magenta.
+
+### Scene 18: Joseph's Coat of Many Colors — *repeat the pattern (Genesis 37:3)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §18.** Art only below.
+
+In short: the coat's stripes flash a color pattern, and the player repeats it by tapping dye pots.
+
+#### Layering — read before generating anything
+
+The stripe colors change every round, so **no stripe color can be baked into the art.**
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Jacob's tent. Centre and bottom strip clear. |
+| 1 | `joseph_coat_base` | Joseph in a coat with five **white** stripe bands. |
+| 2 | `stripe_1` … `stripe_5` | One mask per band, tinted at runtime. |
+| 3 | `dye_pot` | One white pot, tinted and labelled with a symbol at runtime. |
+
+**Cutting the stripe masks.** Generate the coat with five white bands, each fully enclosed by a black
+outline. Then flood-fill each band in an image editor to export five masks aligned to the base
+sprite. `key_sprites.py` won't do this for you; budget about 15 minutes once. In Phaser, each mask is
+an image over the base, `setTint()` to the stripe color, and hidden until painted.
+
+#### Backdrop plate
+
+```
+Scene: Inside a large tent in Canaan, as a backdrop.
+
+Setting: The warm inside of a big desert tent. Draped fabric walls in cream
+and soft tan with gentle outlined folds, a central wooden tent pole on the far
+left, and a woven rug in muted rose and sage covering the floor. Soft light
+comes in through an open tent flap on the right, showing a sliver of pale gold
+sky.
+
+Keep the centre of the frame open where a standing figure will be placed, and
+keep a clear empty strip along the bottom of the frame for a row of objects.
+
+No characters.
+```
+
+#### `joseph_coat_base` sprite
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+JOSEPH, a young man, standing proudly facing forward, full body, arms held
+slightly out to show off his coat.
+- Periwinkle blue skin. Never a realistic human skin tone.
+- Short dark curly hair, big white eyes, pink blush, a big delighted smile.
+- He wears a long robe-like coat that reaches his ankles, with long sleeves.
+  The coat is divided horizontally into FIVE wide bands from the shoulders to
+  the hem. Every band is PLAIN WHITE with no color, no pattern and no shading,
+  and each band is separated from the next by a bold black outline line.
+- Bare feet.
+- No shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with a small even margin of magenta around him.
+```
+
+**The bands must come out white and fully outlined.** If Gemini colors them (it will want to — it's
+the coat of many colors), repeat "every band is plain white, no color at all". Colored bands can't be
+tinted.
+
+Add an edit turn for **`joseph_twirl`**: "Same character and coat. Change only the pose: twirling,
+coat flaring out, eyes closed in joy." The twirl needs its own five masks; cut them the same way.
+
+#### `dye_pot` sprite
+
+```
+Now draw just one object in exactly the same art style, alone, as a game object.
+
+A round clay pot with a wide mouth, in muted tan, filled to the brim with
+liquid that is PLAIN WHITE with a simple outlined surface. No symbols, no
+writing, no shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient. Square 1:1
+framing with an even magenta margin.
+```
+
+Tint the liquid at runtime. The six symbols (dot, star, heart, wave, square, moon) are white UI
+glyphs drawn over the liquid in Phaser, not generated art.
+
+### Scene 19: Nehemiah Rebuilds the Wall — *drop the stones (Nehemiah 2-6)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §19.** Art only below.
+
+In short: a crane swings stone blocks over a gap in Jerusalem's wall, and the player taps to drop
+each one into place.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Jerusalem's wall with a tall **empty** gap in the centre. |
+| 1 | `wall_stone` | One stone, one size. Stacks in the gap. |
+| 2 | `crane_rope` | Wooden crane arm across the top; the rope is drawn in Phaser. |
+| 3 | `nehemiah_point` / `_cheer` | Left side. |
+
+**The gap's size is a hard constraint.** It must be exactly one stone wide and eight stones tall at
+the shared display scale. Generate `wall_stone` **first**, then judge the backdrop's gap against it
+and regenerate until it fits. You can crop the plate; you can't resize the stone without stretching
+its outline.
+
+#### Backdrop plate
+
+```
+Scene: The broken walls of Jerusalem, as a backdrop.
+
+Setting: A long city wall runs across the whole frame, built from large
+rounded sandstone blocks in muted tan and dusty clay with bold black outlines
+and square battlements along the top. In the exact centre there is one tall,
+narrow, rectangular GAP in the wall, running from the ground all the way to
+the top, completely empty — sky shows through it. A few loose blocks lie as
+rubble at the base on either side of the gap. Small rooftops of the city peek
+over the wall. Warm pastel sky in peach and pale gold with two outlined clouds.
+
+The gap must be completely empty and clean-edged, with nothing inside it.
+
+No characters.
+```
+
+#### `wall_stone`, `crane_rope` and Nehemiah
+
+- **`wall_stone`**: "One large rectangular building block in muted tan sandstone with rounded corners, a bold black outline and two simple curved texture lines, seen face on. Slightly wider than tall." On magenta.
+- **`crane_rope`**: "A simple wooden crane arm — one long horizontal beam in muted brown with a small pulley wheel at the end — seen from the side, no rope." On magenta. Draw the rope as a Phaser line from the pulley to the stone; a baked rope can't swing.
+- **`nehemiah_point`**: "NEHEMIAH, standing in profile facing RIGHT, mint green skin, short beard, a cream robe with a dusty blue sash and a small round cap, pointing up and to the right with one hand, cheerful and confident." On magenta. Edit turn for **`nehemiah_cheer`**: "Same character, both arms raised in celebration, huge smile."
+
+### Scene 20: Moses Parts the Red Sea — *spread to part (Exodus 14:21-22)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §20.** Art only below.
+
+In short: the player spreads two fingers to open a dry path through the sea, and people walk
+across while it stays open.
+
+#### Layering — read before generating anything
+
+The sea has to open and close, so **the water can't be in the backdrop.**
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Two shores and a dry seabed across the middle. No water. |
+| 1 | `crosser_a` / `_b` / `_c` | Walk left to right along the seabed. |
+| 2 | `water_wall_top`, `water_wall_bottom` | Slide apart vertically to open the path. |
+| 3 | `moses_staff` | Near shore, left. Static. |
+
+The water walls slide; they never scale. Each must be tall enough to cover half the screen height
+plus the full stroke of the slide, so no gap ever shows at the top or bottom edge.
+
+#### Backdrop plate
+
+```
+Scene: The bed of the Red Sea, as a backdrop, seen from the side.
+
+Setting: On the far left, a sandy shore in pale tan with a few rounded rocks.
+On the far right, another sandy shore with soft sage bushes and a few palm
+trees. Between them, across the whole middle of the frame, a flat dry seabed of
+smooth damp sand in muted tan with a few small shells and pebbles. The sky is a
+dramatic pastel gradient from pale gold at the horizon to soft lavender at the
+top, with outlined clouds swirling gently.
+
+There is NO water anywhere in this image. The seabed must be dry and open from
+the left shore to the right shore.
+
+No characters.
+```
+
+#### `water_wall_top` sprite
+
+```
+Now draw just one object in exactly the same art style, alone, as a game object.
+
+A tall standing WALL OF SEA WATER, seen from the side, in layered bands of
+powder blue, soft teal and periwinkle with simple outlined wave curls along its
+BOTTOM edge, where it is held back. A few small cartoon fish visible inside the
+water. The top, left and right edges run straight off the frame.
+
+No ground, no shadow. Flat solid uniform magenta background (#FF00FF) only
+along the bottom edge. Wide framing.
+```
+
+Generate `water_wall_bottom` as an edit turn: "Same object, flipped: the wave curls run along the
+TOP edge, held back, and the water fills downward." Then crop both so the straight edges run off the
+image.
+
+#### `moses_staff`
+
+Use **`moses.png`** as a character reference for this one sprite, in addition to the three style
+references, so he matches the established design.
+
+```
+Now draw MOSES alone, in exactly the same art style, matching the attached
+Moses reference character, as a game sprite.
+
+Standing in profile facing RIGHT, full body, holding a tall wooden shepherd's
+staff high above his head with one arm, the other hand stretched out forward
+over the water. Calm, strong and trusting. No glow, no shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with an even magenta margin.
+```
+
+**Pro caps style references at 3.** Attach `moses.png` as a *character* reference, not a style one;
+Pro accepts up to 5 character refs alongside the 3 style refs.
+
+#### Crossers
+
+`crosser_a`: "A cheerful traveller walking in profile facing RIGHT, mint green skin, cream robe, carrying a bundle on a stick over one shoulder." Edit turns for `crosser_b` (lavender skin, dusty rose robe, holding a child's hand) and `crosser_c` (mauve skin, tan robe, leading a small cream goat on a rope). All on magenta.
+
+### Scene 21: Feeding the 5,000 — *catch the bread and fish (John 6:1-13)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §21.** Art only below.
+
+In short: Jesus breaks bread at the top of the hill, food tumbles down, and the player drags the
+boy's basket to catch it.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Grassy hillside with a crowd in the far background. Play area open. |
+| 1 | `jesus_bless` | Top centre, static. |
+| 2 | `bread_loaf`, `fish` | Fall from Jesus. |
+| 3 | `boy_basket_empty` / `_half` / `_full` | Bottom, drags left and right. |
+
+#### Backdrop plate
+
+```
+Scene: A grassy hillside by the Sea of Galilee, as a backdrop.
+
+Setting: A wide sloping hillside of soft sage and mint grass rising toward the
+top of the frame, with a small flat rock at the very top centre where someone
+could stand. In the far background along the left and right edges, a large
+gathered crowd drawn as small simple rounded figures in pastel robes, sitting
+in groups. A sliver of pale blue lake and peach sky at the very top.
+
+Keep the whole middle of the frame open grass from the top rock down to the
+bottom edge — objects will fall through this area.
+
+No characters in the foreground.
+```
+
+#### Sprites
+
+- **`jesus_bless`**: the canonical JESUS prompt from **Scene 6**, changing only *"standing, facing forward, holding a round loaf of bread in both hands and breaking it in two, eyes closed in a warm smile, giving thanks."*
+- **`boy_basket_empty`**: "A young boy, lavender skin, short tousled hair, cream tunic, standing facing forward, holding a wide round woven basket out in front of him with both hands, eager big smile." On magenta. Edit turns for **`_half`** ("Same, basket half full of round loaves and little fish") and **`_full`** ("Same, basket heaped and overflowing, boy beaming").
+- **`bread_loaf`**: "One round puffy loaf of bread in golden tan with a bold black outline and two curved score lines." On magenta.
+- **`fish`**: "One small chubby fish in soft dusty pink with a simple outlined tail, a big round eye and a little smile." On magenta.
+
+**Readability:** Jesus' seafoam skin and the mint grass sit close. Jesus stands on the grey-tan rock
+at the top, and his white robe carries the silhouette, same as the Lost Sheep fix. The boy is
+lavender, not mint, so he never reads as part of the grass.
+
+### Scene 22: Jonah and the Big Fish — *time the spit (Jonah 1-2)*
+
+**Gameplay is specified in `biblical_game_design_doc.md` §22.** Art only below.
+
+In short: a power meter swings, the player taps, and a big fish spits Jonah in an arc toward a
+target zone on the beach.
+
+#### Layering
+
+| Layer | Asset | Contents |
+|---|---|---|
+| 0 | backdrop plate | Sea on the left, beach and palm trees on the right. |
+| 1 | `big_fish_closed` / `_puff` / `_spit` | Left, in the water. Bobs on HARD. |
+| 2 | `jonah_tumble` / `_landed` / `_palm` | Flies the arc, then lands. |
+
+The beach target zone is drawn in Phaser (a soft gold oval on the sand), not in the plate, because
+its width changes per tier.
+
+#### Backdrop plate
+
+```
+Scene: A quiet shore after a storm, as a backdrop, seen from the side.
+
+Setting: The left third of the frame is calm sea in powder blue and soft teal
+with simple outlined ripples. The rest of the frame is a wide, flat sandy beach
+in pale tan that slopes gently up from the waterline, with a few small shells.
+On the far right, two tall rounded palm trees with sage green fronds. A warm
+morning sky in peach and pale gold with a soft rising sun and one outlined
+cloud.
+
+Keep the beach open and flat from the waterline to the palm trees. Keep the
+water area on the left clear.
+
+No characters, no animals.
+```
+
+#### Big fish sprites
+
+```
+Now draw a new character in exactly the same art style, alone, as a game sprite.
+
+A BIG FRIENDLY FISH, side view, facing RIGHT, as if rising up out of the water.
+- A huge round body in warm dusty coral and peach with a pale cream belly, a
+  big rounded tail, and simple outlined scales.
+- A large white eye with a big black pupil, pink blush on the cheek, and a
+  wide closed-mouth smile. Gentle and goofy, never scary — no teeth.
+- No water, no shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with an even magenta margin.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `big_fish_puff` | "Same fish. Change only the face: cheeks puffed out wide, eyes squeezed shut, holding something in." |
+| `big_fish_spit` | "Same fish. Change only the face: mouth open in a round 'O', eyes wide, as if it just spat something out. No teeth." |
+
+**Warm fish, cool water.** Coral against blue is the readability call. A blue or grey whale would sink
+into the sea. If the fish comes back with teeth, repeat "no teeth, gentle and goofy".
+
+#### Jonah sprites
+
+Use **`jonah.png`** as a character reference (same note as Moses in Scene 20: character slot, not
+style slot).
+
+```
+Now draw JONAH alone, in exactly the same art style, matching the attached
+Jonah reference character, as a game sprite.
+
+Tumbling through the air head over heels, arms and legs out, a strand of green
+seaweed draped over his head, eyes squeezed shut, a surprised 'whoa' mouth.
+Funny, not hurt. No shadow.
+
+Flat solid uniform magenta background (#FF00FF), no gradient, no shadow.
+Square 1:1 framing with an even magenta margin.
+```
+
+| Asset | Edit turn |
+|---|---|
+| `jonah_landed` | "Same character. Change only the pose: sitting up on the ground, picking seaweed off his head, grinning and waving." |
+| `jonah_palm` | "Same character. Change only the pose: hanging by both hands from something above him, feet dangling, seaweed on his head, sheepish grin." |
+
+---
+
 ## Known risks
 
 - **Style drift after 6–8 generations** in one conversation. Watch for thinning outlines and colours
@@ -1202,6 +1765,13 @@ lying still, anything red — reject it and repeat "funny, not hurt, eyes as diz
 - **Scenes 1 and 8 are the hard pair** — both need a lighting effect (glow, flames) inside a style
   defined by flat fills and no rim lighting. Genuine tension in the prompt; budget extra turns.
 - **Scenes 2, 11 and 13 are backdrops, not scenes.** Judge them on whether the working area stays clean.
+- **Scenes 15 and 20 have hard geometry constraints.** The river must mirror-tile; the Red Sea walls
+  must cover their full slide stroke. Check fit in Phaser before approving either set.
+- **Scene 19's gap is sized to the stone.** Generate `wall_stone` first and regenerate the backdrop
+  until the gap fits — not the other way round.
+- **Scenes 20 and 22 use a character reference** (`moses.png`, `jonah.png`) on top of the three style
+  refs. That's 4 images in the conversation; run them in a fresh chat so earlier scenes don't bleed in.
+- **Scene 18's stripe masks are manual work** (~15 min per pose). Nothing else in the pipeline is.
 - **Sprite isolation is the unreliable half** (~60% first-pass). Budget a manual cleanup per character.
 - **SynthID** is embedded in every Google-generated image. Invisible, does not block commercial use,
   but provenance checkers will flag shipped art as AI-generated.
@@ -1216,7 +1786,7 @@ Two options, pick one **before** HUD work starts:
 1. Desaturate the HUD constants toward the art palette
 2. Deliberately keep the HUD high-saturation so it reads as a distinct overlay layer
 
-See also: `docs/art_plates_mockup.html` — hand-authored SVG plates for four games,
+See also: `art_plates_mockup.html` in the project root — hand-authored SVG plates for four games,
 built before this pipeline. Useful for judging composition and staging; superseded for final art.
 
 ---
@@ -1227,12 +1797,9 @@ Started 2026-09-24. Not retroactive — changes made before this date are not li
 
 | Date | Change |
 |---|---|
-| 2026-10-06 | Scene 10 art delivered as one labelled contact sheet and split into nine plates — backdrop, four city states, `phalanx`, `path_rock`, `horn_ready`, `horn_blow` — into `assets/games/jericho/`. The march path ellipse is measured off the backdrop plate rather than chosen, and the city had to be held under ~270px wide so the phalanx is never hidden behind it. Captions were cut from the sheet automatically; keying, export and layout notes are in that folder's `ASSETS.md`. |
-| 2026-10-06 | Scene 7 art delivered — den backdrop plus Daniel and the lion on a two-figure sheet — into `assets/games/lions-den/`. The backdrop needed cropping to its lower 55% before the game was playable: this prompt asks for "a clear band of open sand across the lower third", and what came back put the floor in the bottom 20% — a 75px band on a 375px stage, which is not a dodging game with four lions in it. The arena ellipse is measured off that crop. The win beat borrows `assets/games/fiery-furnace/angel.png` rather than a den angel of its own; same errand and same style lock, but a purpose-drawn one would be better. Keying, export and balance notes in that folder's `ASSETS.md`. |
+| 2026-10-13 | Scenes 15–22 added: Baby Moses, Peter Walks on Water, Zacchaeus, Joseph's Coat, Nehemiah's Wall, Red Sea, Feeding the 5,000, Jonah. Known risks updated for the new geometry and reference constraints. Gameplay in `biblical_game_design_doc.md` §15–22. |
+| 2026-10-08 | Scene 14 added: Samson and the Jawbone — backdrop, Samson swing/victory/ropes poses, two Philistine troublemakers with run and bonked states. Gameplay in `biblical_game_design_doc.md` §14. |
 | 2026-10-05 | Scene 10 rewritten for the Jericho redesign: centred city with four crack/fall states, four-soldier `phalanx`, horn-blower pair, `path_rock`. Gameplay in `biblical_game_design_doc.md` §11. |
-| 2026-10-03 | Scene 13 backdrop **replaced**. The first plate came back with forest down the middle and a shrub cluster at the right edge, leaving one cramped band of usable meadow; the second is the open pasture the prompt asks for, with the distant sheepfold and the other ninety-nine on the far hill. Hiding-spot slot table re-measured against it — three rows now spread across the lower two thirds of the stage, and the shepherd stands on clean grass. HUD and outcome text switched to dark-on-light, because this sky is pale and white text vanished into it. This also retires the backdrop horizon constraint noted on 2026-10-02. |
-| 2026-10-03 | Scene 13 art delivered and wired in — backdrop, `lost_sheep`, `hide_bush_b`, `hide_rock`, all four shepherd poses, `critter_rabbit`. **Still outstanding: `hide_bush_a` (the plain bush) and `critter_bird`**; both are drop-in, and the game runs without them — bush A borrows bush B mirrored, and the rabbit covers for the bird. Two problems to avoid next time: the 4-up pose sheet cropped the top-row figures at the quadrant boundary, slicing their robe hems flat with no outline, and the backdrop came back with forest down the middle instead of the open grass the prompt asks for. Keying and export notes are in `assets/games/lost-sheep/ASSETS.md`. |
-| 2026-10-02 | Scene 13 **not yet generated** — the game shipped against runtime placeholders. Filenames the code expects are in `assets/games/lost-sheep/ASSETS.md`; drop the real plates in under those names and they take over with no code change. The four shepherd poses must come back at the same frame height, or the shepherd jumps as he changes pose. *(A backdrop horizon constraint recorded here was retired when the plate was replaced on 2026-10-03 — see that entry.)* |
 | 2026-09-29 | Scene 13 added: Find the Lost Sheep — backdrop, layering, `lost_sheep`, four shepherd poses, hiding-spot and critter sprites. Gameplay in `biblical_game_design_doc.md` §13. |
 | 2026-09-24 | Scene 8: gameplay mechanics, config and copy moved out to `biblical_game_design_doc.md` §6. This document is art only now. |
 | 2026-09-24 | Scene 8: third boy's skin changed from mint green to soft mauve `#D8BEDD`, so the angel is the only green character on screen. Readability section rebuilt around it. |
