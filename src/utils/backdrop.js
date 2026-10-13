@@ -39,6 +39,9 @@ const GAME_BACKDROPS = {
   [GAME_KEYS.HE_MUST_INCREASE]:    { key: 'li-bg',  file: 'assets/games/he-must-increase/bg.jpg',   scrim: 0.74 },
   [GAME_KEYS.LOST_SHEEP]:          { key: 'ls-bg',  file: 'assets/games/lost-sheep/bg.jpg',         scrim: 0.73 },
   [GAME_KEYS.SAMSON_JAWBONE]:      { key: 'sj-bg',  file: 'assets/games/samson/bg.jpg',             scrim: 0.74 },
+  // The STILL river. The game itself scrolls a mirror-tiled crop of this same plate, which is a
+  // separate texture (bm-tile) -- these pages do not scroll, so they get the whole picture.
+  [GAME_KEYS.BABY_MOSES]:          { key: 'bm-bg',  file: 'assets/games/baby-moses/bg.jpg',         scrim: 0.74 },
 };
 
 // Scrim colours. GameLoopScene carried its win/loss signal in a flat background colour, so the

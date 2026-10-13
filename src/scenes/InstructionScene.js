@@ -37,6 +37,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.HE_MUST_INCREASE]: { icon: '⬆️', gesture: 'SWIPE TO RESIZE', anim: 'tap' },
       [GAME_KEYS.LOST_SHEEP]: { icon: '🐑', gesture: 'TAP TO SEARCH', anim: 'tap' },
       [GAME_KEYS.SAMSON_JAWBONE]: { icon: '💪', gesture: 'DRAG TO CHASE', anim: 'tap' },
+      [GAME_KEYS.BABY_MOSES]: { icon: '📱', gesture: 'TILT TO STEER', anim: 'tap' },
     };
 
     const info = gestureMap[this.gameKey];
@@ -125,6 +126,10 @@ class InstructionScene extends Phaser.Scene {
     });
 
     this.input.once('pointerdown', () => {
+      // §15: iOS only hands over device motion if requestPermission() is called from a user
+      // gesture, and it names this screen's tap as the place to do it. This is that call. It is
+      // a no-op on every other game and on every platform without the gate.
+      if (this.gameKey === GAME_KEYS.BABY_MOSES && typeof BMMotion !== 'undefined') BMMotion.request();
       if (this.advanceTimer) this.advanceTimer.remove();
       this.advance();
     });

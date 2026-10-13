@@ -114,6 +114,27 @@ const GAME_CONFIG = {
     medium: { timeLimit: 8.0, targetBonks: 7, fleeSpeed: 100, onField: 4 },
     hard:   { timeLimit: 8.0, targetBonks: 9, fleeSpeed: 135, onField: 4 },
   },
+  babyMoses: {
+    // Difficulty is ONE dial: obstacle DENSITY. §15 holds the run length and the bump stall
+    // constant across tiers on purpose -- they are module constants in BabyMosesGame.js
+    // (BM_RUN_TIME = 7.0s, BM_BUMP_STALL = 0.6s) rather than config, because scaling them would
+    // change what the game is rather than how hard it is.
+    //
+    // So the round is 10s against a 7s run: 3 seconds of slack, and a bump costs 0.6, which makes
+    // timeLimit a budget of exactly FIVE bumps at every tier. What changes is how hard five is to
+    // stay under -- 5 obstacles on easy, 9 plus a hippo on medium, 14 plus a hippo plus a current
+    // on hard. timeLimit is the only key adaptive difficulty touches, which is what §15 asks for.
+    //
+    // `obstacles` names a hand-authored lane pattern in BabyMosesGame.js. The patterns are level
+    // geometry rather than tunables, and §15 is explicit that they must not be random: "Random
+    // placement can produce a wall with no gap."
+    //
+    // Zero means off throughout, matching windForce / relocateAfter elsewhere: hippoAt 0 = the
+    // hippo never surfaces, current 0 = no cross-current.
+    easy:   { timeLimit: 10.0, obstacles: 'easy',   hippoAt: 0,   current: 0  },
+    medium: { timeLimit: 10.0, obstacles: 'medium', hippoAt: 3.2, current: 0  },
+    hard:   { timeLimit: 10.0, obstacles: 'hard',   hippoAt: 2.6, current: 55 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -255,6 +276,15 @@ const GAME_STORIES = {
     instruction: "Drag Samson around the field to bonk the Philistines!",
     instructionHard: "They are nearly as fast as you \u2014 corner them against the edges!",
   },
+  [GAME_KEYS.BABY_MOSES]: {
+    title: "Baby Moses in the Basket",
+    reference: "Exodus 2:1-10",
+    story: "Baby Moses' mother put him in a little basket on the river. God watched over him, and Pharaoh's daughter found him and kept him safe!",
+    successMessage: "God kept baby Moses safe! Pharaoh's daughter lifted him from the reeds.",
+    failMessage: "The basket is still bobbing along! Keep steering!",
+    instruction: "Tilt to steer the basket past the reeds and rocks!",
+    instructionHard: "The current pushes you at the banks \u2014 lean against it!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -303,6 +333,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.HE_MUST_INCREASE]: 'heMustIncrease',
   [GAME_KEYS.LOST_SHEEP]: 'lostSheep',
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
+  [GAME_KEYS.BABY_MOSES]: 'babyMoses',
 };
 
 // Adaptive difficulty modifiers
