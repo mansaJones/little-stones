@@ -154,6 +154,21 @@ const GAME_CONFIG = {
     medium: { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 1.1, waveEvery: 0   },
     hard:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 2.0, waveEvery: 2.1 },
   },
+  josephCoat: {
+    // §18: "Pattern length (3 / 4 / 5) is the difficulty dial." The pot count rises with it so the
+    // choice gets wider at the same time, and HARD allows repeats -- "red, blue, red", which §18
+    // rightly says is much harder than it sounds.
+    //
+    // timeLimit is the ANSWER timer only. §18: "the 8-second answer timer starts after the playback
+    // finishes. Watching never eats into answer time." It is the one key adaptive difficulty
+    // touches; patternLength, potCount, allowRepeats and playbackStep stay fixed, because they are
+    // what the tier IS.
+    //
+    // playbackStep is seconds per stripe during playback: slower on EASY so there is time to say
+    // the colour out loud, quicker on HARD.
+    easy:   { timeLimit: 8.0, patternLength: 3, potCount: 4, allowRepeats: false, playbackStep: 0.60 },
+    medium: { timeLimit: 8.0, patternLength: 4, potCount: 5, allowRepeats: false, playbackStep: 0.50 },
+    hard:   { timeLimit: 8.0, patternLength: 5, potCount: 6, allowRepeats: true,  playbackStep: 0.45 },
   zacchaeus: {
     // §17's two dials move together -- the tap target rises as the clock shortens -- but the one
     // that changes how the game FEELS is the third: what a same-side tap costs.
@@ -385,6 +400,14 @@ const GAME_STORIES = {
     instruction: "Press and hold on Jesus to keep Peter walking!",
     instructionHard: "Waves will hide Him \u2014 hold where He IS, not where you can see Him!",
   },
+  [GAME_KEYS.JOSEPH_COAT]: {
+    title: "Joseph's Coat of Many Colors",
+    reference: "Genesis 37:3",
+    story: "Jacob gave his son Joseph a beautiful coat of many colors. Every color showed how much his father loved him!",
+    successMessage: "What a beautiful coat! Every colour showed how much his father loved him.",
+    failMessage: "The colours faded \u2014 watch the stripes closely and try again!",
+    instruction: "Watch the stripes light up, then tap the dye pots in the same order!",
+    instructionHard: "Colours can repeat this time \u2014 watch the order, not just the colours!",
   [GAME_KEYS.ZACCHAEUS]: {
     title: "Zacchaeus Climbs the Tree",
     reference: "Luke 19:1-10",
@@ -471,6 +494,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.JOSEPH_COAT]: 'josephCoat',
   [GAME_KEYS.FEEDING_5000]: 'feedingFiveThousand',
   [GAME_KEYS.RED_SEA]: 'redSea',
   [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
