@@ -176,6 +176,20 @@ const GAME_CONFIG = {
     medium: { spotCount: 6, timeLimit: 6.0, peekInterval: 0,   wrongTapLimit: 4, hotCold: true,  relocateAfter: 0 },
     hard:   { spotCount: 8, timeLimit: 5.0, peekInterval: 0,   wrongTapLimit: 3, hotCold: true,  relocateAfter: 2 },
   },
+  // §20: "Crosser count and required width rise together. On a phone, 50% of the screen height
+  // between two fingers is a real stretch, which is the point."
+  //
+  // requiredSpread is a fraction of the SCREEN HEIGHT, and it measures the FINGER SPREAD, not the
+  // drawn path. §20 words it as the path width, which the delivered backdrop cannot deliver: its
+  // horizon sits 59% down, so the dry seabed is only 41.3% of the screen and a 50% path has
+  // nowhere to go. Reading it as the gesture keeps §20's difficulty exactly -- HARD still asks for
+  // a 187.5px stretch -- and the path follows at RS_SPREAD_GAIN, drawing 131px. See ASSETS.md.
+  redSea: {
+    easy:   { timeLimit: 10.0, crossers: 4, requiredSpread: 0.30 },
+    medium: { timeLimit: 10.0, crossers: 6, requiredSpread: 0.40 },
+    hard:   { timeLimit: 10.0, crossers: 8, requiredSpread: 0.50 },
+  },
+
 };
 
 // Story context for each game
@@ -324,6 +338,15 @@ const GAME_STORIES = {
     instruction: "Tap the bushes and rocks to find the lost sheep!",
     instructionHard: "Find the sheep fast — and it might move!",
   },
+  [GAME_KEYS.RED_SEA]: {
+    title: 'Moses Parts the Red Sea',
+    reference: 'Exodus 14:21-22',
+    story: 'Moses stretched out his hand over the sea. God split the water in two, and His people walked across on dry ground!',
+    successMessage: 'God made a way! Everyone crossed over on dry ground.',
+    failMessage: 'Some people are still waiting \u2014 hold the water open a little longer!',
+    instruction: 'Spread two fingers apart to part the sea, and hold it open while everyone walks across!',
+    instructionHard: 'Eight people to get across, and the path has to be wider \u2014 stretch those fingers!',
+  },
 };
 
 // Scoring configuration
@@ -363,6 +386,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.RED_SEA]: 'redSea',
 };
 
 // Adaptive difficulty modifiers

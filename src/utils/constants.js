@@ -106,6 +106,7 @@ const GAME_KEYS = {
   SAMSON_JAWBONE: 'SamsonJawboneGame',
   BABY_MOSES: 'BabyMosesGame',
   PETER_WATER: 'PeterWaterGame',
+  RED_SEA: 'RedSeaGame',
 };
 
 const GAME_NAMES = {
@@ -125,6 +126,7 @@ const GAME_NAMES = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'Samson and the Jawbone',
   [GAME_KEYS.BABY_MOSES]: 'Baby Moses in the Basket',
   [GAME_KEYS.PETER_WATER]: 'Peter Walks on Water',
+  [GAME_KEYS.RED_SEA]: 'Moses Parts the Red Sea',
 };
 
 const ALL_GAME_KEYS = [
@@ -144,6 +146,7 @@ const ALL_GAME_KEYS = [
   GAME_KEYS.SAMSON_JAWBONE,
   GAME_KEYS.BABY_MOSES,
   GAME_KEYS.PETER_WATER,
+  GAME_KEYS.RED_SEA,
 ];
 
 // Games pulled from play on 2026-10-08. Their scenes, art and config all stay in the build and
