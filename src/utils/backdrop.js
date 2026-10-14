@@ -44,6 +44,9 @@ const GAME_BACKDROPS = {
   [GAME_KEYS.BABY_MOSES]:          { key: 'bm-bg',  file: 'assets/games/baby-moses/bg.jpg',         scrim: 0.74 },
   [GAME_KEYS.PETER_WATER]:         { key: 'pw-bg',  file: 'assets/games/peter-water/bg.jpg',        scrim: 0.68 },
   [GAME_KEYS.FEEDING_5000]:        { key: 'fk-bg',  file: 'assets/games/feeding-5000/bg.jpg',       scrim: 0.65 },
+  [GAME_KEYS.RED_SEA]:             { key: 'rs-bg',  file: 'assets/games/red-sea/bg.jpg',            scrim: 0.68 },
+  [GAME_KEYS.NEHEMIAH_WALL]:       { key: 'nw-bg',  file: 'assets/games/nehemiah-wall/bg.jpg',      scrim: 0.62 },
+  [GAME_KEYS.ZACCHAEUS]:           { key: 'zt-bg',  file: 'assets/games/zacchaeus/bg.jpg',          scrim: 0.69 },
 };
 
 // Scrim colours. GameLoopScene carried its win/loss signal in a flat background colour, so the
