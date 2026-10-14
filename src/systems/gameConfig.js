@@ -154,6 +154,20 @@ const GAME_CONFIG = {
     medium: { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 1.1, waveEvery: 0   },
     hard:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 2.0, waveEvery: 2.1 },
   },
+  zacchaeus: {
+    // §17's two dials move together -- the tap target rises as the clock shortens -- but the one
+    // that changes how the game FEELS is the third: what a same-side tap costs.
+    //
+    //   EASY   a wrong tap does nothing, so alternating two thumbs is fine
+    //   MEDIUM it costs a step
+    //   HARD   it costs two, which turns mashing into rhythm
+    //
+    // slipSteps is deliberately NOT scaled by adaptive difficulty: it is the character of the
+    // tier, not its dosage. Zero means off, matching windForce / relocateAfter elsewhere.
+    easy:   { timeLimit: 8.0, targetTaps: 14, slipSteps: 0 },
+    medium: { timeLimit: 7.0, targetTaps: 18, slipSteps: 1 },
+    hard:   { timeLimit: 6.0, targetTaps: 22, slipSteps: 2 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -176,6 +190,62 @@ const GAME_CONFIG = {
     medium: { spotCount: 6, timeLimit: 6.0, peekInterval: 0,   wrongTapLimit: 4, hotCold: true,  relocateAfter: 0 },
     hard:   { spotCount: 8, timeLimit: 5.0, peekInterval: 0,   wrongTapLimit: 3, hotCold: true,  relocateAfter: 2 },
   },
+  // §21: "Fall speed and catch target rise together," and MEDIUM's twelve is the twelve baskets
+  // left over. swayAmount is HARD only -- §21: "items sway side to side as they fall."
+  //
+  // There is deliberately no spawn-rate key. §21 fixes the rate by a guarantee instead -- "spawn
+  // rate x time >= 1.6 x the catch target, so the target is always reachable" -- so the game
+  // derives it, against the USABLE window rather than the whole round. An item released later than
+  // one fall-time before the buzzer can never be caught, and counting it would make the guarantee
+  // a lie: at EASY that is a real ratio of 1.29 against the promised 1.6.
+  //
+  // §21: "targetCatches is not scaled by adaptive difficulty."
+  feedingFiveThousand: {
+    easy:   { timeLimit: 10.0, targetCatches: 8,  fallSpeed: 150, swayAmount: 0 },
+    medium: { timeLimit: 10.0, targetCatches: 12, fallSpeed: 190, swayAmount: 0 },
+    hard:   { timeLimit: 10.0, targetCatches: 15, fallSpeed: 240, swayAmount: 26 },
+  // §20: "Crosser count and required width rise together. On a phone, 50% of the screen height
+  // between two fingers is a real stretch, which is the point."
+  //
+  // requiredSpread is a fraction of the SCREEN HEIGHT, and it measures the FINGER SPREAD, not the
+  // drawn path. §20 words it as the path width, which the delivered backdrop cannot deliver: its
+  // horizon sits 59% down, so the dry seabed is only 41.3% of the screen and a 50% path has
+  // nowhere to go. Reading it as the gesture keeps §20's difficulty exactly -- HARD still asks for
+  // a 187.5px stretch -- and the path follows at RS_SPREAD_GAIN, drawing 131px. See ASSETS.md.
+  redSea: {
+    easy:   { timeLimit: 10.0, crossers: 4, requiredSpread: 0.30 },
+    medium: { timeLimit: 10.0, crossers: 6, requiredSpread: 0.40 },
+    hard:   { timeLimit: 10.0, crossers: 8, requiredSpread: 0.50 },
+  // §19: "Stones to place (4 / 6 / 8) is the main dial," and the gap always holds 8, so what is
+  // NOT in stonesToPlace is already built into the wall when the round starts -- Nehemiah 4:6, the
+  // wall joined "to half its height". The game derives that count rather than reading a key, so
+  // the two can never drift apart and leave a nine-stone gap.
+  //
+  // §19 names exactly four keys: timeLimit, stonesToPlace, tolerance and swingSpeed. tolerance is
+  // in STAGE PIXELS of horizontal error at the moment of release, against a swing that reaches
+  // 52.6px either side of the gap's centre line; swingSpeed is in Hz, so 0.38 is a 2.6s round trip.
+  // They tighten together, as §19 asks.
+  //
+  // What they really control is a window in TIME, not in pixels: the stone is inside tolerance for
+  // asin(tolerance / 52.6) / (pi * swingSpeed) seconds, twice a cycle, and a child's timing scatter
+  // has to fit inside that. These four numbers are measured, not chosen -- a simulated player with
+  // a given timing sigma, 8-14 rounds a cell:
+  //
+  //                       window     sigma 80ms   sigma 110ms   mashing
+  //     easy  30 / 0.38   +/-254ms      100%         100%          0%
+  //     med   26 / 0.50   +/-165ms      100%          88%          0%
+  //     hard  22 / 0.62   +/-111ms       79%          50%          0%
+  //
+  // An earlier 22/15/10 against 0.45/0.62/0.80 looked like a sensible ladder on paper and measured
+  // 29% on HARD at 80ms: eight stones in twelve seconds does not leave room for a 0.8s miss
+  // penalty at a 52% hit rate. Mashing loses on every tier, because the stone swings IN from an
+  // extreme and a stone released on sight is 52.6px off centre.
+  nehemiahWall: {
+    easy:   { timeLimit: 12.0, stonesToPlace: 4, tolerance: 30, swingSpeed: 0.38 },
+    medium: { timeLimit: 12.0, stonesToPlace: 6, tolerance: 26, swingSpeed: 0.50 },
+    hard:   { timeLimit: 12.0, stonesToPlace: 8, tolerance: 22, swingSpeed: 0.62 },
+  },
+
 };
 
 // Story context for each game
@@ -313,6 +383,15 @@ const GAME_STORIES = {
     instruction: "Press and hold on Jesus to keep Peter walking!",
     instructionHard: "Waves will hide Him \u2014 hold where He IS, not where you can see Him!",
   },
+  [GAME_KEYS.ZACCHAEUS]: {
+    title: "Zacchaeus Climbs the Tree",
+    reference: "Luke 19:1-10",
+    story: "Zacchaeus was too short to see Jesus, so he climbed a tree! Jesus looked up and said, 'Come down, I'm visiting your house today!'",
+    successMessage: "Zacchaeus climbed high and Jesus saw him! Jesus came looking for him.",
+    failMessage: "Jesus is already at the tree \u2014 climb a bit quicker next time!",
+    instruction: "Tap LEFT then RIGHT, over and over, to climb the tree!",
+    instructionHard: "Tap the same side twice and you slip down two \u2014 keep the rhythm!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -323,6 +402,31 @@ const GAME_STORIES = {
     failMessage: "The shepherd is still searching! He never gives up.",
     instruction: "Tap the bushes and rocks to find the lost sheep!",
     instructionHard: "Find the sheep fast — and it might move!",
+  },
+  [GAME_KEYS.FEEDING_5000]: {
+    title: 'Feeding the 5,000',
+    reference: 'John 6:1-13',
+    story: 'A boy shared his five loaves and two fish. Jesus thanked God, and everyone ate. There were even twelve baskets left over!',
+    successMessage: 'Everyone had enough! A little became more than enough.',
+    failMessage: "The food is still falling \u2014 catch some more and try again!",
+    instruction: 'Slide the basket left and right to catch the bread and fish!',
+    instructionHard: 'Fifteen to catch, falling faster, and they sway on the way down \u2014 watch closely!',
+  [GAME_KEYS.RED_SEA]: {
+    title: 'Moses Parts the Red Sea',
+    reference: 'Exodus 14:21-22',
+    story: 'Moses stretched out his hand over the sea. God split the water in two, and His people walked across on dry ground!',
+    successMessage: 'God made a way! Everyone crossed over on dry ground.',
+    failMessage: 'Some people are still waiting \u2014 hold the water open a little longer!',
+    instruction: 'Spread two fingers apart to part the sea, and hold it open while everyone walks across!',
+    instructionHard: 'Eight people to get across, and the path has to be wider \u2014 stretch those fingers!',
+  [GAME_KEYS.NEHEMIAH_WALL]: {
+    title: 'Nehemiah Rebuilds the Wall',
+    reference: 'Nehemiah 2:17-18; 4:6; 6:15',
+    story: "Jerusalem's walls were broken down. Nehemiah got everyone working together, and they rebuilt the whole wall in just 52 days!",
+    successMessage: 'The wall is finished! Everyone worked together and the gap is closed.',
+    failMessage: "The gap is still open \u2014 keep building and try again!",
+    instruction: 'Tap to drop each stone when it swings over the gap!',
+    instructionHard: 'The gap is empty this time, and the crane swings faster \u2014 wait for the middle!',
   },
 };
 
@@ -363,6 +467,10 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.FEEDING_5000]: 'feedingFiveThousand',
+  [GAME_KEYS.RED_SEA]: 'redSea',
+  [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
+  [GAME_KEYS.ZACCHAEUS]: 'zacchaeus',
 };
 
 // Adaptive difficulty modifiers
@@ -375,6 +483,17 @@ function getAdjustedConfig(gameName, difficulty, sessionPerformance) {
 
   const baseConfig = { ...GAME_CONFIG[configKey][difficulty] };
 
+  // targetTaps is scaled for ZACCHAEUS ONLY, by name, and this is deliberate.
+  //
+  // §17 says the key is named so adaptive difficulty scales it "for free", and walkAroundJericho's
+  // config comment says the same thing about itself -- but nothing in this function has ever
+  // touched targetTaps, so both claims were aspirational. wrestleAngel carries the key too.
+  //
+  // Scaling it for everything would quietly re-balance two games that shipped and were tuned
+  // without it, so the opt-in is per game rather than per key. If Jericho or Wrestle should get it
+  // too, add them here and re-run their harnesses -- do not widen the test to the key name.
+  const scalesTaps = configKey === 'zacchaeus';
+
   // NOTE: timeLimit and reactionWindow get HARDER as they shrink. surviveTime is the opposite —
   // a longer survival is a harder round — so it scales the other way. Affects fieryFurnace and
   // danielLionsDen, which are both survive-the-clock games and were previously skipped entirely
@@ -384,18 +503,22 @@ function getAdjustedConfig(gameName, difficulty, sessionPerformance) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 0.93;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 0.93;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 1.07;
+    // rounded: a target of 19.26 taps is a number no child can finish exactly
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 1.07);
   }
 
   if (sessionPerformance && sessionPerformance.consecutiveLosses >= 2) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 1.10;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 1.10;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 0.91;
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 0.91);
   }
 
   if (sessionPerformance && sessionPerformance.consecutiveLosses >= 4) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 1.25;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 1.25;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 0.80;
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 0.80);
   }
 
   return baseConfig;
