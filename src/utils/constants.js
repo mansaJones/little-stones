@@ -107,6 +107,8 @@ const GAME_KEYS = {
   BABY_MOSES: 'BabyMosesGame',
   PETER_WATER: 'PeterWaterGame',
   RED_SEA: 'RedSeaGame',
+  NEHEMIAH_WALL: 'NehemiahWallGame',
+  ZACCHAEUS: 'ZacchaeusTreeGame',
 };
 
 const GAME_NAMES = {
@@ -127,6 +129,8 @@ const GAME_NAMES = {
   [GAME_KEYS.BABY_MOSES]: 'Baby Moses in the Basket',
   [GAME_KEYS.PETER_WATER]: 'Peter Walks on Water',
   [GAME_KEYS.RED_SEA]: 'Moses Parts the Red Sea',
+  [GAME_KEYS.NEHEMIAH_WALL]: 'Nehemiah Rebuilds the Wall',
+  [GAME_KEYS.ZACCHAEUS]: 'Zacchaeus Climbs the Tree',
 };
 
 const ALL_GAME_KEYS = [
@@ -147,6 +151,8 @@ const ALL_GAME_KEYS = [
   GAME_KEYS.BABY_MOSES,
   GAME_KEYS.PETER_WATER,
   GAME_KEYS.RED_SEA,
+  GAME_KEYS.NEHEMIAH_WALL,
+  GAME_KEYS.ZACCHAEUS,
 ];
 
 // Games pulled from play on 2026-10-08. Their scenes, art and config all stay in the build and
