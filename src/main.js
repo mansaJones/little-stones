@@ -79,6 +79,7 @@ const config = {
     RedSeaGame,
     NehemiahWallGame,
     ZacchaeusTreeGame,
+    JosephCoatGame,
   ],
   plugins: {
     scene: [{ key: 'StageOffset', plugin: StageOffsetPlugin, mapping: 'stageOffset' }],

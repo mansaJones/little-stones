@@ -43,6 +43,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.RED_SEA]: { icon: '🌊', gesture: 'SPREAD TWO FINGERS', anim: 'tap' },
       [GAME_KEYS.NEHEMIAH_WALL]: { icon: '🧱', gesture: 'TAP TO DROP', anim: 'tap' },
       [GAME_KEYS.ZACCHAEUS]: { icon: '🤚', gesture: 'TAP LEFT, THEN RIGHT', anim: 'tap' },
+      [GAME_KEYS.JOSEPH_COAT]: { icon: '🎨', gesture: 'WATCH, THEN REPEAT', anim: 'tap' },
     };
 
     const info = gestureMap[this.gameKey];
