@@ -190,6 +190,36 @@ const GAME_CONFIG = {
     medium: { spotCount: 6, timeLimit: 6.0, peekInterval: 0,   wrongTapLimit: 4, hotCold: true,  relocateAfter: 0 },
     hard:   { spotCount: 8, timeLimit: 5.0, peekInterval: 0,   wrongTapLimit: 3, hotCold: true,  relocateAfter: 2 },
   },
+  // §19: "Stones to place (4 / 6 / 8) is the main dial," and the gap always holds 8, so what is
+  // NOT in stonesToPlace is already built into the wall when the round starts -- Nehemiah 4:6, the
+  // wall joined "to half its height". The game derives that count rather than reading a key, so
+  // the two can never drift apart and leave a nine-stone gap.
+  //
+  // §19 names exactly four keys: timeLimit, stonesToPlace, tolerance and swingSpeed. tolerance is
+  // in STAGE PIXELS of horizontal error at the moment of release, against a swing that reaches
+  // 52.6px either side of the gap's centre line; swingSpeed is in Hz, so 0.38 is a 2.6s round trip.
+  // They tighten together, as §19 asks.
+  //
+  // What they really control is a window in TIME, not in pixels: the stone is inside tolerance for
+  // asin(tolerance / 52.6) / (pi * swingSpeed) seconds, twice a cycle, and a child's timing scatter
+  // has to fit inside that. These four numbers are measured, not chosen -- a simulated player with
+  // a given timing sigma, 8-14 rounds a cell:
+  //
+  //                       window     sigma 80ms   sigma 110ms   mashing
+  //     easy  30 / 0.38   +/-254ms      100%         100%          0%
+  //     med   26 / 0.50   +/-165ms      100%          88%          0%
+  //     hard  22 / 0.62   +/-111ms       79%          50%          0%
+  //
+  // An earlier 22/15/10 against 0.45/0.62/0.80 looked like a sensible ladder on paper and measured
+  // 29% on HARD at 80ms: eight stones in twelve seconds does not leave room for a 0.8s miss
+  // penalty at a 52% hit rate. Mashing loses on every tier, because the stone swings IN from an
+  // extreme and a stone released on sight is 52.6px off centre.
+  nehemiahWall: {
+    easy:   { timeLimit: 12.0, stonesToPlace: 4, tolerance: 30, swingSpeed: 0.38 },
+    medium: { timeLimit: 12.0, stonesToPlace: 6, tolerance: 26, swingSpeed: 0.50 },
+    hard:   { timeLimit: 12.0, stonesToPlace: 8, tolerance: 22, swingSpeed: 0.62 },
+  },
+
 };
 
 // Story context for each game
@@ -347,6 +377,15 @@ const GAME_STORIES = {
     instruction: "Tap the bushes and rocks to find the lost sheep!",
     instructionHard: "Find the sheep fast — and it might move!",
   },
+  [GAME_KEYS.NEHEMIAH_WALL]: {
+    title: 'Nehemiah Rebuilds the Wall',
+    reference: 'Nehemiah 2:17-18; 4:6; 6:15',
+    story: "Jerusalem's walls were broken down. Nehemiah got everyone working together, and they rebuilt the whole wall in just 52 days!",
+    successMessage: 'The wall is finished! Everyone worked together and the gap is closed.',
+    failMessage: "The gap is still open \u2014 keep building and try again!",
+    instruction: 'Tap to drop each stone when it swings over the gap!',
+    instructionHard: 'The gap is empty this time, and the crane swings faster \u2014 wait for the middle!',
+  },
 };
 
 // Scoring configuration
@@ -386,6 +425,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
   [GAME_KEYS.ZACCHAEUS]: 'zacchaeus',
 };
 

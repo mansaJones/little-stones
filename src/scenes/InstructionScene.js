@@ -39,6 +39,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.SAMSON_JAWBONE]: { icon: '💪', gesture: 'DRAG TO CHASE', anim: 'tap' },
       [GAME_KEYS.BABY_MOSES]: { icon: '📱', gesture: 'TILT TO STEER', anim: 'tap' },
       [GAME_KEYS.PETER_WATER]: { icon: '✋', gesture: 'PRESS & HOLD', anim: 'tap' },
+      [GAME_KEYS.NEHEMIAH_WALL]: { icon: '🧱', gesture: 'TAP TO DROP', anim: 'tap' },
       [GAME_KEYS.ZACCHAEUS]: { icon: '🤚', gesture: 'TAP LEFT, THEN RIGHT', anim: 'tap' },
     };
 
