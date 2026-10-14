@@ -75,6 +75,7 @@ const config = {
     SamsonJawboneGame,
     BabyMosesGame,
     PeterWaterGame,
+    FeedingFiveThousandGame,
     RedSeaGame,
     NehemiahWallGame,
     ZacchaeusTreeGame,

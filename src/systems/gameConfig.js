@@ -190,6 +190,20 @@ const GAME_CONFIG = {
     medium: { spotCount: 6, timeLimit: 6.0, peekInterval: 0,   wrongTapLimit: 4, hotCold: true,  relocateAfter: 0 },
     hard:   { spotCount: 8, timeLimit: 5.0, peekInterval: 0,   wrongTapLimit: 3, hotCold: true,  relocateAfter: 2 },
   },
+  // §21: "Fall speed and catch target rise together," and MEDIUM's twelve is the twelve baskets
+  // left over. swayAmount is HARD only -- §21: "items sway side to side as they fall."
+  //
+  // There is deliberately no spawn-rate key. §21 fixes the rate by a guarantee instead -- "spawn
+  // rate x time >= 1.6 x the catch target, so the target is always reachable" -- so the game
+  // derives it, against the USABLE window rather than the whole round. An item released later than
+  // one fall-time before the buzzer can never be caught, and counting it would make the guarantee
+  // a lie: at EASY that is a real ratio of 1.29 against the promised 1.6.
+  //
+  // §21: "targetCatches is not scaled by adaptive difficulty."
+  feedingFiveThousand: {
+    easy:   { timeLimit: 10.0, targetCatches: 8,  fallSpeed: 150, swayAmount: 0 },
+    medium: { timeLimit: 10.0, targetCatches: 12, fallSpeed: 190, swayAmount: 0 },
+    hard:   { timeLimit: 10.0, targetCatches: 15, fallSpeed: 240, swayAmount: 26 },
   // §20: "Crosser count and required width rise together. On a phone, 50% of the screen height
   // between two fingers is a real stretch, which is the point."
   //
@@ -389,6 +403,14 @@ const GAME_STORIES = {
     instruction: "Tap the bushes and rocks to find the lost sheep!",
     instructionHard: "Find the sheep fast — and it might move!",
   },
+  [GAME_KEYS.FEEDING_5000]: {
+    title: 'Feeding the 5,000',
+    reference: 'John 6:1-13',
+    story: 'A boy shared his five loaves and two fish. Jesus thanked God, and everyone ate. There were even twelve baskets left over!',
+    successMessage: 'Everyone had enough! A little became more than enough.',
+    failMessage: "The food is still falling \u2014 catch some more and try again!",
+    instruction: 'Slide the basket left and right to catch the bread and fish!',
+    instructionHard: 'Fifteen to catch, falling faster, and they sway on the way down \u2014 watch closely!',
   [GAME_KEYS.RED_SEA]: {
     title: 'Moses Parts the Red Sea',
     reference: 'Exodus 14:21-22',
@@ -445,6 +467,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.FEEDING_5000]: 'feedingFiveThousand',
   [GAME_KEYS.RED_SEA]: 'redSea',
   [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
   [GAME_KEYS.ZACCHAEUS]: 'zacchaeus',
