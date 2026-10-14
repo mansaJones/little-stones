@@ -43,6 +43,7 @@ const GAME_BACKDROPS = {
   // separate texture (bm-tile) -- these pages do not scroll, so they get the whole picture.
   [GAME_KEYS.BABY_MOSES]:          { key: 'bm-bg',  file: 'assets/games/baby-moses/bg.jpg',         scrim: 0.74 },
   [GAME_KEYS.PETER_WATER]:         { key: 'pw-bg',  file: 'assets/games/peter-water/bg.jpg',        scrim: 0.68 },
+  [GAME_KEYS.RED_SEA]:             { key: 'rs-bg',  file: 'assets/games/red-sea/bg.jpg',            scrim: 0.68 },
   [GAME_KEYS.NEHEMIAH_WALL]:       { key: 'nw-bg',  file: 'assets/games/nehemiah-wall/bg.jpg',      scrim: 0.62 },
   [GAME_KEYS.ZACCHAEUS]:           { key: 'zt-bg',  file: 'assets/games/zacchaeus/bg.jpg',          scrim: 0.69 },
 };

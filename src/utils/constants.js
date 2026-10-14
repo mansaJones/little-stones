@@ -106,6 +106,7 @@ const GAME_KEYS = {
   SAMSON_JAWBONE: 'SamsonJawboneGame',
   BABY_MOSES: 'BabyMosesGame',
   PETER_WATER: 'PeterWaterGame',
+  RED_SEA: 'RedSeaGame',
   NEHEMIAH_WALL: 'NehemiahWallGame',
   ZACCHAEUS: 'ZacchaeusTreeGame',
 };
@@ -127,6 +128,7 @@ const GAME_NAMES = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'Samson and the Jawbone',
   [GAME_KEYS.BABY_MOSES]: 'Baby Moses in the Basket',
   [GAME_KEYS.PETER_WATER]: 'Peter Walks on Water',
+  [GAME_KEYS.RED_SEA]: 'Moses Parts the Red Sea',
   [GAME_KEYS.NEHEMIAH_WALL]: 'Nehemiah Rebuilds the Wall',
   [GAME_KEYS.ZACCHAEUS]: 'Zacchaeus Climbs the Tree',
 };
@@ -148,6 +150,7 @@ const ALL_GAME_KEYS = [
   GAME_KEYS.SAMSON_JAWBONE,
   GAME_KEYS.BABY_MOSES,
   GAME_KEYS.PETER_WATER,
+  GAME_KEYS.RED_SEA,
   GAME_KEYS.NEHEMIAH_WALL,
   GAME_KEYS.ZACCHAEUS,
 ];
