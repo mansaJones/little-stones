@@ -64,6 +64,12 @@ class OnboardingScene extends Phaser.Scene {
     });
 
     btn.on('pointerdown', () => {
+      // Ask for fullscreen HERE, because this is a real tap. The Fullscreen API needs transient
+      // user activation, so it cannot be requested on load, and this is the first and most
+      // reliable gesture in the app. On a device that cannot do it -- iPhone Safari has no element
+      // fullscreen -- this is a no-op and the Home Screen hint below has already said so.
+      requestGameFullscreen(this);
+
       // Mark first launch done
       const data = loadGameData();
       data.firstLaunch = false;
@@ -76,6 +82,20 @@ class OnboardingScene extends Phaser.Scene {
         isFirstGame: true,
       });
     });
+
+    // On a device with no element fullscreen, say the thing that actually works instead of
+    // offering a button that silently does nothing. index.html already carries
+    // apple-mobile-web-app-capable, so a Home Screen launch is chrome-free today -- it is just
+    // undiscoverable. Hidden once the app IS launched that way, and on anything that can simply
+    // go fullscreen on the tap above.
+    if (shouldOfferHomeScreen(this)) {
+      this.add.text(cx, 338, HOME_SCREEN_HINT, {
+        ...FONTS.SMALL,
+        fontSize: '10px',
+        color: '#ffffff66',
+        align: 'center',
+      }).setOrigin(0.5);
+    }
 
     // Version text - VERY BOTTOM
     this.add.text(cx, 360, 'v1.0.0-prototype', {
