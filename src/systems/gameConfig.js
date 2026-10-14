@@ -204,6 +204,7 @@ const GAME_CONFIG = {
     easy:   { timeLimit: 10.0, targetCatches: 8,  fallSpeed: 150, swayAmount: 0 },
     medium: { timeLimit: 10.0, targetCatches: 12, fallSpeed: 190, swayAmount: 0 },
     hard:   { timeLimit: 10.0, targetCatches: 15, fallSpeed: 240, swayAmount: 26 },
+  },
   // §20: "Crosser count and required width rise together. On a phone, 50% of the screen height
   // between two fingers is a real stretch, which is the point."
   //
@@ -216,6 +217,7 @@ const GAME_CONFIG = {
     easy:   { timeLimit: 10.0, crossers: 4, requiredSpread: 0.30 },
     medium: { timeLimit: 10.0, crossers: 6, requiredSpread: 0.40 },
     hard:   { timeLimit: 10.0, crossers: 8, requiredSpread: 0.50 },
+  },
   // §19: "Stones to place (4 / 6 / 8) is the main dial," and the gap always holds 8, so what is
   // NOT in stonesToPlace is already built into the wall when the round starts -- Nehemiah 4:6, the
   // wall joined "to half its height". The game derives that count rather than reading a key, so
@@ -411,6 +413,7 @@ const GAME_STORIES = {
     failMessage: "The food is still falling \u2014 catch some more and try again!",
     instruction: 'Slide the basket left and right to catch the bread and fish!',
     instructionHard: 'Fifteen to catch, falling faster, and they sway on the way down \u2014 watch closely!',
+  },
   [GAME_KEYS.RED_SEA]: {
     title: 'Moses Parts the Red Sea',
     reference: 'Exodus 14:21-22',
@@ -419,6 +422,7 @@ const GAME_STORIES = {
     failMessage: 'Some people are still waiting \u2014 hold the water open a little longer!',
     instruction: 'Spread two fingers apart to part the sea, and hold it open while everyone walks across!',
     instructionHard: 'Eight people to get across, and the path has to be wider \u2014 stretch those fingers!',
+  },
   [GAME_KEYS.NEHEMIAH_WALL]: {
     title: 'Nehemiah Rebuilds the Wall',
     reference: 'Nehemiah 2:17-18; 4:6; 6:15',
