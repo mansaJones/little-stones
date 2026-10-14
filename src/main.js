@@ -75,6 +75,7 @@ const config = {
     SamsonJawboneGame,
     BabyMosesGame,
     PeterWaterGame,
+    JosephCoatGame,
   ],
   plugins: {
     scene: [{ key: 'StageOffset', plugin: StageOffsetPlugin, mapping: 'stageOffset' }],

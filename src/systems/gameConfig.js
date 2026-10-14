@@ -154,6 +154,22 @@ const GAME_CONFIG = {
     medium: { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 1.1, waveEvery: 0   },
     hard:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 2.0, waveEvery: 2.1 },
   },
+  josephCoat: {
+    // §18: "Pattern length (3 / 4 / 5) is the difficulty dial." The pot count rises with it so the
+    // choice gets wider at the same time, and HARD allows repeats -- "red, blue, red", which §18
+    // rightly says is much harder than it sounds.
+    //
+    // timeLimit is the ANSWER timer only. §18: "the 8-second answer timer starts after the playback
+    // finishes. Watching never eats into answer time." It is the one key adaptive difficulty
+    // touches; patternLength, potCount, allowRepeats and playbackStep stay fixed, because they are
+    // what the tier IS.
+    //
+    // playbackStep is seconds per stripe during playback: slower on EASY so there is time to say
+    // the colour out loud, quicker on HARD.
+    easy:   { timeLimit: 8.0, patternLength: 3, potCount: 4, allowRepeats: false, playbackStep: 0.60 },
+    medium: { timeLimit: 8.0, patternLength: 4, potCount: 5, allowRepeats: false, playbackStep: 0.50 },
+    hard:   { timeLimit: 8.0, patternLength: 5, potCount: 6, allowRepeats: true,  playbackStep: 0.45 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -313,6 +329,15 @@ const GAME_STORIES = {
     instruction: "Press and hold on Jesus to keep Peter walking!",
     instructionHard: "Waves will hide Him \u2014 hold where He IS, not where you can see Him!",
   },
+  [GAME_KEYS.JOSEPH_COAT]: {
+    title: "Joseph's Coat of Many Colors",
+    reference: "Genesis 37:3",
+    story: "Jacob gave his son Joseph a beautiful coat of many colors. Every color showed how much his father loved him!",
+    successMessage: "What a beautiful coat! Every colour showed how much his father loved him.",
+    failMessage: "The colours faded \u2014 watch the stripes closely and try again!",
+    instruction: "Watch the stripes light up, then tap the dye pots in the same order!",
+    instructionHard: "Colours can repeat this time \u2014 watch the order, not just the colours!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -363,6 +388,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.SAMSON_JAWBONE]: 'samsonJawbone',
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
+  [GAME_KEYS.JOSEPH_COAT]: 'josephCoat',
 };
 
 // Adaptive difficulty modifiers
