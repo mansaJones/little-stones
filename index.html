@@ -66,7 +66,27 @@
   </div>
   <div id="game-container"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+  <!-- Phaser is VENDORED, not loaded from a CDN.
+       It used to come from cdnjs, and any miss -- offline, a blocked domain, an ad-blocker, a
+       DNS hiccup, a locked-down network -- left `Phaser` undefined. Every script after it then
+       threw "Phaser is not defined", no canvas was ever created, and the page showed a flat
+       #1a1a2e rectangle with no message at all: indistinguishable from a broken build, and
+       impossible to diagnose without opening the console. A game for six-year-olds should not
+       need the internet to start. -->
+  <script src="vendor/phaser.min.js"></script>
+  <script>
+    // Never fail silently again. If the engine is missing, say so on the screen.
+    if (typeof Phaser === 'undefined') {
+      document.getElementById('game-container').innerHTML =
+        '<div style="color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px;' +
+        'line-height:1.6">' +
+        '<div style="font-size:42px;margin-bottom:12px">\u26A0\uFE0F</div>' +
+        '<div style="font-size:19px;font-weight:bold;margin-bottom:8px">' +
+        'The game engine did not load.</div>' +
+        '<div style="font-size:14px;opacity:.75">vendor/phaser.min.js is missing from this ' +
+        'folder.<br>Re-download the project, or restore that file from git.</div></div>';
+    }
+  </script>
   <script src="src/utils/constants.js"></script>
   <script src="src/utils/backdrop.js"></script>
   <script src="src/systems/gameConfig.js"></script>
