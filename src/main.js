@@ -110,3 +110,9 @@ const config = {
 // Launch!
 const game = new Phaser.Game(config);
 
+// The canvas was shaped to the viewport once, before Phaser booted. Keep it that way: entering
+// fullscreen or rotating changes the viewport's aspect, and without this the canvas keeps its old
+// shape and Scale.FIT letterboxes it -- measured at 36-72px of bars, which is almost exactly the
+// chrome height fullscreen just won back.
+installFullscreenReflow(game);
+

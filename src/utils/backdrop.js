@@ -107,12 +107,16 @@ function drawGameBackdrop(scene, gameKey, tintColor) {
 // Called once from main.js for every scene, rather than from 16 backdrop sites. A game scene's
 // key IS its game key, and the interstitials carry theirs on `gameKey`, so one lookup serves both.
 function drawBackdropBleed(scene) {
+  // Idempotent: the canvas is re-measured whenever the viewport changes shape (entering
+  // fullscreen, rotating), and this is called again each time. Without dropping the previous
+  // image every reflow would stack another tinted copy behind the stage.
+  if (scene.__bleed) { scene.__bleed.destroy(); scene.__bleed = null; }
   if (STAGE_X === 0 && STAGE_Y === 0) return;         // canvas matches the stage; nothing to fill
   const bd = GAME_BACKDROPS[scene.gameKey || scene.scene.key];
   if (!bd || !scene.textures.exists(bd.key)) return;
   const src = scene.textures.get(bd.key).getSourceImage();
   if (!src || !src.width) return;
-  scene.add.image(CANVAS_WIDTH / 2 - STAGE_X, CANVAS_HEIGHT / 2 - STAGE_Y, bd.key)
+  scene.__bleed = scene.add.image(CANVAS_WIDTH / 2 - STAGE_X, CANVAS_HEIGHT / 2 - STAGE_Y, bd.key)
     .setScale(Math.max(CANVAS_WIDTH / src.width, CANVAS_HEIGHT / src.height))
     .setTint(0x5A5A6E)
     .setDepth(-10000);
