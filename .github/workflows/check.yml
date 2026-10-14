@@ -1,0 +1,26 @@
+# The same check Netlify runs, run on every push and pull request.
+#
+# Netlify is the last line -- it stops a broken commit reaching the live URL, but only once you
+# try to deploy it. This one puts a red X on the branch the moment it breaks, which is the half
+# that matters for merges made on GitHub itself: "Merge branch 'main' into joseph-coat" was
+# created in the web UI, so nothing on anyone's laptop ever saw it until the site went blank.
+#
+# To make this binding rather than advisory, turn on branch protection for main
+# (Settings -> Branches -> Add rule -> Require status checks to pass -> "does it boot").
+
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  boots:
+    name: does it boot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node tools/check.js

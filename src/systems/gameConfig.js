@@ -263,6 +263,23 @@ const GAME_CONFIG = {
     hard:   { timeLimit: 12.0, stonesToPlace: 8, tolerance: 22, swingSpeed: 0.62 },
   },
 
+  // §18: "Pattern length (3 / 4 / 5) is the difficulty dial." The pot count rises with it so the
+  // choice gets wider at the same time, and HARD allows repeats -- "red, blue, red", which §18
+  // rightly says is much harder than it sounds.
+  //
+  // timeLimit is the ANSWER timer only. §18: "the 8-second answer timer starts after the playback
+  // finishes. Watching never eats into answer time." It is the one key adaptive difficulty
+  // touches; patternLength, potCount, allowRepeats and playbackStep stay fixed, because they are
+  // what the tier IS.
+  //
+  // playbackStep is seconds per stripe during playback: slower on EASY so there is time to say
+  // the colour out loud, quicker on HARD.
+  josephCoat: {
+    easy:   { timeLimit: 8.0, patternLength: 3, potCount: 4, allowRepeats: false, playbackStep: 0.60 },
+    medium: { timeLimit: 8.0, patternLength: 4, potCount: 5, allowRepeats: false, playbackStep: 0.50 },
+    hard:   { timeLimit: 8.0, patternLength: 5, potCount: 6, allowRepeats: true,  playbackStep: 0.45 },
+  },
+
 };
 
 // Story context for each game
@@ -455,6 +472,15 @@ const GAME_STORIES = {
     instruction: 'Tap to drop each stone when it swings over the gap!',
     instructionHard: 'The gap is empty this time, and the crane swings faster \u2014 wait for the middle!',
   },
+  [GAME_KEYS.JOSEPH_COAT]: {
+    title: "Joseph's Coat of Many Colors",
+    reference: "Genesis 37:3",
+    story: "Jacob gave his son Joseph a beautiful coat of many colors. Every color showed how much his father loved him!",
+    successMessage: "What a beautiful coat! Every colour showed how much his father loved him.",
+    failMessage: "The colours faded \u2014 watch the stripes closely and try again!",
+    instruction: "Watch the stripes light up, then tap the dye pots in the same order!",
+    instructionHard: "Colours can repeat this time \u2014 watch the order, not just the colours!",
+  },
 };
 
 // Scoring configuration
@@ -499,6 +525,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.RED_SEA]: 'redSea',
   [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
   [GAME_KEYS.ZACCHAEUS]: 'zacchaeus',
+  [GAME_KEYS.JOSEPH_COAT]: 'josephCoat',
 };
 
 // Adaptive difficulty modifiers

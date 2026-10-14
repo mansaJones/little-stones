@@ -1,0 +1,22 @@
+# Does this commit boot? If not, do not publish it.
+#
+# Three times a git merge has silently eaten a closing brace in src/systems/gameConfig.js. Every
+# entry in that registry ends with an identical "  }," followed by a blank line, so when two
+# branches each append an entry at the same place git treats those closers as the same line and
+# keeps one where it needed two. The file still reads plausibly. The first sign of trouble is a
+# blank navy screen on the live site, because one SyntaxError leaves GAME_CONFIG, GAME_STORIES
+# and getAdjustedConfig undefined and every scene that needs them dies on arrival.
+#
+# A static site with no build step has nothing standing between a bad merge and production.
+# This is that something: tools/check.js exits non-zero when the commit would not boot, Netlify
+# fails the deploy, and the last good version keeps serving.
+#
+# The publish directory is deliberately NOT set here, so whatever is configured in the Netlify UI
+# still governs. Pin it by adding `publish = "."` below only if the UI field is blank and you
+# want it fixed in the repo.
+
+[build]
+  command = "node tools/check.js"
+
+[build.environment]
+  NODE_VERSION = "20"
