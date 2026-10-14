@@ -154,6 +154,20 @@ const GAME_CONFIG = {
     medium: { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 1.1, waveEvery: 0   },
     hard:   { timeLimit: 8.0, walkTime: 5.0, sinkRate: 0.55, driftSpeed: 2.0, waveEvery: 2.1 },
   },
+  zacchaeus: {
+    // §17's two dials move together -- the tap target rises as the clock shortens -- but the one
+    // that changes how the game FEELS is the third: what a same-side tap costs.
+    //
+    //   EASY   a wrong tap does nothing, so alternating two thumbs is fine
+    //   MEDIUM it costs a step
+    //   HARD   it costs two, which turns mashing into rhythm
+    //
+    // slipSteps is deliberately NOT scaled by adaptive difficulty: it is the character of the
+    // tier, not its dosage. Zero means off, matching windForce / relocateAfter elsewhere.
+    easy:   { timeLimit: 8.0, targetTaps: 14, slipSteps: 0 },
+    medium: { timeLimit: 7.0, targetTaps: 18, slipSteps: 1 },
+    hard:   { timeLimit: 6.0, targetTaps: 22, slipSteps: 2 },
+  },
   heMustIncrease: {
     easy:   { targetGodMin: 70, targetGodMax: 100, timeLimit: 5.0, revertRate: 0 },
     medium: { targetGodMin: 80, targetGodMax: 90, timeLimit: 4.0, revertRate: 0 },
@@ -343,6 +357,15 @@ const GAME_STORIES = {
     instruction: "Press and hold on Jesus to keep Peter walking!",
     instructionHard: "Waves will hide Him \u2014 hold where He IS, not where you can see Him!",
   },
+  [GAME_KEYS.ZACCHAEUS]: {
+    title: "Zacchaeus Climbs the Tree",
+    reference: "Luke 19:1-10",
+    story: "Zacchaeus was too short to see Jesus, so he climbed a tree! Jesus looked up and said, 'Come down, I'm visiting your house today!'",
+    successMessage: "Zacchaeus climbed high and Jesus saw him! Jesus came looking for him.",
+    failMessage: "Jesus is already at the tree \u2014 climb a bit quicker next time!",
+    instruction: "Tap LEFT then RIGHT, over and over, to climb the tree!",
+    instructionHard: "Tap the same side twice and you slip down two \u2014 keep the rhythm!",
+  },
   [GAME_KEYS.LOST_SHEEP]: {
     title: "Find the Lost Sheep",
     reference: "Luke 15:3-7",
@@ -403,6 +426,7 @@ const CONFIG_KEY_MAP = {
   [GAME_KEYS.BABY_MOSES]: 'babyMoses',
   [GAME_KEYS.PETER_WATER]: 'peterWater',
   [GAME_KEYS.NEHEMIAH_WALL]: 'nehemiahWall',
+  [GAME_KEYS.ZACCHAEUS]: 'zacchaeus',
 };
 
 // Adaptive difficulty modifiers
@@ -415,6 +439,17 @@ function getAdjustedConfig(gameName, difficulty, sessionPerformance) {
 
   const baseConfig = { ...GAME_CONFIG[configKey][difficulty] };
 
+  // targetTaps is scaled for ZACCHAEUS ONLY, by name, and this is deliberate.
+  //
+  // §17 says the key is named so adaptive difficulty scales it "for free", and walkAroundJericho's
+  // config comment says the same thing about itself -- but nothing in this function has ever
+  // touched targetTaps, so both claims were aspirational. wrestleAngel carries the key too.
+  //
+  // Scaling it for everything would quietly re-balance two games that shipped and were tuned
+  // without it, so the opt-in is per game rather than per key. If Jericho or Wrestle should get it
+  // too, add them here and re-run their harnesses -- do not widen the test to the key name.
+  const scalesTaps = configKey === 'zacchaeus';
+
   // NOTE: timeLimit and reactionWindow get HARDER as they shrink. surviveTime is the opposite —
   // a longer survival is a harder round — so it scales the other way. Affects fieryFurnace and
   // danielLionsDen, which are both survive-the-clock games and were previously skipped entirely
@@ -424,18 +459,22 @@ function getAdjustedConfig(gameName, difficulty, sessionPerformance) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 0.93;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 0.93;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 1.07;
+    // rounded: a target of 19.26 taps is a number no child can finish exactly
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 1.07);
   }
 
   if (sessionPerformance && sessionPerformance.consecutiveLosses >= 2) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 1.10;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 1.10;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 0.91;
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 0.91);
   }
 
   if (sessionPerformance && sessionPerformance.consecutiveLosses >= 4) {
     if (baseConfig.timeLimit) baseConfig.timeLimit *= 1.25;
     if (baseConfig.reactionWindow) baseConfig.reactionWindow *= 1.25;
     if (baseConfig.surviveTime) baseConfig.surviveTime *= 0.80;
+    if (scalesTaps && baseConfig.targetTaps) baseConfig.targetTaps = Math.round(baseConfig.targetTaps * 0.80);
   }
 
   return baseConfig;

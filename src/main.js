@@ -76,6 +76,7 @@ const config = {
     BabyMosesGame,
     PeterWaterGame,
     NehemiahWallGame,
+    ZacchaeusTreeGame,
   ],
   plugins: {
     scene: [{ key: 'StageOffset', plugin: StageOffsetPlugin, mapping: 'stageOffset' }],
