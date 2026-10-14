@@ -39,21 +39,53 @@ class GamePickerScene extends Phaser.Scene {
       icon: this.getIcon(key),
     }));
 
-    const cols = 5;
-    const cardW = 124;
-    const cardH = 80;
+    // The grid sizes itself to the list. Nothing here is a fixed card size, because a fixed card
+    // size is what broke it: 124x80 in five columns fitted when the picker had thirteen games, but
+    // eighteen needs four rows, and 4 x 80 plus gaps is 344px crammed into the 272px band between
+    // the header and the difficulty toggle. Measured before the fix: five cards sat ON the toggle
+    // and three fell past the bottom of the stage entirely.
+    //
+    // So: try each column count, and keep whichever gives the TALLEST card that still fits. Height
+    // is the objective rather than area because the card carries a wrapped two- or three-line
+    // name, and height is what the name needs -- "Nehemiah Rebuilds the Wall" in a short wide card
+    // is the thing that overflows next.
     const gapX = 10;
     const gapY = 8;
-    const gridW = cols * cardW + (cols - 1) * gapX;
-    const startX = (GAME_WIDTH - gridW) / 2 + cardW / 2;
+    const MARGIN_X = 12;
+    const BAND_TOP = 42;
+    const BAND_BOTTOM = 310;        // 10px clear of the difficulty toggle, whose top edge is y=320
+    const MAX_ASPECT = 1.35;        // wider than this and the name has nowhere to wrap
+    const MIN_CARD_H = 44;
 
-    // Centred in the band between the header and the difficulty toggle, rather than pinned to
-    // y=55. At thirteen games the grid filled all three rows and 55 was the only value that fit;
-    // at ten it is two rows, and pinning the top would leave a 100px hole above the toggle.
-    const BAND_TOP = 42, BAND_BOTTOM = 315;
-    const rows = Math.ceil(games.length / cols);
+    const availW = GAME_WIDTH - MARGIN_X * 2;
+    const availH = BAND_BOTTOM - BAND_TOP;
+
+    let best = null;
+    for (let c = 4; c <= 7; c++) {
+      const r = Math.ceil(games.length / c);
+      const w = (availW - (c - 1) * gapX) / c;
+      const h = Math.min(w / MAX_ASPECT, (availH - (r - 1) * gapY) / r);
+      if (h < MIN_CARD_H) continue;
+      if (!best || h > best.h || (h === best.h && w > best.w)) best = { cols: c, rows: r, w: w, h: h };
+    }
+    // Every column count was too tight -- only reachable with a far longer list than this app has.
+    // Fall back to the narrowest cards rather than drawing nothing.
+    if (!best) {
+      const c = 7, r = Math.ceil(games.length / c);
+      best = { cols: c, rows: r, w: (availW - (c - 1) * gapX) / c,
+               h: (availH - (r - 1) * gapY) / r };
+    }
+
+    const cols = best.cols;
+    const cardW = best.w;
+    const cardH = best.h;
+    const rows = best.rows;
     const gridH = rows * cardH + (rows - 1) * gapY;
-    const startY = Math.max(55, BAND_TOP + (BAND_BOTTOM - BAND_TOP - gridH) / 2);
+    const startY = BAND_TOP + (availH - gridH) / 2;
+
+    // Type scales with the card, from the proportions the 124x80 card was designed at.
+    const iconSize = Math.max(16, Math.round(cardH * 0.325));
+    const nameSize = Math.max(8, Math.min(10, Math.round(cardH * 0.125)));
 
     games.forEach((game, i) => {
       const col = i % cols;
@@ -77,13 +109,13 @@ class GamePickerScene extends Phaser.Scene {
       hover.fillRoundedRect(x - cardW / 2, y - cardH / 2, cardW, cardH, 10);
       hover.setVisible(false);
 
-      // Icon
-      this.add.text(x, y - 15, game.icon, { fontSize: '26px' }).setOrigin(0.5);
+      // Icon and name are placed as fractions of the card, not at a fixed -15 / +18, so they stay
+      // put when the card resizes.
+      this.add.text(x, y - cardH * 0.19, game.icon, { fontSize: iconSize + 'px' }).setOrigin(0.5);
 
-      // Name
-      this.add.text(x, y + 18, game.name, {
+      this.add.text(x, y + cardH * 0.22, game.name, {
         ...FONTS.SMALL,
-        fontSize: '10px',
+        fontSize: nameSize + 'px',
         fontStyle: 'bold',
         wordWrap: { width: cardW - 10 },
         align: 'center',
