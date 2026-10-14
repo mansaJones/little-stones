@@ -39,6 +39,7 @@ class InstructionScene extends Phaser.Scene {
       [GAME_KEYS.SAMSON_JAWBONE]: { icon: '💪', gesture: 'DRAG TO CHASE', anim: 'tap' },
       [GAME_KEYS.BABY_MOSES]: { icon: '📱', gesture: 'TILT TO STEER', anim: 'tap' },
       [GAME_KEYS.PETER_WATER]: { icon: '✋', gesture: 'PRESS & HOLD', anim: 'tap' },
+      [GAME_KEYS.FEEDING_5000]: { icon: '🧺', gesture: 'SLIDE TO CATCH', anim: 'drag' },
     };
 
     const info = gestureMap[this.gameKey];

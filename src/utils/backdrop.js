@@ -43,6 +43,7 @@ const GAME_BACKDROPS = {
   // separate texture (bm-tile) -- these pages do not scroll, so they get the whole picture.
   [GAME_KEYS.BABY_MOSES]:          { key: 'bm-bg',  file: 'assets/games/baby-moses/bg.jpg',         scrim: 0.74 },
   [GAME_KEYS.PETER_WATER]:         { key: 'pw-bg',  file: 'assets/games/peter-water/bg.jpg',        scrim: 0.68 },
+  [GAME_KEYS.FEEDING_5000]:        { key: 'fk-bg',  file: 'assets/games/feeding-5000/bg.jpg',       scrim: 0.65 },
 };
 
 // Scrim colours. GameLoopScene carried its win/loss signal in a flat background colour, so the
