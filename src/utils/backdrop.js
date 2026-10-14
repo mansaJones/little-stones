@@ -20,8 +20,9 @@
 // [0.22, 0.82]. Every plate below lands at 4.51:1 except the furnace, which is already darker than
 // the target and clamps to 0.22 at 7.1:1. Re-measure if a plate is ever redrawn.
 //
-// null means the game has no plate. DAVID_VS_GOLIATH draws its own gradient at runtime and
-// TOWER_OF_BABEL never had art; both fall back to the page's original gradient.
+// null means the game has no plate. Only TOWER_OF_BABEL now: it never had art and falls back
+// to the page's original gradient. David vs Goliath used to be here too, drawing its own
+// gradient at runtime, until Scene 12's canyon arrived.
 const GAME_BACKDROPS = {
   // Two plates for this one, dark and light. The light one is used here: the dark plate is nearly
   // black, and under any scrim it reads as a blank page rather than as the game's art.
@@ -34,7 +35,7 @@ const GAME_BACKDROPS = {
   [GAME_KEYS.DANIEL_LIONS_DEN]:    { key: 'ld-bg',  file: 'assets/games/lions-den/bg.jpg',          scrim: 0.65 },
   [GAME_KEYS.FIERY_FURNACE]:       { key: 'ff-bg',  file: 'assets/games/fiery-furnace/bg.jpg',      scrim: 0.22 },
   [GAME_KEYS.HOUSE_ON_ROCK]:       { key: 'hr-bg',  file: 'assets/games/house-on-rock/bg.jpg',      scrim: 0.56 },
-  [GAME_KEYS.DAVID_VS_GOLIATH]:    null,
+  [GAME_KEYS.DAVID_VS_GOLIATH]:    { key: 'dvg-bg', file: 'assets/games/david-goliath/bg.jpg',      scrim: 0.74 },
   [GAME_KEYS.WALK_AROUND_JERICHO]: { key: 'lj-bg',  file: 'assets/games/jericho/bg.jpg',            scrim: 0.70 },
   [GAME_KEYS.HE_MUST_INCREASE]:    { key: 'li-bg',  file: 'assets/games/he-must-increase/bg.jpg',   scrim: 0.74 },
   [GAME_KEYS.LOST_SHEEP]:          { key: 'ls-bg',  file: 'assets/games/lost-sheep/bg.jpg',         scrim: 0.73 },
