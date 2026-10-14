@@ -48,6 +48,12 @@ const config = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+    // Send the CONTAINER fullscreen, not just the canvas. Left unset, Phaser creates its own
+    // blank wrapper div and moves only the canvas into it -- and a browser can send exactly one
+    // element fullscreen, so anything else in the container (the feedback button) disappears the
+    // moment a tester taps START PLAYING. The canvas is already a child of this element, which is
+    // the one requirement.
+    fullscreenTarget: 'game-container',
   },
   scene: [
     BootScene,
@@ -110,9 +116,18 @@ const config = {
 // Launch!
 const game = new Phaser.Game(config);
 
+// A top-level `const` in a classic script is script-scoped and never becomes a window property,
+// so the feedback button -- which lives in the DOM, outside Phaser -- has no way to ask what
+// scene is running. This is the one deliberate handle across that boundary.
+window.__LS_GAME = game;
+
 // The canvas was shaped to the viewport once, before Phaser booted. Keep it that way: entering
 // fullscreen or rotating changes the viewport's aspect, and without this the canvas keeps its old
 // shape and Scale.FIT letterboxes it -- measured at 36-72px of bars, which is almost exactly the
 // chrome height fullscreen just won back.
 installFullscreenReflow(game);
+
+// Persistent across every scene because it is not in any scene. Renders nothing at all until a
+// form URL is configured in src/utils/feedback.js.
+installFeedbackButton();
 
