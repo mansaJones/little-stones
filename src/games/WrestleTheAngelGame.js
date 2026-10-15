@@ -191,9 +191,13 @@ class WrestleTheAngelGame extends Phaser.Scene {
     });
 
     // Brief instruction hint
-    const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18,
+    // 11px -> 20px, lifted off the bottom edge, and given the same outline its two siblings
+    // already had. It was 67% white with no stroke over a painted backdrop, which is faint at any
+    // size; growing the text without that would have made it bigger and still washed out.
+    const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 26,
       'Tap anywhere — fast!', {
-        ...FONTS.SMALL, color: '#ffffffaa', fontSize: '11px',
+        ...FONTS.SMALL, color: '#ffffff', fontSize: '20px',
+        stroke: '#000000', strokeThickness: 4,
       }).setOrigin(0.5).setDepth(40);
     this.tweens.add({ targets: hint, alpha: 0, delay: 2000, duration: 500 });
   }

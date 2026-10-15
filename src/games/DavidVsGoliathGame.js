@@ -259,8 +259,10 @@ class DavidVsGoliathGame extends Phaser.Scene {
       this.hudSlings.push(s);
     }
 
+    // 14px -> 20px. At 20px, centred on y 44, it spans 34..54 and still clears the stone icons
+    // above it, whose lowest pixel is 27.
     this.prompt = this.add.text(GAME_WIDTH / 2, 44, 'Pull back and let go!', {
-      ...FONTS.BODY, fontSize: '14px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 4,
+      ...FONTS.BODY, fontSize: '20px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 4,
     }).setOrigin(0.5).setDepth(900);
   }
 
