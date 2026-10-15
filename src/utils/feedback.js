@@ -26,8 +26,25 @@
 //
 // Leave `url` empty and the button does not render at all, so a half-configured build ships
 // without a dead link in the corner.
+// The RESOLVED /viewform URL, deliberately, not the forms.gle short link it came from. A short
+// link answers with a 302 to this address, and query parameters appended to the short form are not
+// reliably carried across that redirect -- so the moment a prefill field is configured below, a
+// forms.gle URL would silently drop it and every response would arrive with the context blank.
+// Resolved once here so nobody has to rediscover that.
 const FEEDBACK_FORM = {
-  url: '',                        // e.g. 'https://docs.google.com/forms/d/e/1FAIp.../viewform'
+  url: 'https://docs.google.com/forms/d/e/1FAIpQLSctlnjSd0QoX4BZycQTd-mVyEtprNbcJbxGWeB8ByK5Toqs3A/viewform',
+
+  // Still empty, so nothing is prefilled yet and the button simply opens the form.
+  //
+  // The live form asks four questions -- platform, bugs, suggestions, new game ideas -- and none
+  // of them records WHICH mini-game the tester was playing. Across 21 games that is the one thing
+  // a bug report is useless without, and the one thing a tester will not reliably remember by the
+  // time they are typing.
+  //
+  // Adding a single short-answer question, e.g. "Build info (leave this as it is)", and pasting
+  // its entry ID into `game` below is enough: the game, difficulty, outcome, device and version
+  // all arrive in that one field without the tester touching it. `platform` could be auto-filled
+  // the same way from the existing multiple-choice question.
   fields: {
     game: '',                     // e.g. 'entry.123456789'
     difficulty: '',
