@@ -133,23 +133,33 @@ function installFeedbackButton() {
   a.rel = 'noopener noreferrer';
   a.setAttribute('aria-label', 'Send feedback');
   a.title = 'Send feedback';
-  a.textContent = '💬';
+  a.textContent = '💬 Feedback';
   a.style.cssText = [
-    'position:absolute', 'top:4px', 'right:4px',
-    'width:26px', 'height:26px', 'line-height:26px',
-    'text-align:center', 'font-size:14px',
-    'border-radius:8px', 'text-decoration:none',
-    'background:rgba(20,22,40,0.55)', 'color:#fff',
-    'border:1px solid rgba(255,255,255,0.22)',
-    'opacity:0.55', 'z-index:50',
+    // Bottom-left. The top-right corner is occupied in all 20 games -- timers, counters and
+    // icons within 30px of it, and five games draw a full-width HUD bar across the top 46px --
+    // whereas the only thing near bottom-left is centred chrome ("Tap to skip", the ADMIN MODE
+    // line) that sits at GAME_WIDTH / 2. A labelled pill needs the clear space; a 26px icon did
+    // not.
+    'position:absolute', 'bottom:6px', 'left:6px',
+    'height:26px', 'line-height:26px', 'padding:0 11px',
+    'text-align:center', 'font-size:13px', 'white-space:nowrap',
+    'font-family:Arial,Helvetica,sans-serif',
+    'border-radius:13px', 'text-decoration:none',
+    // The PILL is translucent; the label is not. Fading the whole element to 0.55 also faded the
+    // white text to 55%, which vanished over the pale backdrops (Wrestle the Angel, the canyon,
+    // the hillside). Keeping the element opaque and letting only the background carry the
+    // translucency means the text stays crisp on light art and dark art alike.
+    'background:rgba(20,22,40,0.62)', 'color:#fff',
+    'border:1px solid rgba(255,255,255,0.28)',
+    'opacity:1', 'z-index:50',
     // The page sets touch-action:none globally to stop the game scrolling. That also kills the
     // tap on this link, so it is re-enabled here and nowhere else.
     'touch-action:manipulation', '-webkit-tap-highlight-color:transparent',
     'transition:opacity 120ms ease',
   ].join(';');
 
-  const wake = () => { a.style.opacity = '1'; };
-  const rest = () => { a.style.opacity = '0.55'; };
+  const wake = () => { a.style.background = 'rgba(20,22,40,0.92)'; };
+  const rest = () => { a.style.background = 'rgba(20,22,40,0.62)'; };
   a.addEventListener('pointerenter', wake);
   a.addEventListener('pointerleave', rest);
   a.addEventListener('touchstart', wake, { passive: true });

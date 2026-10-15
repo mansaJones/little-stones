@@ -199,10 +199,13 @@ class RollTheStoneGame extends Phaser.Scene {
     if (this.config.obstacles) this.spawnObstacles();
 
     // Brief instruction hint
-    const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18,
+    // 11px was the smallest text in the build and it is the line telling the player what to do.
+    // 20px to match the eleven games that were already at 18-24. Lifted off GAME_HEIGHT - 18 as
+    // well: at 20px the descenders sat 8px from the bottom edge.
+    const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 26,
       '← Drag the stone to roll it away', {
-        ...FONTS.SMALL, color: '#ffffff', fontSize: '11px',
-        stroke: '#000000', strokeThickness: 3,
+        ...FONTS.SMALL, color: '#ffffff', fontSize: '20px',
+        stroke: '#000000', strokeThickness: 4,
       }).setOrigin(0.5).setDepth(40);
     this.tweens.add({ targets: hint, alpha: 0, delay: 2000, duration: 500 });
   }

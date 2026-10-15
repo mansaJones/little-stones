@@ -74,16 +74,24 @@ class InstructionScene extends Phaser.Scene {
       ? story.instructionHard
       : story.instruction;
 
-    this.add.text(450, 100, instructionText, {
+    // 16px in a 200px column was the smallest readable thing on the page, and it is the one line
+    // that tells a six-year-old what to actually do. At 20px it needs a wider column and more
+    // headroom: the longest string in the set is 87 characters ("Spread two fingers apart to part
+    // the sea, and hold it open while everyone walks across!"), which wraps to four lines, and at
+    // the old spacing the fourth line landed on the gesture label. The column is widened to 250 --
+    // it spans x 325..575, clear of the gesture icon's 60..140 on the left and the 667 edge on the
+    // right -- and the gesture label drops to 224 to make room. Verified against all 39 strings,
+    // normal and HARD, not just the one that looked worst.
+    this.add.text(450, 96, instructionText, {
       ...FONTS.BODY,
-      fontSize: '16px',
-      wordWrap: { width: 200 },
+      fontSize: '20px',
+      wordWrap: { width: 250 },
       align: 'center',
-      lineSpacing: 4,
+      lineSpacing: 5,
     }).setOrigin(0.5, 0);
 
     // RIGHT SIDE: Gesture label
-    this.add.text(450, 200, info.gesture, {
+    this.add.text(450, 224, info.gesture, {
       ...FONTS.COMBO,
       fontSize: '18px',
       color: '#FF9F43',
