@@ -66,34 +66,43 @@ class StoryScene extends Phaser.Scene {
       fontSize: '40px',
     }).setOrigin(0.5);
 
-    // RIGHT SIDE (~60% width, ~400px): Title, story text, bible reference (stacked vertically)
+    // RIGHT SIDE (~60% width, ~400px): Title, story text, bible reference
     const rightStartX = GAME_WIDTH * 0.4;
     const rightWidth = GAME_WIDTH * 0.6 - 10; // Leave 10px margin
-    const textStartY = 20;
-    const spacing = 65;
+    const cx = rightStartX + rightWidth / 2;
 
-    // Title
-    this.add.text(rightStartX + rightWidth / 2, textStartY, `"${story.title}"`, {
+    // The story was 12px -- the smallest body text left in the build, and the one passage a child
+    // is meant to actually read. It now matches the How to Play page's 20px.
+    //
+    // That needs a reflow, not just a number. The longest story is Samson's at 181 characters
+    // ("Samson was tied up with brand-new ropes, but God made him strong..."), which wrapped to
+    // three lines at 12px and wraps to five at 20px, straight through where the bible reference
+    // used to sit at a fixed y of 175.
+    //
+    // So the reference is positioned from the story's MEASURED height rather than from a constant.
+    // Whatever any future story wraps to, the reference lands under it, and the only thing a long
+    // story can do is run out of room above the progress dots at y 295 -- which all 21 clear with
+    // room to spare.
+    this.add.text(cx, 18, `"${story.title}"`, {
       ...FONTS.TITLE,
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#FFD93D',
       wordWrap: { width: rightWidth - 10 },
       align: 'center',
     }).setOrigin(0.5, 0);
 
-    // Story text
-    this.add.text(rightStartX + rightWidth / 2, textStartY + spacing, story.story, {
+    const storyText = this.add.text(cx, 56, story.story, {
       ...FONTS.STORY,
-      fontSize: '12px',
+      fontSize: '20px',
       wordWrap: { width: rightWidth - 10 },
       align: 'center',
-      lineSpacing: 4,
+      lineSpacing: 5,
     }).setOrigin(0.5, 0);
 
-    // Bible reference
-    this.add.text(rightStartX + rightWidth / 2, textStartY + spacing + 90, story.reference, {
+    // 11px italic under 20px body read as a mistake rather than as a citation.
+    this.add.text(cx, storyText.y + storyText.height + 12, story.reference, {
       ...FONTS.VERSE,
-      fontSize: '11px',
+      fontSize: '14px',
       wordWrap: { width: rightWidth - 10 },
       align: 'center',
     }).setOrigin(0.5, 0);
