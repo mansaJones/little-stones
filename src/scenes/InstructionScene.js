@@ -1,5 +1,5 @@
 // ============================================
-// INSTRUCTION SCENE - How to play (2 seconds)
+// INSTRUCTION SCENE - How to play. Advances on the button, never on a timer.
 // ============================================
 
 class InstructionScene extends Phaser.Scene {
@@ -98,53 +98,26 @@ class InstructionScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // BOTTOM CENTER: Progress dots
-    this.drawProgressDots(333.5, 295, 1);
+    this.drawProgressDots(333.5, 285, 1);
 
-    // BOTTOM: Timer bar
-    const timerBar = this.add.graphics();
-    const barY = 330;
-    const barW = 200;
-    timerBar.fillStyle(0xffffff, 0.15);
-    timerBar.fillRoundedRect(333.5 - barW / 2, barY, barW, 6, 3);
-
-    const fill = this.add.graphics();
-    const duration = this.isFirstGame ? 3500 : 2000;
-
-    this.tweens.addCounter({
-      from: 0,
-      to: barW,
-      duration: duration,
-      onUpdate: (tween) => {
-        fill.clear();
-        fill.fillStyle(COLORS.SUNSET_ORANGE, 0.8);
-        fill.fillRoundedRect(333.5 - barW / 2, barY, tween.getValue(), 6, 3);
-      },
-    });
-
-    // BOTTOM: "Get Ready!" countdown
-    this.add.text(333.5, 350, 'Get Ready!', {
-      ...FONTS.BODY,
-      fontSize: '14px',
-      color: '#ffffff66',
+    // Nothing moves until the button is pressed. The 2000ms auto-advance (3500 on the first game)
+    // gave a child two seconds to read the instruction they had just been given, and the "Tap to
+    // skip" hint meant a stray thumb skipped it entirely. Timer bar, "Get Ready!" and the hint are
+    // all gone with it.
+    const btnY = 342;
+    const btn = this.add.image(333.5, btnY, 'btn-play')
+      .setDisplaySize(210, 46)
+      .setInteractive({ useHandCursor: true });
+    this.add.text(333.5, btnY, "LET'S GO  \u25B6", {
+      ...FONTS.BUTTON, fontSize: '16px',
     }).setOrigin(0.5);
 
-    // BOTTOM: Tap to skip
-    this.add.text(333.5, 365, 'Tap to skip', {
-      ...FONTS.SMALL,
-      fontSize: '12px',
-      color: '#ffffff33',
-    }).setOrigin(0.5);
-
-    this.advanceTimer = this.time.delayedCall(duration, () => {
-      this.advance();
-    });
-
-    this.input.once('pointerdown', () => {
+    btn.on('pointerdown', () => {
       // §15: iOS only hands over device motion if requestPermission() is called from a user
-      // gesture, and it names this screen's tap as the place to do it. This is that call. It is
-      // a no-op on every other game and on every platform without the gate.
+      // gesture, and it names this screen's tap as the place to do it. That tap is now this
+      // button, so the call moves here with it -- Baby Moses is unplayable on an iPhone without
+      // it. A no-op on every other game and on every platform without the gate.
       if (this.gameKey === GAME_KEYS.BABY_MOSES && typeof BMMotion !== 'undefined') BMMotion.request();
-      if (this.advanceTimer) this.advanceTimer.remove();
       this.advance();
     });
   }

@@ -1,5 +1,5 @@
 // ============================================
-// STORY SCENE - Pre-game biblical context (3 seconds)
+// STORY SCENE - Pre-game biblical context. Advances on the button, never on a timer.
 // ============================================
 
 class StoryScene extends Phaser.Scene {
@@ -99,46 +99,24 @@ class StoryScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     // Progress dots (BOTTOM CENTER)
-    const bottomY = GAME_HEIGHT - 55;
-    this.drawProgressDots(GAME_WIDTH / 2, bottomY, 0);
+    this.drawProgressDots(GAME_WIDTH / 2, GAME_HEIGHT - 80, 0);
 
-    // Auto-advance timer bar (bottom center, above progress dots)
-    const timerBarY = GAME_HEIGHT - 35;
-    const barW = 150;
-    const timerBar = this.add.graphics();
-    timerBar.fillStyle(0xffffff, 0.15);
-    timerBar.fillRoundedRect(GAME_WIDTH / 2 - barW / 2, timerBarY, barW, 5, 2);
+    // Nothing moves until the button is pressed.
+    //
+    // This page used to advance itself after 3000ms, with a tap anywhere to skip. Both halves were
+    // wrong for the audience: a six-year-old reading "Jacob gave his son Joseph a beautiful coat
+    // of many colors" does not finish it in three seconds, and a child resting a thumb on the
+    // screen skipped the story without ever knowing it was there. The timer bar, the countdown and
+    // the "Tap to skip" hint are all gone with it.
+    const btnY = GAME_HEIGHT - 30;
+    const btn = this.add.image(GAME_WIDTH / 2, btnY, 'btn-play')
+      .setDisplaySize(210, 46)
+      .setInteractive({ useHandCursor: true });
+    this.add.text(GAME_WIDTH / 2, btnY, 'HOW TO PLAY  \u25B6', {
+      ...FONTS.BUTTON, fontSize: '16px',
+    }).setOrigin(0.5);
 
-    const fill = this.add.graphics();
-    const duration = 3000;
-
-    this.tweens.addCounter({
-      from: 0,
-      to: barW,
-      duration: duration,
-      onUpdate: (tween) => {
-        fill.clear();
-        fill.fillStyle(COLORS.GOLD, 0.8);
-        fill.fillRoundedRect(GAME_WIDTH / 2 - barW / 2, timerBarY, tween.getValue(), 5, 2);
-      },
-    });
-
-    // Tap to skip hint (very bottom)
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 10, 'Tap to skip', {
-      ...FONTS.SMALL,
-      fontSize: '9px',
-      color: '#ffffff44',
-    }).setOrigin(0.5, 1);
-
-    // Auto-advance or tap to skip
-    this.advanceTimer = this.time.delayedCall(duration, () => {
-      this.advance();
-    });
-
-    this.input.once('pointerdown', () => {
-      if (this.advanceTimer) this.advanceTimer.remove();
-      this.advance();
-    });
+    btn.on('pointerdown', () => this.advance());
   }
 
   advance() {
